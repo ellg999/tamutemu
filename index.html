@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -1496,11 +1495,10 @@ QRCode.createBytes = function(buffer, rsBlocks) {
 return { QRCode: QRCode, QRErrorCorrectLevel: QRErrorCorrectLevel };
 })();
  
+// ini yang harus diubah ya
 const STAFF = [
-  {id:'s1', name:'Bu Ratna Wulandari', dept:'Wali Kelas XI IPA 1'},
-  {id:'s2', name:'Pak Doni Saputra', dept:'Wali Kelas XII IPS 2'},
-  {id:'s3', name:'Bu Amelia Putri', dept:'Wakil Kepala Sekolah'},
-  {id:'s4', name:'Pak Hendra Kusuma', dept:'Kepala Sekolah'},
+  {id:'s1', name:'Kepala Sekolah'},
+  {id:'s2', name:'Wali Kelas', dept:'Wali Kelas XII'},
 ];
 const ADMIN_CODE = '246810';
  
@@ -1697,8 +1695,11 @@ function viewKiosk(){
             <input type="date" id="f_date" value="${todayStr()}">
           </div>
           <div class="field">
-            <label>Waktu</label>
-            <input type="time" id="f_time" value="13:00">
+            <label>Waktu (WIB)</label>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <input type="time" id="f_time" value="13:00">
+              <span style="font-weight:600; font-size:13px; color:var(--text-dim);">WIB</span>
+            </div>
           </div>
         </div>
         <div id="conflictWarn"></div>
@@ -1748,7 +1749,7 @@ function guestCardHtml(a){
         ${a.photo ? `<img src="${a.photo}" class="li-avatar">` : `<div class="li-avatar ph">${initials(a.guest)}</div>`}
         <div class="li-text">
           <div class="name">${staffName(a.staffId)}</div>
-          <div class="meta">${staffDept(a.staffId)} · ${a.date} ${a.time} · ${a.category}</div>
+          <div class="meta">${staffDept(a.staffId)} · ${a.date} ${a.time} WIB · ${a.category}</div>
         </div>
       </div>
       <span class="badge ${a.status}"><span class="dot"></span>${statusLabel(a.status)}</span>
@@ -1799,7 +1800,7 @@ function viewHost(){
             ${a.photo ? `<img src="${a.photo}" class="li-avatar">` : `<div class="li-avatar ph">${initials(a.guest)}</div>`}
             <div class="li-text">
               <div class="name">${a.guest}</div>
-              <div class="meta">${a.category}${a.nisn? ' · NISN '+a.nisn:''} → ${staffName(a.staffId)} · ${a.date} ${a.time}</div>
+              <div class="meta">${a.category}${a.nisn? ' · NISN '+a.nisn:''} → ${staffName(a.staffId)} · ${a.date} ${a.time} WIB</div>
             </div>
           </div>
           <div class="li-actions">
@@ -1831,7 +1832,7 @@ function viewHost(){
             ${a.photo ? `<img src="${a.photo}" class="li-avatar">` : `<div class="li-avatar ph">${initials(a.guest)}</div>`}
             <div class="li-text">
               <div class="name">${a.guest}</div>
-              <div class="meta">Menemui ${staffName(a.staffId)} · check-in ${a.time}</div>
+              <div class="meta">Menemui ${staffName(a.staffId)} · check-in ${a.time} WIB</div>
             </div>
           </div>
           <span class="badge checked-in"><span class="dot"></span>Di lokasi</span>
@@ -1848,7 +1849,7 @@ function viewHost(){
       <tbody>
         ${todaysAll.map(a=>`
         <tr>
-          <td class="mono">${a.time}</td>
+          <td class="mono">${a.time} WIB</td>
           <td>${a.guest}</td>
           <td>${a.category}</td>
           <td>${staffName(a.staffId)}</td>
@@ -1899,7 +1900,7 @@ function viewStaf(){
             ${a.photo ? `<img src="${a.photo}" class="li-avatar">` : `<div class="li-avatar ph">${initials(a.guest)}</div>`}
             <div class="li-text">
               <div class="name">${a.guest}</div>
-              <div class="meta">${a.category}${a.nisn? ' · NISN '+a.nisn:''} · ${a.date} ${a.time}</div>
+              <div class="meta">${a.category}${a.nisn? ' · NISN '+a.nisn:''} · ${a.date} ${a.time} WIB</div>
               <div class="meta" style="margin-top:4px;">"${a.purpose}"</div>
             </div>
           </div>
@@ -1918,7 +1919,7 @@ function viewStaf(){
             ${a.photo ? `<img src="${a.photo}" class="li-avatar">` : `<div class="li-avatar ph">${initials(a.guest)}</div>`}
             <div class="li-text">
               <div class="name">${a.guest}</div>
-              <div class="meta">${a.date} ${a.time} · ${a.category}</div>
+              <div class="meta">${a.date} ${a.time} WIB · ${a.category}</div>
             </div>
           </div>
           <span class="badge approved"><span class="dot"></span>Disetujui</span>
@@ -2075,5 +2076,3 @@ renderAll();
 </script>
 </body>
 </html>
- 
-
