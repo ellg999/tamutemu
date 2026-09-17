@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TamuTemu - Sistem Buku Tamu</title>
+    <title>TamuTemu</title>
     <!-- Font Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <!-- Pustaka Eksternal -->
@@ -262,11 +262,11 @@
     <!-- 1. HALAMAN UTAMA (LANDING) -->
     <div id="view-landing" class="page-view active">
         <div class="top-nav">
-            <span class="admin-link" onclick="navigasi('view-login')">Masuk sebagai Admin →</span>
+            <span class="admin-link" onclick="navigasi('view-login')">Supervisor Mode</span>
         </div>
         <div class="landing-center">
             <h1>TamuTemu</h1>
-            <p>Sistem Manajemen Buku Tamu Kepala Sekolah.<br>Silakan pilih layanan untuk mengatur jadwal pertemuan.</p>
+            <p>Jadwalkan Pertemuan Anda</p>
             
             <div class="action-bars">
                 <div class="action-bar" onclick="navigasi('view-buat-janji')">
@@ -281,9 +281,9 @@
 
     <!-- 2. FORM BUAT JANJI -->
     <div id="view-buat-janji" class="page-view" style="justify-content: center; position:relative;">
-        <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">← Kembali</button>
+        <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">Kembali</button>
         <div class="card-container">
-            <h2>Form Pengajuan Janji</h2>
+            <h2>Form Pengajuan Pertemuan</h2>
             <form id="form-tamu" onsubmit="buatJanji(event)">
                 <div class="form-group">
                     <label>Nama Lengkap</label>
@@ -294,7 +294,7 @@
                     <input type="datetime-local" id="input-waktu" required>
                 </div>
                 <div class="form-group">
-                    <label>Tujuan Kepentingan</label>
+                    <label>Tujuan</label>
                     <textarea id="input-tujuan" rows="3" required placeholder="Tujuan pertemuan..."></textarea>
                 </div>
                 <button type="submit" class="btn" style="width: 100%;">Kirim Pengajuan</button>
@@ -311,7 +311,7 @@
 
     <!-- 3. CEK STATUS & QR -->
     <div id="view-cek-status" class="page-view" style="justify-content: center; position:relative;">
-        <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">← Kembali</button>
+        <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')"> Kembali</button>
         <div class="card-container" style="text-align: center;">
             <h2>Cek Status Janji</h2>
             <div class="form-group" style="text-align: left;">
@@ -330,10 +330,10 @@
 
     <!-- 4. LOGIN ADMIN -->
     <div id="view-login" class="page-view" style="justify-content: center; position:relative;">
-        <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">← Kembali</button>
+        <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')"> Kembali</button>
         <div class="card-container" style="text-align: center;">
-            <h2>Otorisasi Admin</h2>
-            <p>Masukkan kata sandi (Demo: <b>123</b>)</p>
+            <h2>Supervisor</h2>
+            <p>Masukkan kata sandi </p>
             <div class="form-group">
                 <input type="password" id="input-sandi" placeholder="Kata Sandi...">
             </div>
@@ -346,7 +346,7 @@
         <div class="dashboard-layout">
             <!-- Sidebar Kiri -->
             <div class="sidebar">
-                <div class="sidebar-brand">Panel Kepsek</div>
+                <div class="sidebar-brand">Supervisor</div>
                 <div class="menu-item active" onclick="switchAdminTab('tab-persetujuan', this)">
                     Menunggu Approval
                 </div>
@@ -357,7 +357,7 @@
                     Grafik Pengunjung
                 </div>
                 <div class="menu-item logout-btn" onclick="navigasi('view-landing')">
-                    ← Keluar
+                    Keluar
                 </div>
             </div>
 
