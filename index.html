@@ -47,6 +47,7 @@
             width: 100%;
             min-height: 100vh;
             animation: fadeIn 0.4s ease;
+            position: relative;
         }
         .page-view.active { display: flex; flex-direction: column; }
 
@@ -55,7 +56,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Elemen Umum & Input (Soft Interactive) */
+        /* Elemen Umum & Input */
         h1, h2, h3 { color: var(--text-main); margin-bottom: 15px; font-weight: 600; }
         p { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; line-height: 1.6; }
 
@@ -100,6 +101,35 @@
         }
 
         /* --- 1. HALAMAN AWAL (LANDING) --- */
+        .top-nav {
+            display: flex;
+            justify-content: flex-end;
+            padding: 20px 40px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .admin-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--bg-navy-lighter);
+        }
+        .admin-link:hover { 
+            color: var(--primary-accent); 
+            background: rgba(255, 255, 255, 0.1); 
+            border-color: var(--primary-accent);
+        }
+
         .landing-center {
             flex: 1;
             display: flex;
@@ -110,26 +140,6 @@
             padding: 20px;
         }
         
-        .admin-link-wrapper {
-            width: 100%;
-            max-width: 450px;
-            text-align: right;
-            margin-bottom: 10px;
-        }
-        
-        .admin-link {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-weight: 500;
-            cursor: pointer;
-            transition: 0.3s;
-            font-size: 14px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 6px 15px;
-            border-radius: 20px;
-        }
-        .admin-link:hover { color: var(--primary-accent); background: rgba(255, 255, 255, 0.1); }
-
         .action-bars {
             display: flex;
             flex-direction: column;
@@ -194,7 +204,7 @@
         /* Styling Khusus Saat Cetak (Print Media) */
         @media print {
             body { background: #ffffff !important; color: #000 !important; display: block; }
-            .back-btn, .ticket-action-btns { display: none !important; }
+            .back-btn, .ticket-action-btns, .top-nav { display: none !important; }
             .card-container { background: none; border: none; box-shadow: none; padding: 0; margin: 0; }
             .ticket-card { box-shadow: none; border: 2px dashed #000; margin: 0 auto; padding: 40px; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -246,7 +256,7 @@
         .admin-tab { display: none; animation: fadeIn 0.3s ease; }
         .admin-tab.active { display: block; }
 
-        /* Tabel & Kalender CSS sama ... */
+        /* Tabel & Kalender CSS */
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--bg-navy-lighter); font-size: 14px;}
         th { color: var(--text-muted); font-weight: 500; }
@@ -304,12 +314,12 @@
 
     <!-- 1. HALAMAN UTAMA (LANDING) -->
     <div id="view-landing" class="page-view active">
+        <!-- Toolbar Kanan Atas -->
+        <div class="top-nav">
+            <span class="admin-link" onclick="navigasi('view-login')">Supervisor Mode ➔</span>
+        </div>
+        
         <div class="landing-center">
-            
-            <div class="admin-link-wrapper">
-                <span class="admin-link" onclick="navigasi('view-login')">Supervisor Mode ➔</span>
-            </div>
-            
             <h1>TamuTemu</h1>
             <p>Jadwalkan Pertemuan Anda</p>
             
@@ -349,7 +359,6 @@
                 </div>
                 <div class="form-group">
                     <label>Unggah Foto Identitas / Selfie (Opsional)</label>
-                    <!-- capture="user" akan membuka kamera depan jika di HP, accept="image/*" menerima foto -->
                     <input type="file" id="input-foto" accept="image/*" capture="user" style="padding: 10px;">
                 </div>
                 <button type="submit" class="btn" style="width: 100%;">Kirim Pengajuan</button>
@@ -474,7 +483,6 @@
     </div>
 
     <script>
-        // Simulasi Database dengan beberapa contoh data awal
         let databaseJadwal = [
             { id: 'TM-0001', nama: 'Vendor Seragam', hp: '08123456789', waktu: '2026-09-08T10:00', tujuan: 'Presentasi Penawaran', status: 'Terverifikasi' },
             { id: 'TM-0002', nama: 'Budi Santoso', hp: '08571234123', waktu: '2026-09-20T13:30', tujuan: 'Konsultasi Akademik Siswa', status: 'Terverifikasi' }
@@ -482,7 +490,6 @@
         
         let chartInstance = null;
 
-        // FUNGSI NAVIGASI GLOBAL
         function navigasi(viewId) {
             document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
@@ -494,12 +501,10 @@
             }
         }
 
-        // FUNGSI TAMU: MENGAJUKAN JANJI
         function buatJanji(e) {
             e.preventDefault();
             const id = 'TM-' + Math.floor(Math.random() * 9000 + 1000);
             
-            // Simpan Ke Database
             databaseJadwal.push({
                 id: id,
                 nama: document.getElementById('input-nama').value,
@@ -509,20 +514,17 @@
                 status: 'Menunggu'
             });
             
-            // Ubah Tampilan UI
             document.getElementById('form-tamu').style.display = 'none';
             document.getElementById('form-title').style.display = 'none';
             document.getElementById('hasil-pengajuan').style.display = 'block';
             document.getElementById('display-id').innerText = id;
             
-            // Generate QR Code untuk Tiket Kertas
             document.getElementById('tiket-qrcode').innerHTML = "";
             new QRCode(document.getElementById("tiket-qrcode"), {
                 text: id, width: 120, height: 120,
                 colorDark: "#0f172a", colorLight: "#ffffff"
             });
             
-            // Reset Form (tanpa mereset tampilan karena sedang disembunyikan)
             document.getElementById('form-tamu').reset();
         }
 
@@ -555,10 +557,8 @@
             }
         }
 
-        // FUNGSI ADMIN
         function loginAdmin() {
             const sandi = document.getElementById('input-sandi').value;
-            // Gunakan kata sandi sembarang untuk simulasi ini
             if(sandi.trim() !== '') { 
                 document.getElementById('input-sandi').value = '';
                 navigasi('view-dashboard');
