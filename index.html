@@ -1,113 +1,478 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TamuTemu</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TamuTemu</title>
+    <!-- Font Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- QRCode.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <style>
+        :root {
+            /* Gradasi Biru Kuning Gelap */
+            --bg-gradient: linear-gradient(135deg, #091221 0%, #0f203b 50%, #3a3211 100%);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.15);
+            --text-main: #f0f4f8;
+            --text-muted: #a0aec0;
+            --accent-yellow: #d4af37;
+            --accent-blue: #3182ce;
+            --success: #38a169;
+            --danger: #e53e3e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigasi Simulasi Peran */
+        nav {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        nav button {
+            background: transparent;
+            color: var(--text-muted);
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s ease;
+            padding: 5px 10px;
+        }
+
+        nav button.active, nav button:hover {
+            color: var(--accent-yellow);
+            border-bottom: 2px solid var(--accent-yellow);
+        }
+
+        /* Container Utama */
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Kartu & Formulir (Soft Interactive) */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: var(--accent-yellow);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-yellow);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        }
+
+        button.btn {
+            width: 100%;
+            padding: 12px;
+            background: rgba(212, 175, 55, 0.2);
+            color: var(--accent-yellow);
+            border: 1px solid var(--accent-yellow);
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button.btn:hover {
+            background: var(--accent-yellow);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        button.btn-danger {
+            background: rgba(229, 62, 62, 0.2);
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+        button.btn-danger:hover {
+            background: var(--danger);
+            color: white;
+            box-shadow: 0 4px 15px rgba(229, 62, 62, 0.4);
+        }
+
+        /* Area QR Code */
+        #qr-result {
+            display: none;
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        #qrcode {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 15px 0;
+        }
+
+        .ticket-id {
+            font-family: monospace;
+            font-size: 18px;
+            letter-spacing: 2px;
+            color: var(--accent-yellow);
+            margin-bottom: 15px;
+        }
+
+        /* Dasbor Admin */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        th {
+            color: var(--accent-yellow);
+            font-weight: 500;
+        }
+
+        .status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status.terjadwal { background: rgba(49, 130, 206, 0.2); color: var(--accent-blue); }
+        .status.hadir { background: rgba(56, 161, 105, 0.2); color: var(--success); }
+        .status.batal { background: rgba(229, 62, 62, 0.2); color: var(--danger); }
+
+        /* Notifikasi Toast */
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #fff;
+            color: #000;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-weight: 500;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+        }
+        #toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Background Image Sekolah -->
-  <div class="bg-school"></div>
-  <div class="bg-overlay"></div>
+    <!-- Navigasi -->
+    <nav>
+        <button id="nav-tamu" class="active" onclick="switchTab('tamu')">Halaman Tamu</button>
+        <button id="nav-admin" onclick="switchTab('admin')">Dashboard Admin (Host)</button>
+    </nav>
 
-  <!-- Main Container -->
-  <div class="app-container">
-    
-    <!-- LAYAR 1: SPLASH SCREEN -->
-    <div id="view-splash" class="view-section active">
-      <h1 class="splash-title">Jadwalkan pertemuan Anda.</h1
-      <button class="btn btn-primary btn-large" id="btnStart">Mulai Mengisi Data &rarr;</button>
+    <!-- Notifikasi -->
+    <div id="toast">Notifikasi muncul di sini</div>
+
+    <!-- Halaman Tamu -->
+    <div class="container tab-content active" id="tab-tamu">
+        <div class="card">
+            <h2>Pendaftaran Tamu Kepala Sekolah</h2>
+            <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 14px;">Silakan isi formulir di bawah ini untuk mendapatkan akses masuk.</p>
+            
+            <form id="formTamu">
+                <div class="form-group">
+                    <label>Nama Lengkap</label>
+                    <input type="text" id="nama" placeholder="Contoh: Budi Santoso (Orang Tua Murid SMA)" required>
+                </div>
+                <div class="form-group">
+                    <label>Tanggal & Waktu</label>
+                    <input type="datetime-local" id="waktu" required>
+                </div>
+                <div class="form-group">
+                    <label>Kepentingan (Detail)</label>
+                    <textarea id="kepentingan" rows="3" placeholder="Tuliskan tujuan Anda bertemu Kepala Sekolah..." required></textarea>
+                </div>
+                <button type="submit" class="btn">Buat Jadwal & Dapatkan QR</button>
+            </form>
+
+            <div id="qr-result">
+                <h3>Jadwal Berhasil Dibuat!</h3>
+                <p style="font-size: 12px; color: var(--text-muted);">Tunjukkan QR Code ini di lobi</p>
+                <div id="qrcode"></div>
+                <div class="ticket-id" id="ticket-id-display"></div>
+                
+                <div class="form-group" style="margin-top: 20px;">
+                    <label>Ingin membatalkan jadwal ini?</label>
+                    <input type="text" id="alasanBatal" placeholder="Alasan pembatalan..." style="margin-bottom: 10px;">
+                    <button class="btn btn-danger" onclick="requestCancel()">Batalkan Jadwal</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- LAYAR 2: FORMULIR MINIMALIS -->
-    <div id="view-form" class="view-section glass-card hidden">
-      <h2>Data Pengunjung</h2>
-      <p class="subtitle">Lengkapi formulir di bawah ini untuk melanjutkan.</p>
-      
-      <div class="form-group">
-        <label>Nama Lengkap</label>
-        <input type="text" id="f_name" placeholder="Masukkan nama Anda" required>
-      </div>
+    <!-- Halaman Admin / Host -->
+    <div class="container tab-content" id="tab-admin">
+        <div class="dashboard-grid">
+            
+            <!-- Panel Scanner -->
+            <div class="card">
+                <h2>Scanner Kehadiran</h2>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">(Simulasi) Pindai QR tamu menggunakan ID Unik.</p>
+                <div class="form-group">
+                    <input type="text" id="scanInput" placeholder="Masukkan ID Tamu (ex: TM-XXX)">
+                </div>
+                <button class="btn" onclick="simulasiScan()">Verifikasi Kehadiran</button>
+            </div>
 
-      <div class="form-group">
-        <label>No. Handphone (WA)</label>
-        <input type="tel" id="f_phone" placeholder="08xxxxxxxxxx" required>
-      </div>
+            <!-- Kalender Jadwal -->
+            <div class="card">
+                <h2>Kalender Jadwal Tamu</h2>
+                <div class="table-responsive">
+                    <table id="tabelJadwal">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nama</th>
+                                <th>Waktu</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataJadwal">
+                            <!-- Data dimuat oleh JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-      <div class="form-group">
-        <label>Kebutuhan</label>
-        <select id="f_need" required>
-          <option value="" disabled selected>Pilih Kebutuhan...</option>
-          <option value="Dinas/Instansi">Urusan Dinas / Instansi</option>
-          <option value="Orang Tua/Wali">Orang Tua / Wali Murid</option>
-          <option value="Lainnya">Lainnya</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Alasan Ingin Bertemu</label>
-        <textarea id="f_reason" rows="2" placeholder="Tuliskan tujuan spesifik Anda..." required></textarea>
-      </div>
-
-      <!-- Input Fixed (Terkunci) -->
-      <div class="form-group">
-        <label>Pihak yang dituju</label>
-        <input type="text" value="Kepala Sekolah" class="input-locked" readonly disabled>
-      </div>
-
-      <div class="action-row">
-        <button class="btn btn-secondary" id="btnBackToSplash">&larr; Batal</button>
-        <button class="btn btn-primary" id="btnToPhoto">Lanjut &rarr;</button>
-      </div>
+        </div>
     </div>
 
-    <!-- LAYAR 3: PENGAMBILAN FOTO -->
-    <div id="view-photo" class="view-section glass-card hidden">
-      <h2>Identitas</h2>
-      <p class="subtitle">Ambil swafoto (selfie) atau unggah foto Anda.</p>
-      
-      <div class="camera-box">
-        <video id="cameraStream" class="mirror" autoplay playsinline></video>
-        <img id="photoPreview" class="hidden" src="" alt="Preview">
-      </div>
+    <script>
+        // Simulasi Database
+        let daftarTamu = [];
+        let currentTicketId = null;
 
-      <div class="photo-controls" id="controlsCamera">
-        <button class="btn btn-secondary" id="btnSnap">📸 Jepret Foto</button>
-        <button class="btn btn-secondary" id="btnUploadTrig">⬆ Unggah File</button>
-        <input type="file" id="uploadInput" accept="image/*" class="hidden">
-      </div>
+        // Fungsi berpindah Tab (UI)
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            document.getElementById(`nav-${tab}`).classList.add('active');
+            
+            if(tab === 'admin') renderTabel();
+        }
 
-      <div class="photo-controls hidden" id="controlsPreview">
-        <button class="btn btn-secondary" id="btnRetake">Ulangi</button>
-      </div>
+        // Fungsi Notifikasi Toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 4000);
+        }
 
-      <div class="action-row" style="margin-top: 24px;">
-        <button class="btn btn-secondary" id="btnBackToForm">&larr; Kembali</button>
-        <button class="btn btn-primary" id="btnSubmitFinal">Kirim & Dapatkan QR</button>
-      </div>
-    </div>
+        // 1. Pendaftaran Mandiri & Generator QR
+        document.getElementById('formTamu').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nama = document.getElementById('nama').value;
+            const waktu = document.getElementById('waktu').value;
+            const kepentingan = document.getElementById('kepentingan').value;
+            
+            // Generate ID Unik
+            currentTicketId = 'TM-' + Math.floor(Math.random() * 9000 + 1000);
+            
+            // Simpan ke database simulasi
+            daftarTamu.push({
+                id: currentTicketId,
+                nama: nama,
+                waktu: waktu,
+                kepentingan: kepentingan,
+                status: 'Terjadwal',
+                alasanBatal: ''
+            });
 
-    <!-- LAYAR 4: QR CODE SUKSES -->
-    <div id="view-qr" class="view-section glass-card hidden text-center">
-      <div class="success-icon">✓</div>
-      <h2>Pendaftaran Berhasil!</h2>
-      <p class="subtitle">Tunjukkan QR Code ini ketika anda datang ke sekolah.</p>
-      
-      <div class="qr-wrapper">
-        <canvas id="qrCanvas" width="150" height="150"></canvas>
-      </div>
-      <p class="qr-id" id="qrTextId">KS-XXXXXX</p>
+            // Generate QR Code
+            document.getElementById('qrcode').innerHTML = ""; // Bersihkan QR lama
+            new QRCode(document.getElementById("qrcode"), {
+                text: currentTicketId,
+                width: 150,
+                height: 150,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+            });
 
-      <button class="btn btn-primary" id="btnFinish" style="margin-top:20px; width: 100%;">Selesai</button>
-    </div>
+            document.getElementById('ticket-id-display').innerText = currentTicketId;
+            document.getElementById('qr-result').style.display = 'block';
+            document.getElementById('formTamu').style.display = 'none';
 
-  </div>
+            // Sistem Notifikasi Simulasi
+            showToast(`Sistem: Email Notifikasi jadwal dikirim ke Kepala Sekolah!`);
+        });
 
-  <script src="script.js"></script>
+        // 2. Simulasi Permintaan Pembatalan (Oleh Tamu)
+        function requestCancel() {
+            const alasan = document.getElementById('alasanBatal').value;
+            if(!alasan) return alert("Mohon isi alasan pembatalan.");
+
+            const tamuIndex = daftarTamu.findIndex(t => t.id === currentTicketId);
+            if(tamuIndex > -1) {
+                daftarTamu[tamuIndex].status = 'Minta Batal';
+                daftarTamu[tamuIndex].alasanBatal = alasan;
+                
+                showToast(`Permintaan batal dikirim ke Admin/Host.`);
+                document.getElementById('qr-result').innerHTML = `<h3 style="color:var(--danger)">Jadwal Menunggu Validasi Pembatalan.</h3>`;
+            }
+        }
+
+        // 3. Render Tabel Dashboard Admin
+        function renderTabel() {
+            const tbody = document.getElementById('dataJadwal');
+            tbody.innerHTML = '';
+
+            daftarTamu.forEach((tamu, index) => {
+                let badgeClass = '';
+                if(tamu.status === 'Terjadwal') badgeClass = 'terjadwal';
+                if(tamu.status === 'Hadir') badgeClass = 'hadir';
+                if(tamu.status === 'Batal' || tamu.status === 'Minta Batal') badgeClass = 'batal';
+
+                let actionBtn = '-';
+                // Jika tamu minta batal, admin wajib memvalidasi
+                if(tamu.status === 'Minta Batal') {
+                    actionBtn = `<button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="validasiBatal(${index})">Validasi Batal</button>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-family:monospace; color:var(--accent-yellow)">${tamu.id}</td>
+                    <td>${tamu.nama}</td>
+                    <td>${new Date(tamu.waktu).toLocaleString('id-ID')}</td>
+                    <td><span class="status ${badgeClass}">${tamu.status}</span></td>
+                    <td>${actionBtn}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // 4. Simulasi Scanner Kehadiran (Admin mengubah status menjadi Hadir)
+        function simulasiScan() {
+            const inputId = document.getElementById('scanInput').value.toUpperCase();
+            const tamuIndex = daftarTamu.findIndex(t => t.id === inputId);
+
+            if(tamuIndex > -1) {
+                if(daftarTamu[tamuIndex].status === 'Terjadwal') {
+                    daftarTamu[tamuIndex].status = 'Hadir';
+                    showToast(`Tamu ${daftarTamu[tamuIndex].nama} hadir. Notifikasi dikirim ke Kepsek!`);
+                    document.getElementById('scanInput').value = '';
+                    renderTabel();
+                } else {
+                    alert(`Tamu ini sudah memiliki status: ${daftarTamu[tamuIndex].status}`);
+                }
+            } else {
+                alert("ID Tamu tidak ditemukan!");
+            }
+        }
+
+        // 5. Validasi Pembatalan oleh Admin
+        function validasiBatal(index) {
+            if(confirm(`Validasi pembatalan untuk ${daftarTamu[index].nama}\nAlasan: ${daftarTamu[index].alasanBatal}\n\nJadwal akan dikosongkan.`)) {
+                daftarTamu[index].status = 'Batal';
+                showToast("Pembatalan divalidasi, jadwal dikosongkan.");
+                renderTabel();
+            }
+        }
+    </script>
 </body>
 </html>
