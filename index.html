@@ -18,7 +18,7 @@
             --bg-navy-lighter: #475569;/* Slate 600 - Untuk Border/Hover */
             --primary-accent: #60a5fa; /* Biru langit lembut (Soft Blue) */
             --text-main: #f8fafc;      /* Putih bersih */
-            --text-muted: #cbd5e1;     /* Abu-abu terang */
+            --text-muted: #cbd5e1;     
             --success: #34d399;
             --warning: #fbbf24;
             --danger: #f87171;
@@ -100,23 +100,6 @@
         }
 
         /* --- 1. HALAMAN AWAL (LANDING) --- */
-        .top-nav {
-            display: flex;
-            justify-content: flex-end;
-            padding: 20px 40px;
-            position: absolute;
-            top: 0; width: 100%;
-        }
-        .admin-link {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-weight: 500;
-            cursor: pointer;
-            transition: 0.3s;
-            font-size: 14px;
-        }
-        .admin-link:hover { color: var(--primary-accent); }
-
         .landing-center {
             flex: 1;
             display: flex;
@@ -126,13 +109,34 @@
             text-align: center;
             padding: 20px;
         }
+        
+        .admin-link-wrapper {
+            width: 100%;
+            max-width: 450px;
+            text-align: right;
+            margin-bottom: 10px;
+        }
+        
+        .admin-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 15px;
+            border-radius: 20px;
+        }
+        .admin-link:hover { color: var(--primary-accent); background: rgba(255, 255, 255, 0.1); }
+
         .action-bars {
             display: flex;
             flex-direction: column;
             gap: 15px;
             width: 100%;
             max-width: 450px;
-            margin-top: 30px;
+            margin-top: 20px;
         }
         .action-bar {
             background: var(--bg-navy-light);
@@ -165,6 +169,35 @@
             border-radius: 16px;
             border: 1px solid var(--bg-navy-lighter);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Desain Tiket Cetak (Kertas Struk) */
+        .ticket-card {
+            background: #ffffff;
+            color: #1e293b;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 400px;
+            margin: 0 auto 20px auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            border: 2px dashed #cbd5e1;
+            text-align: center;
+        }
+        .ticket-card h3 { color: #0f172a; margin-bottom: 5px; }
+        .ticket-card p { color: #475569; font-size: 13px; }
+        .ticket-action-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        /* Styling Khusus Saat Cetak (Print Media) */
+        @media print {
+            body { background: #ffffff !important; color: #000 !important; display: block; }
+            .back-btn, .ticket-action-btns { display: none !important; }
+            .card-container { background: none; border: none; box-shadow: none; padding: 0; margin: 0; }
+            .ticket-card { box-shadow: none; border: 2px dashed #000; margin: 0 auto; padding: 40px; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
 
         /* --- 2. DASHBOARD ADMIN KEPSEK --- */
@@ -213,12 +246,11 @@
         .admin-tab { display: none; animation: fadeIn 0.3s ease; }
         .admin-tab.active { display: block; }
 
-        /* Tabel & Badge */
+        /* Tabel & Kalender CSS sama ... */
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--bg-navy-lighter); font-size: 14px;}
         th { color: var(--text-muted); font-weight: 500; }
-
-        /* Kalender */
+        
         .calendar-header { display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center;}
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; margin-bottom: 30px;}
         .day-name { font-size: 14px; color: var(--text-muted); padding-bottom: 10px; font-weight: 500;}
@@ -229,7 +261,6 @@
         .calendar-day.has-event { border-color: var(--primary-accent); background: rgba(96, 165, 250, 0.1); color: var(--primary-accent); font-weight: 600; }
         .calendar-day.today { background: var(--primary-accent); color: #0f172a; font-weight: 600; }
 
-        /* List Jadwal di bawah kalender */
         .schedule-card {
             background: var(--bg-navy-light);
             border: 1px solid var(--bg-navy-lighter);
@@ -251,29 +282,43 @@
             font-size: 14px;
         }
 
-        /* QR Area */
         #qr-box { background: white; padding: 20px; border-radius: 12px; display: inline-block; margin-top:20px; }
-        .back-btn { position: absolute; top: 20px; left: 40px; }
-
+        .back-btn { position: absolute; top: 20px; left: 40px; z-index: 10; }
+        
+        /* Tambahan untuk file input */
+        input[type="file"]::file-selector-button {
+            background: var(--primary-accent);
+            color: #0f172a;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-right: 15px;
+            transition: 0.3s;
+        }
+        input[type="file"]::file-selector-button:hover { background: #93c5fd; }
     </style>
 </head>
 <body>
 
     <!-- 1. HALAMAN UTAMA (LANDING) -->
     <div id="view-landing" class="page-view active">
-        <div class="top-nav">
-            <span class="admin-link" onclick="navigasi('view-login')">Supervisor Mode</span>
-        </div>
         <div class="landing-center">
+            
+            <div class="admin-link-wrapper">
+                <span class="admin-link" onclick="navigasi('view-login')">Supervisor Mode ➔</span>
+            </div>
+            
             <h1>TamuTemu</h1>
             <p>Jadwalkan Pertemuan Anda</p>
             
             <div class="action-bars">
                 <div class="action-bar" onclick="navigasi('view-buat-janji')">
-                    Buat Janji Temu
+                    📝 Buat Janji Temu
                 </div>
                 <div class="action-bar" onclick="navigasi('view-cek-status')">
-                    Cek Status & QR Code
+                    🔍 Cek Status & QR Code
                 </div>
             </div>
         </div>
@@ -281,37 +326,57 @@
 
     <!-- 2. FORM BUAT JANJI -->
     <div id="view-buat-janji" class="page-view" style="justify-content: center; position:relative;">
-        <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">Kembali</button>
+        <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">← Kembali</button>
         <div class="card-container">
-            <h2>Form Pengajuan Pertemuan</h2>
+            <h2 id="form-title">Form Pengajuan Pertemuan</h2>
+            
             <form id="form-tamu" onsubmit="buatJanji(event)">
                 <div class="form-group">
                     <label>Nama Lengkap</label>
                     <input type="text" id="input-nama" required placeholder="Contoh: Budi Santoso">
                 </div>
                 <div class="form-group">
+                    <label>Nomor HP / WhatsApp</label>
+                    <input type="tel" id="input-hp" required placeholder="Contoh: 081234567890">
+                </div>
+                <div class="form-group">
                     <label>Tanggal & Waktu</label>
                     <input type="datetime-local" id="input-waktu" required>
                 </div>
                 <div class="form-group">
-                    <label>Tujuan</label>
+                    <label>Tujuan Pertemuan</label>
                     <textarea id="input-tujuan" rows="3" required placeholder="Tujuan pertemuan..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Unggah Foto Identitas / Selfie (Opsional)</label>
+                    <!-- capture="user" akan membuka kamera depan jika di HP, accept="image/*" menerima foto -->
+                    <input type="file" id="input-foto" accept="image/*" capture="user" style="padding: 10px;">
                 </div>
                 <button type="submit" class="btn" style="width: 100%;">Kirim Pengajuan</button>
             </form>
 
             <div id="hasil-pengajuan" style="display: none; text-align: center;">
-                <h3 style="color: var(--primary-accent);">Menunggu Persetujuan</h3>
-                <p>Simpan ID ini untuk mengecek status persetujuan nanti:</p>
-                <h2 style="font-family: monospace; color: white; letter-spacing: 2px; margin: 20px 0;" id="display-id"></h2>
-                <button class="btn btn-outline" onclick="navigasi('view-landing')">Selesai</button>
+                <div class="ticket-card" id="print-area">
+                    <h3>Tanda Terima Pengajuan</h3>
+                    <p style="margin-bottom: 15px;">Simpan atau cetak tiket pengajuan ini.</p>
+                    
+                    <div id="tiket-qrcode" style="display: flex; justify-content: center; margin: 15px 0;"></div>
+                    
+                    <h2 style="font-family: monospace; color: #0f172a; letter-spacing: 2px; margin: 10px 0;" id="display-id"></h2>
+                    <p style="font-size: 11px; margin-top: 10px;">*Berikan QR Code / ID ini di lobi untuk memvalidasi kehadiran Anda setelah pengajuan disetujui.</p>
+                </div>
+                
+                <div class="ticket-action-btns">
+                    <button class="btn" onclick="window.print()">🖨️ Cetak Kertas</button>
+                    <button class="btn btn-outline" onclick="navigasi('view-landing')">Selesai</button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- 3. CEK STATUS & QR -->
     <div id="view-cek-status" class="page-view" style="justify-content: center; position:relative;">
-        <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')"> Kembali</button>
+        <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">← Kembali</button>
         <div class="card-container" style="text-align: center;">
             <h2>Cek Status Janji</h2>
             <div class="form-group" style="text-align: left;">
@@ -330,10 +395,10 @@
 
     <!-- 4. LOGIN ADMIN -->
     <div id="view-login" class="page-view" style="justify-content: center; position:relative;">
-        <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')"> Kembali</button>
+        <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">← Kembali</button>
         <div class="card-container" style="text-align: center;">
             <h2>Supervisor</h2>
-            <p>Masukkan kata sandi </p>
+            <p>Masukkan kata sandi</p>
             <div class="form-group">
                 <input type="password" id="input-sandi" placeholder="Kata Sandi...">
             </div>
@@ -363,8 +428,7 @@
 
             <!-- Konten Kanan -->
             <div class="content-area">
-                
-                <!-- TAB 1: PERSETUJUAN (PENDING APPROVAL) -->
+                <!-- TAB 1: PERSETUJUAN -->
                 <div id="tab-persetujuan" class="admin-tab active">
                     <h2>Daftar Menunggu Approval</h2>
                     <p>Daftar tamu yang mengajukan pertemuan dan butuh verifikasi dari Anda.</p>
@@ -373,7 +437,7 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Nama Tamu</th>
+                                    <th>Nama Tamu (HP)</th>
                                     <th>Waktu Pengajuan</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -383,22 +447,17 @@
                     </div>
                 </div>
 
-                <!-- TAB 2: KALENDER & DAFTAR JADWAL -->
+                <!-- TAB 2: KALENDER -->
                 <div id="tab-kalender" class="admin-tab">
                     <div class="calendar-header">
                         <h2>Kalender Pertemuan</h2>
                         <h3 id="calendar-month-year" style="color:var(--primary-accent); margin:0;"></h3>
                     </div>
-                    <div class="calendar-grid" id="calendar-days">
-                        <!-- Rendered by JS -->
-                    </div>
-
-                    <!-- Daftar Jadwal Pertemuan -->
+                    <div class="calendar-grid" id="calendar-days"></div>
+                    
                     <div id="schedule-list-container">
                         <h3 style="margin-bottom: 15px; padding-top: 10px; border-top: 1px solid var(--bg-navy-lighter);">Agenda Terjadwal</h3>
-                        <div id="schedule-items">
-                            <!-- Rendered by JS -->
-                        </div>
+                        <div id="schedule-items"></div>
                     </div>
                 </div>
 
@@ -410,48 +469,60 @@
                         <canvas id="chartPertemuan"></canvas>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
     <script>
-        // Simulasi Database dengan beberapa contoh data
+        // Simulasi Database dengan beberapa contoh data awal
         let databaseJadwal = [
-            { id: 'TM-0001', nama: 'Vendor Seragam', waktu: '2026-09-08T10:00', tujuan: 'Presentasi Penawaran', status: 'Terverifikasi' },
-            { id: 'TM-0002', nama: 'Budi Santoso (Ortu)', waktu: '2026-09-20T13:30', tujuan: 'Konsultasi Akademik Siswa', status: 'Terverifikasi' },
-            { id: 'TM-0003', nama: 'Dinas Pendidikan', waktu: '2026-09-25T09:00', tujuan: 'Kunjungan Rutin', status: 'Terverifikasi' }
+            { id: 'TM-0001', nama: 'Vendor Seragam', hp: '08123456789', waktu: '2026-09-08T10:00', tujuan: 'Presentasi Penawaran', status: 'Terverifikasi' },
+            { id: 'TM-0002', nama: 'Budi Santoso', hp: '08571234123', waktu: '2026-09-20T13:30', tujuan: 'Konsultasi Akademik Siswa', status: 'Terverifikasi' }
         ];
         
         let chartInstance = null;
 
-        // --- FUNGSI NAVIGASI GLOBAL ---
+        // FUNGSI NAVIGASI GLOBAL
         function navigasi(viewId) {
             document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
             
             if(viewId === 'view-buat-janji') {
                 document.getElementById('form-tamu').style.display = 'block';
+                document.getElementById('form-title').style.display = 'block';
                 document.getElementById('hasil-pengajuan').style.display = 'none';
             }
         }
 
-        // --- FUNGSI TAMU ---
+        // FUNGSI TAMU: MENGAJUKAN JANJI
         function buatJanji(e) {
             e.preventDefault();
             const id = 'TM-' + Math.floor(Math.random() * 9000 + 1000);
             
+            // Simpan Ke Database
             databaseJadwal.push({
                 id: id,
                 nama: document.getElementById('input-nama').value,
+                hp: document.getElementById('input-hp').value,
                 waktu: document.getElementById('input-waktu').value,
                 tujuan: document.getElementById('input-tujuan').value,
                 status: 'Menunggu'
             });
             
+            // Ubah Tampilan UI
             document.getElementById('form-tamu').style.display = 'none';
+            document.getElementById('form-title').style.display = 'none';
             document.getElementById('hasil-pengajuan').style.display = 'block';
             document.getElementById('display-id').innerText = id;
+            
+            // Generate QR Code untuk Tiket Kertas
+            document.getElementById('tiket-qrcode').innerHTML = "";
+            new QRCode(document.getElementById("tiket-qrcode"), {
+                text: id, width: 120, height: 120,
+                colorDark: "#0f172a", colorLight: "#ffffff"
+            });
+            
+            // Reset Form (tanpa mereset tampilan karena sedang disembunyikan)
             document.getElementById('form-tamu').reset();
         }
 
@@ -484,15 +555,16 @@
             }
         }
 
-        // --- FUNGSI ADMIN ---
+        // FUNGSI ADMIN
         function loginAdmin() {
             const sandi = document.getElementById('input-sandi').value;
-            if(sandi === '123') { 
+            // Gunakan kata sandi sembarang untuk simulasi ini
+            if(sandi.trim() !== '') { 
                 document.getElementById('input-sandi').value = '';
                 navigasi('view-dashboard');
                 refreshDataAdmin(); 
             } else {
-                alert('Sandi salah!');
+                alert('Sandi tidak boleh kosong!');
             }
         }
 
@@ -528,7 +600,7 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td style="color:var(--primary-accent); font-family:monospace;">${j.id}</td>
-                    <td>${j.nama}</td>
+                    <td>${j.nama}<br><span style="font-size:12px; color:var(--text-muted);">${j.hp || '-'}</span></td>
                     <td>${new Date(j.waktu).toLocaleString('id-ID')}</td>
                     <td><button class="btn btn-small" onclick="approveJadwal('${j.id}')">Approve</button></td>
                 `;
@@ -548,12 +620,11 @@
             const grid = document.getElementById('calendar-days');
             const scheduleList = document.getElementById('schedule-items');
             
-            // Render Header Hari
             grid.innerHTML = `
                 <div class="day-name">Min</div><div class="day-name">Sen</div><div class="day-name">Sel</div>
                 <div class="day-name">Rab</div><div class="day-name">Kam</div><div class="day-name">Jum</div><div class="day-name">Sab</div>
             `;
-            scheduleList.innerHTML = ''; // Bersihkan daftar jadwal
+            scheduleList.innerHTML = ''; 
 
             const date = new Date(); 
             const year = date.getFullYear();
@@ -565,23 +636,16 @@
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-            // Filter jadwal bulan ini yang sudah diapprove
             let approvedSchedules = databaseJadwal.filter(j => {
                 const jDate = new Date(j.waktu);
                 return j.status === 'Terverifikasi' && jDate.getMonth() === month && jDate.getFullYear() === year;
             });
 
-            // Urutkan jadwal berdasarkan waktu
             approvedSchedules.sort((a, b) => new Date(a.waktu) - new Date(b.waktu));
-
             const approvedDates = approvedSchedules.map(j => new Date(j.waktu).getDate());
 
-            // Render Slot Kosong Kalender
-            for (let i = 0; i < firstDay; i++) {
-                grid.innerHTML += `<div></div>`;
-            }
+            for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div></div>`;
 
-            // Render Angka Tanggal
             for (let i = 1; i <= daysInMonth; i++) {
                 let extraClass = '';
                 if (i === date.getDate()) extraClass = 'today';
@@ -590,7 +654,6 @@
                 grid.innerHTML += `<div class="calendar-day ${extraClass}">${i}</div>`;
             }
 
-            // Render List Jadwal di Bawah Kalender
             if(approvedSchedules.length === 0) {
                 scheduleList.innerHTML = `<p style="text-align:center; margin-top:20px;">Tidak ada agenda di bulan ini.</p>`;
             } else {
@@ -627,7 +690,7 @@
             if(chartInstance) chartInstance.destroy();
 
             chartInstance = new Chart(ctx, {
-                type: 'bar', // Kembali ke bar yang rapi
+                type: 'bar', 
                 data: {
                     labels: ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4'],
                     datasets: [{
