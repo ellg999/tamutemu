@@ -1,1088 +1,337 @@
-/* Bundled QR encoder — MIT License, (c) 2009 Kazuhiko Arase, from npm qrcode-terminal vendor lib. No network dependency. */
-var QRLib = (function(){
-// ---- QRMode.js ----
-var QRMode = {
-    MODE_NUMBER :       1 << 0,
-    MODE_ALPHA_NUM :    1 << 1,
-    MODE_8BIT_BYTE :    1 << 2,
-    MODE_KANJI :        1 << 3
-};
- 
-// ---- QRErrorCorrectLevel.js ----
-var QRErrorCorrectLevel = {
-	L : 1,
-	M : 0,
-	Q : 3,
-	H : 2
-};
- 
-// ---- QRMaskPattern.js ----
-var QRMaskPattern = {
-	PATTERN000 : 0,
-	PATTERN001 : 1,
-	PATTERN010 : 2,
-	PATTERN011 : 3,
-	PATTERN100 : 4,
-	PATTERN101 : 5,
-	PATTERN110 : 6,
-	PATTERN111 : 7
-};
- 
-// ---- QRMath.js ----
-var QRMath = {
- 
-	glog : function(n) {
-	
-		if (n < 1) {
-			throw new Error("glog(" + n + ")");
-		}
-		
-		return QRMath.LOG_TABLE[n];
-	},
-	
-	gexp : function(n) {
-	
-		while (n < 0) {
-			n += 255;
-		}
-	
-		while (n >= 256) {
-			n -= 255;
-		}
-	
-		return QRMath.EXP_TABLE[n];
-	},
-	
-	EXP_TABLE : new Array(256),
-	
-	LOG_TABLE : new Array(256)
- 
-};
-	
-for (var i = 0; i < 8; i++) {
-	QRMath.EXP_TABLE[i] = 1 << i;
-}
-for (var i = 8; i < 256; i++) {
-	QRMath.EXP_TABLE[i] = QRMath.EXP_TABLE[i - 4]
-		^ QRMath.EXP_TABLE[i - 5]
-		^ QRMath.EXP_TABLE[i - 6]
-		^ QRMath.EXP_TABLE[i - 8];
-}
-for (var i = 0; i < 255; i++) {
-	QRMath.LOG_TABLE[QRMath.EXP_TABLE[i] ] = i;
-}
- 
-// ---- QRPolynomial.js ----
-function QRPolynomial(num, shift) {
-	if (num.length === undefined) {
-		throw new Error(num.length + "/" + shift);
-	}
- 
-	var offset = 0;
- 
-	while (offset < num.length && num[offset] === 0) {
-		offset++;
-	}
- 
-	this.num = new Array(num.length - offset + shift);
-	for (var i = 0; i < num.length - offset; i++) {
-		this.num[i] = num[i + offset];
-	}
-}
- 
-QRPolynomial.prototype = {
- 
-	get : function(index) {
-		return this.num[index];
-	},
-	
-	getLength : function() {
-		return this.num.length;
-	},
-	
-	multiply : function(e) {
-	
-		var num = new Array(this.getLength() + e.getLength() - 1);
-	
-		for (var i = 0; i < this.getLength(); i++) {
-			for (var j = 0; j < e.getLength(); j++) {
-				num[i + j] ^= QRMath.gexp(QRMath.glog(this.get(i) ) + QRMath.glog(e.get(j) ) );
-			}
-		}
-	
-		return new QRPolynomial(num, 0);
-	},
-	
-	mod : function(e) {
-	
-		if (this.getLength() - e.getLength() < 0) {
-			return this;
-		}
-	
-		var ratio = QRMath.glog(this.get(0) ) - QRMath.glog(e.get(0) );
-	
-		var num = new Array(this.getLength() );
-		
-		for (var i = 0; i < this.getLength(); i++) {
-			num[i] = this.get(i);
-		}
-		
-		for (var x = 0; x < e.getLength(); x++) {
-			num[x] ^= QRMath.gexp(QRMath.glog(e.get(x) ) + ratio);
-		}
-	
-		// recursive call
-		return new QRPolynomial(num, 0).mod(e);
-	}
-};
- 
-// ---- QRUtil.js ----
-var QRUtil = {
- 
-    PATTERN_POSITION_TABLE : [
-        [], [6, 18], [6, 22], [6, 26], [6, 30], [6, 34], [6, 22, 38], [6, 24, 42], [6, 26, 46], [6, 28, 50],
-        [6, 30, 54], [6, 32, 58], [6, 34, 62], [6, 26, 46, 66], [6, 26, 48, 70], [6, 26, 50, 74], [6, 30, 54, 78],
-        [6, 30, 56, 82], [6, 30, 58, 86], [6, 34, 62, 90], [6, 28, 50, 72, 94], [6, 26, 50, 74, 98], [6, 30, 54, 78, 102],
-        [6, 28, 54, 80, 106], [6, 32, 58, 84, 110], [6, 30, 58, 86, 114], [6, 34, 62, 90, 118], [6, 26, 50, 74, 98, 122],
-        [6, 30, 54, 78, 102, 126], [6, 26, 52, 78, 104, 130], [6, 30, 56, 82, 108, 134], [6, 34, 60, 86, 112, 138],
-        [6, 30, 58, 86, 114, 142], [6, 34, 62, 90, 118, 146], [6, 30, 54, 78, 102, 126, 150], [6, 24, 50, 76, 102, 128, 154],
-        [6, 28, 54, 80, 106, 132, 158], [6, 32, 58, 84, 110, 136, 162], [6, 26, 54, 82, 110, 138, 166], [6, 30, 58, 86, 114, 142, 170]
-    ],
- 
-    G15 : (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0),
-    G18 : (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0),
-    G15_MASK : (1 << 14) | (1 << 12) | (1 << 10)    | (1 << 4) | (1 << 1),
- 
-    getBCHTypeInfo : function(data) {
-        var d = data << 10;
-        while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15) >= 0) {
-            d ^= (QRUtil.G15 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15) ) );    
-        }
-        return ( (data << 10) | d) ^ QRUtil.G15_MASK;
-    },
- 
-    getBCHTypeNumber : function(data) {
-        var d = data << 12;
-        while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18) >= 0) {
-            d ^= (QRUtil.G18 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18) ) );    
-        }
-        return (data << 12) | d;
-    },
- 
-    getBCHDigit : function(data) {
-        var digit = 0;
-        while (data !== 0) { digit++; data >>>= 1; }
-        return digit;
-    },
- 
-    getPatternPosition : function(typeNumber) {
-        return QRUtil.PATTERN_POSITION_TABLE[typeNumber - 1];
-    },
- 
-    getMask : function(maskPattern, i, j) {
-        switch (maskPattern) {
-        case QRMaskPattern.PATTERN000 : return (i + j) % 2 === 0;
-        case QRMaskPattern.PATTERN001 : return i % 2 === 0;
-        case QRMaskPattern.PATTERN010 : return j % 3 === 0;
-        case QRMaskPattern.PATTERN011 : return (i + j) % 3 === 0;
-        case QRMaskPattern.PATTERN100 : return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 === 0;
-        case QRMaskPattern.PATTERN101 : return (i * j) % 2 + (i * j) % 3 === 0;
-        case QRMaskPattern.PATTERN110 : return ( (i * j) % 2 + (i * j) % 3) % 2 === 0;
-        case QRMaskPattern.PATTERN111 : return ( (i * j) % 3 + (i + j) % 2) % 2 === 0;
-        default : throw new Error("bad maskPattern:" + maskPattern);
-        }
-    },
- 
-    getErrorCorrectPolynomial : function(errorCorrectLength) {
-        var a = new QRPolynomial([1], 0);
-        for (var i = 0; i < errorCorrectLength; i++) {
-            a = a.multiply(new QRPolynomial([1, QRMath.gexp(i)], 0) );
-        }
-        return a;
-    },
- 
-    getLengthInBits : function(mode, type) {
-        if (1 <= type && type < 10) {
-            switch(mode) {
-            case QRMode.MODE_NUMBER     : return 10;
-            case QRMode.MODE_ALPHA_NUM  : return 9;
-            case QRMode.MODE_8BIT_BYTE  : return 8;
-            case QRMode.MODE_KANJI      : return 8;
-            default : throw new Error("mode:" + mode);
-            }
-        } else if (type < 27) {
-            switch(mode) {
-            case QRMode.MODE_NUMBER     : return 12;
-            case QRMode.MODE_ALPHA_NUM  : return 11;
-            case QRMode.MODE_8BIT_BYTE  : return 16;
-            case QRMode.MODE_KANJI      : return 10;
-            default : throw new Error("mode:" + mode);
-            }
-        } else if (type < 41) {
-            switch(mode) {
-            case QRMode.MODE_NUMBER     : return 14;
-            case QRMode.MODE_ALPHA_NUM  : return 13;
-            case QRMode.MODE_8BIT_BYTE  : return 16;
-            case QRMode.MODE_KANJI      : return 12;
-            default : throw new Error("mode:" + mode);
-            }
-        } else {
-            throw new Error("type:" + type);
-        }
-    },
- 
-    getLostPoint : function(qrCode) {
-        var moduleCount = qrCode.getModuleCount();
-        var lostPoint = 0;
-        var row = 0; 
-        var col = 0;
-        
-        for (row = 0; row < moduleCount; row++) {
-            for (col = 0; col < moduleCount; col++) {
-                var sameCount = 0;
-                var dark = qrCode.isDark(row, col);
-                for (var r = -1; r <= 1; r++) {
-                    if (row + r < 0 || moduleCount <= row + r) continue;
-                    for (var c = -1; c <= 1; c++) {
-                        if (col + c < 0 || moduleCount <= col + c) continue;
-                        if (r === 0 && c === 0) continue;
-                        if (dark === qrCode.isDark(row + r, col + c) ) sameCount++;
-                    }
-                }
-                if (sameCount > 5) lostPoint += (3 + sameCount - 5);
-            }
-        }
-        for (row = 0; row < moduleCount - 1; row++) {
-            for (col = 0; col < moduleCount - 1; col++) {
-                var count = 0;
-                if (qrCode.isDark(row,     col    ) ) count++;
-                if (qrCode.isDark(row + 1, col    ) ) count++;
-                if (qrCode.isDark(row,     col + 1) ) count++;
-                if (qrCode.isDark(row + 1, col + 1) ) count++;
-                if (count === 0 || count === 4) lostPoint += 3;
-            }
-        }
-        for (row = 0; row < moduleCount; row++) {
-            for (col = 0; col < moduleCount - 6; col++) {
-                if (qrCode.isDark(row, col) && !qrCode.isDark(row, col + 1) && qrCode.isDark(row, col + 2) && qrCode.isDark(row, col + 3) && qrCode.isDark(row, col + 4) && !qrCode.isDark(row, col + 5) && qrCode.isDark(row, col + 6) ) {
-                    lostPoint += 40;
-                }
-            }
-        }
-        for (col = 0; col < moduleCount; col++) {
-            for (row = 0; row < moduleCount - 6; row++) {
-                if (qrCode.isDark(row, col) && !qrCode.isDark(row + 1, col) && qrCode.isDark(row + 2, col) && qrCode.isDark(row + 3, col) && qrCode.isDark(row + 4, col) && !qrCode.isDark(row + 5, col) && qrCode.isDark(row + 6, col) ) {
-                    lostPoint += 40;
-                }
-            }
-        }
-        var darkCount = 0;
-        for (col = 0; col < moduleCount; col++) {
-            for (row = 0; row < moduleCount; row++) {
-                if (qrCode.isDark(row, col) ) darkCount++;
-            }
-        }
-        var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
-        lostPoint += ratio * 10;
-        return lostPoint;       
-    }
-};
- 
-function QRRSBlock(totalCount, dataCount) {
-	this.totalCount = totalCount;
-	this.dataCount  = dataCount;
-}
- 
-QRRSBlock.RS_BLOCK_TABLE = [
-	[1, 26, 19],[1, 26, 16],[1, 26, 13],[1, 26, 9],[1, 44, 34],[1, 44, 28],[1, 44, 22],[1, 44, 16],
-	[1, 70, 55],[1, 70, 44],[2, 35, 17],[2, 35, 13],[1, 100, 80],[2, 50, 32],[2, 50, 24],[4, 25, 9],
-	[1, 134, 108],[2, 67, 43],[2, 33, 15, 2, 34, 16],[2, 33, 11, 2, 34, 12],[2, 86, 68],[4, 43, 27],[4, 43, 19],[4, 43, 15],
-	[2, 98, 78],[4, 49, 31],[2, 32, 14, 4, 33, 15],[4, 39, 13, 1, 40, 14],[2, 121, 97],[2, 60, 38, 2, 61, 39],[4, 40, 18, 2, 41, 19],[4, 40, 14, 2, 41, 15],
-	[2, 146, 116],[3, 58, 36, 2, 59, 37],[4, 36, 16, 4, 37, 17],[4, 36, 12, 4, 37, 13],[2, 86, 68, 2, 87, 69],[4, 69, 43, 1, 70, 44],[6, 43, 19, 2, 44, 20],[6, 43, 15, 2, 44, 16],
-	[4, 101, 81],[1, 80, 50, 4, 81, 51],[4, 50, 22, 4, 51, 23],[3, 36, 12, 8, 37, 13],[2, 116, 92, 2, 117, 93],[6, 58, 36, 2, 59, 37],[4, 46, 20, 6, 47, 21],[7, 42, 14, 4, 43, 15],
-	[4, 133, 107],[8, 59, 37, 1, 60, 38],[8, 44, 20, 4, 45, 21],[12, 33, 11, 4, 34, 12],[3, 145, 115, 1, 146, 116],[4, 64, 40, 5, 65, 41],[11, 36, 16, 5, 37, 17],[11, 36, 12, 5, 37, 13],
-	[5, 109, 87, 1, 110, 88],[5, 65, 41, 5, 66, 42],[5, 54, 24, 7, 55, 25],[11, 36, 12],[5, 122, 98, 1, 123, 99],[7, 73, 45, 3, 74, 46],[15, 43, 19, 2, 44, 20],[3, 45, 15, 13, 46, 16],
-	[1, 135, 107, 5, 136, 108],[10, 74, 46, 1, 75, 47],[1, 50, 22, 15, 51, 23],[2, 42, 14, 17, 43, 15],[5, 150, 120, 1, 151, 121],[9, 69, 43, 4, 70, 44],[17, 50, 22, 1, 51, 23],[2, 42, 14, 19, 43, 15],
-	[3, 141, 113, 4, 142, 114],[3, 70, 44, 11, 71, 45],[17, 47, 21, 4, 48, 22],[9, 39, 13, 16, 40, 14],[3, 135, 107, 5, 136, 108],[3, 67, 41, 13, 68, 42],[15, 54, 24, 5, 55, 25],[15, 43, 15, 10, 44, 16],
-	[4, 144, 116, 4, 145, 117],[17, 68, 42],[17, 50, 22, 6, 51, 23],[19, 46, 16, 6, 47, 17],[2, 139, 111, 7, 140, 112],[17, 74, 46],[7, 54, 24, 16, 55, 25],[34, 37, 13],
-	[4, 151, 121, 5, 152, 122],[4, 75, 47, 14, 76, 48],[11, 54, 24, 14, 55, 25],[16, 45, 15, 14, 46, 16],[6, 147, 117, 4, 148, 118],[6, 73, 45, 14, 74, 46],[11, 54, 24, 16, 55, 25],[30, 46, 16, 2, 47, 17],
-	[8, 132, 106, 4, 133, 107],[8, 75, 47, 13, 76, 48],[7, 54, 24, 22, 55, 25],[22, 45, 15, 13, 46, 16],[10, 142, 114, 2, 143, 115],[19, 74, 46, 4, 75, 47],[28, 50, 22, 6, 51, 23],[33, 46, 16, 4, 47, 17],
-	[8, 152, 122, 4, 153, 123],[22, 73, 45, 3, 74, 46],[8, 53, 23, 26, 54, 24],[12, 45, 15, 28, 46, 16],[3, 147, 117, 10, 148, 118],[3, 73, 45, 23, 74, 46],[4, 54, 24, 31, 55, 25],[11, 45, 15, 31, 46, 16],
-	[7, 146, 116, 7, 147, 117],[21, 73, 45, 7, 74, 46],[1, 53, 23, 37, 54, 24],[19, 45, 15, 26, 46, 16],[5, 145, 115, 10, 146, 116],[19, 75, 47, 10, 76, 48],[15, 54, 24, 25, 55, 25],[23, 45, 15, 25, 46, 16],
-	[13, 145, 115, 3, 146, 116],[2, 74, 46, 29, 75, 47],[42, 54, 24, 1, 55, 25],[23, 45, 15, 28, 46, 16],[17, 145, 115],[10, 74, 46, 23, 75, 47],[10, 54, 24, 35, 55, 25],[19, 45, 15, 35, 46, 16],
-	[17, 145, 115, 1, 146, 116],[14, 74, 46, 21, 75, 47],[29, 54, 24, 19, 55, 25],[11, 45, 15, 46, 46, 16],[13, 145, 115, 6, 146, 116],[14, 74, 46, 23, 75, 47],[44, 54, 24, 7, 55, 25],[59, 46, 16, 1, 47, 17],
-	[12, 151, 121, 7, 152, 122],[12, 75, 47, 26, 76, 48],[39, 54, 24, 14, 55, 25],[22, 45, 15, 41, 46, 16],[6, 151, 121, 14, 152, 122],[6, 75, 47, 34, 76, 48],[46, 54, 24, 10, 55, 25],[2, 45, 15, 64, 46, 16],
-	[17, 152, 122, 4, 153, 123],[29, 74, 46, 14, 75, 47],[49, 54, 24, 10, 55, 25],[24, 45, 15, 46, 46, 16],[4, 152, 122, 18, 153, 123],[13, 74, 46, 32, 75, 47],[48, 54, 24, 14, 55, 25],[42, 45, 15, 32, 46, 16],
-	[20, 147, 117, 4, 148, 118],[40, 75, 47, 7, 76, 48],[43, 54, 24, 22, 55, 25],[10, 45, 15, 67, 46, 16],[19, 148, 118, 6, 149, 119],[18, 75, 47, 31, 76, 48],[34, 54, 24, 34, 55, 25],[20, 45, 15, 61, 46, 16]
-];
- 
-QRRSBlock.getRSBlocks = function(typeNumber, errorCorrectLevel) {
-	var rsBlock = QRRSBlock.getRsBlockTable(typeNumber, errorCorrectLevel);
-	if (rsBlock === undefined) throw new Error("bad rs block @ typeNumber:" + typeNumber + "/errorCorrectLevel:" + errorCorrectLevel);
-	var length = rsBlock.length / 3;
-	var list = [];
-	for (var i = 0; i < length; i++) {
-		var count = rsBlock[i * 3 + 0];
-		var totalCount = rsBlock[i * 3 + 1];
-		var dataCount  = rsBlock[i * 3 + 2];
-		for (var j = 0; j < count; j++) {
-			list.push(new QRRSBlock(totalCount, dataCount) );	
-		}
-	}
-	return list;
-};
- 
-QRRSBlock.getRsBlockTable = function(typeNumber, errorCorrectLevel) {
-	switch(errorCorrectLevel) {
-	case QRErrorCorrectLevel.L : return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
-	case QRErrorCorrectLevel.M : return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
-	case QRErrorCorrectLevel.Q : return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
-	case QRErrorCorrectLevel.H : return QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
-	default : return undefined;
-	}
-};
- 
-function QRBitBuffer() {
-	this.buffer = []; this.length = 0;
-}
-QRBitBuffer.prototype = {
-	get : function(index) {
-		var bufIndex = Math.floor(index / 8);
-		return ( (this.buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
-	},
-	put : function(num, length) {
-		for (var i = 0; i < length; i++) { this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1); }
-	},
-	getLengthInBits : function() { return this.length; },
-	putBit : function(bit) {
-		var bufIndex = Math.floor(this.length / 8);
-		if (this.buffer.length <= bufIndex) { this.buffer.push(0); }
-		if (bit) { this.buffer[bufIndex] |= (0x80 >>> (this.length % 8) ); }
-		this.length++;
-	}
-};
- 
-function QR8bitByte(data) {
-	this.mode = QRMode.MODE_8BIT_BYTE; this.data = data;
-}
-QR8bitByte.prototype = {
-	getLength : function() { return this.data.length; },
-	write : function(buffer) {
-		for (var i = 0; i < this.data.length; i++) { buffer.put(this.data.charCodeAt(i), 8); }
-	}
-};
- 
-function QRCode(typeNumber, errorCorrectLevel) {
-	this.typeNumber = typeNumber;
-	this.errorCorrectLevel = errorCorrectLevel;
-	this.modules = null;
-	this.moduleCount = 0;
-	this.dataCache = null;
-	this.dataList = [];
-}
- 
-QRCode.prototype = {
-	addData : function(data) {
-		var newData = new QR8bitByte(data);
-		this.dataList.push(newData);
-		this.dataCache = null;
-	},
-	isDark : function(row, col) {
-		if (row < 0 || this.moduleCount <= row || col < 0 || this.moduleCount <= col) throw new Error(row + "," + col);
-		return this.modules[row][col];
-	},
-	getModuleCount : function() { return this.moduleCount; },
-	make : function() {
-		if (this.typeNumber < 1 ){
-			var typeNumber = 1;
-			for (typeNumber = 1; typeNumber < 40; typeNumber++) {
-				var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, this.errorCorrectLevel);
-				var buffer = new QRBitBuffer();
-				var totalDataCount = 0;
-				for (var i = 0; i < rsBlocks.length; i++) totalDataCount += rsBlocks[i].dataCount;
-				for (var x = 0; x < this.dataList.length; x++) {
-					var data = this.dataList[x];
-					buffer.put(data.mode, 4);
-					buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber) );
-					data.write(buffer);
-				}
-				if (buffer.getLengthInBits() <= totalDataCount * 8) break;
-			}
-			this.typeNumber = typeNumber;
-		}
-		this.makeImpl(false, this.getBestMaskPattern() );
-	},
-	makeImpl : function(test, maskPattern) {
-		this.moduleCount = this.typeNumber * 4 + 17;
-		this.modules = new Array(this.moduleCount);
-		for (var row = 0; row < this.moduleCount; row++) {
-			this.modules[row] = new Array(this.moduleCount);
-			for (var col = 0; col < this.moduleCount; col++) {
-				this.modules[row][col] = null;
-			}
-		}
-		this.setupPositionProbePattern(0, 0);
-		this.setupPositionProbePattern(this.moduleCount - 7, 0);
-		this.setupPositionProbePattern(0, this.moduleCount - 7);
-		this.setupPositionAdjustPattern();
-		this.setupTimingPattern();
-		this.setupTypeInfo(test, maskPattern);
-		if (this.typeNumber >= 7) { this.setupTypeNumber(test); }
-		if (this.dataCache === null) { this.dataCache = QRCode.createData(this.typeNumber, this.errorCorrectLevel, this.dataList); }
-		this.mapData(this.dataCache, maskPattern);
-	},
-	setupPositionProbePattern : function(row, col)  {
-		for (var r = -1; r <= 7; r++) {
-			if (row + r <= -1 || this.moduleCount <= row + r) continue;
-			for (var c = -1; c <= 7; c++) {
-				if (col + c <= -1 || this.moduleCount <= col + c) continue;
-				if ( (0 <= r && r <= 6 && (c === 0 || c === 6) ) || (0 <= c && c <= 6 && (r === 0 || r === 6) ) || (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
-					this.modules[row + r][col + c] = true;
-				} else {
-					this.modules[row + r][col + c] = false;
-				}
-			}		
-		}		
-	},
-	getBestMaskPattern : function() {
-		var minLostPoint = 0; var pattern = 0;
-		for (var i = 0; i < 8; i++) {
-			this.makeImpl(true, i);
-			var lostPoint = QRUtil.getLostPoint(this);
-			if (i === 0 || minLostPoint >  lostPoint) { minLostPoint = lostPoint; pattern = i; }
-		}
-		return pattern;
-	},
-	setupTimingPattern : function() {
-		for (var r = 8; r < this.moduleCount - 8; r++) {
-			if (this.modules[r][6] !== null) continue;
-			this.modules[r][6] = (r % 2 === 0);
-		}
-		for (var c = 8; c < this.moduleCount - 8; c++) {
-			if (this.modules[6][c] !== null) continue;
-			this.modules[6][c] = (c % 2 === 0);
-		}
-	},
-	setupPositionAdjustPattern : function() {
-		var pos = QRUtil.getPatternPosition(this.typeNumber);
-		for (var i = 0; i < pos.length; i++) {
-			for (var j = 0; j < pos.length; j++) {
-				var row = pos[i]; var col = pos[j];
-				if (this.modules[row][col] !== null) continue;
-				for (var r = -2; r <= 2; r++) {
-					for (var c = -2; c <= 2; c++) {
-						if (Math.abs(r) === 2 || Math.abs(c) === 2 || (r === 0 && c === 0) ) {
-							this.modules[row + r][col + c] = true;
-						} else {
-							this.modules[row + r][col + c] = false;
-						}
-					}
-				}
-			}
-		}
-	},
-	setupTypeNumber : function(test) {
-		var bits = QRUtil.getBCHTypeNumber(this.typeNumber); var mod;
-		for (var i = 0; i < 18; i++) {
-			mod = (!test && ( (bits >> i) & 1) === 1);
-			this.modules[Math.floor(i / 3)][i % 3 + this.moduleCount - 8 - 3] = mod;
-		}
-		for (var x = 0; x < 18; x++) {
-			mod = (!test && ( (bits >> x) & 1) === 1);
-			this.modules[x % 3 + this.moduleCount - 8 - 3][Math.floor(x / 3)] = mod;
-		}
-	},
-	setupTypeInfo : function(test, maskPattern) {
-		var data = (this.errorCorrectLevel << 3) | maskPattern;
-		var bits = QRUtil.getBCHTypeInfo(data); var mod;
-		for (var v = 0; v < 15; v++) {
-			mod = (!test && ( (bits >> v) & 1) === 1);
-			if (v < 6) { this.modules[v][8] = mod; } 
-            else if (v < 8) { this.modules[v + 1][8] = mod; } 
-            else { this.modules[this.moduleCount - 15 + v][8] = mod; }
-		}
-		for (var h = 0; h < 15; h++) {
-			mod = (!test && ( (bits >> h) & 1) === 1);
-			if (h < 8) { this.modules[8][this.moduleCount - h - 1] = mod; } 
-            else if (h < 9) { this.modules[8][15 - h - 1 + 1] = mod; } 
-            else { this.modules[8][15 - h - 1] = mod; }
-		}
-		this.modules[this.moduleCount - 8][8] = (!test);
-	},
-	mapData : function(data, maskPattern) {
-		var inc = -1; var row = this.moduleCount - 1; var bitIndex = 7; var byteIndex = 0;
-		for (var col = this.moduleCount - 1; col > 0; col -= 2) {
-			if (col === 6) col--;
-			while (true) {
-				for (var c = 0; c < 2; c++) {
-					if (this.modules[row][col - c] === null) {
-						var dark = false;
-						if (byteIndex < data.length) { dark = ( ( (data[byteIndex] >>> bitIndex) & 1) === 1); }
-						var mask = QRUtil.getMask(maskPattern, row, col - c);
-						if (mask) { dark = !dark; }
-						this.modules[row][col - c] = dark;
-						bitIndex--;
-						if (bitIndex === -1) { byteIndex++; bitIndex = 7; }
-					}
-				}
-				row += inc;
-				if (row < 0 || this.moduleCount <= row) {
-					row -= inc; inc = -inc; break;
-				}
-			}
-		}
-	}
-};
- 
-QRCode.PAD0 = 0xEC;
-QRCode.PAD1 = 0x11;
- 
-QRCode.createData = function(typeNumber, errorCorrectLevel, dataList) {
-	var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectLevel);
-	var buffer = new QRBitBuffer();
-	for (var i = 0; i < dataList.length; i++) {
-		var data = dataList[i];
-		buffer.put(data.mode, 4);
-		buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber) );
-		data.write(buffer);
-	}
-	var totalDataCount = 0;
-	for (var x = 0; x < rsBlocks.length; x++) { totalDataCount += rsBlocks[x].dataCount; }
-	if (buffer.getLengthInBits() > totalDataCount * 8) throw new Error("code length overflow.");
-	if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) { buffer.put(0, 4); }
-	while (buffer.getLengthInBits() % 8 !== 0) { buffer.putBit(false); }
-	while (true) {
-		if (buffer.getLengthInBits() >= totalDataCount * 8) break;
-		buffer.put(QRCode.PAD0, 8);
-		if (buffer.getLengthInBits() >= totalDataCount * 8) break;
-		buffer.put(QRCode.PAD1, 8);
-	}
-	return QRCode.createBytes(buffer, rsBlocks);
-};
- 
-QRCode.createBytes = function(buffer, rsBlocks) {
-	var offset = 0;
-	var maxDcCount = 0; var maxEcCount = 0;
-	var dcdata = new Array(rsBlocks.length);
-	var ecdata = new Array(rsBlocks.length);
-	
-	for (var r = 0; r < rsBlocks.length; r++) {
-		var dcCount = rsBlocks[r].dataCount;
-		var ecCount = rsBlocks[r].totalCount - dcCount;
-		maxDcCount = Math.max(maxDcCount, dcCount);
-		maxEcCount = Math.max(maxEcCount, ecCount);
-		dcdata[r] = new Array(dcCount);
-		for (var i = 0; i < dcdata[r].length; i++) {
-			dcdata[r][i] = 0xff & buffer.buffer[i + offset];
-		}
-		offset += dcCount;
-		var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
-		var rawPoly = new QRPolynomial(dcdata[r], rsPoly.getLength() - 1);
-		var modPoly = rawPoly.mod(rsPoly);
-		ecdata[r] = new Array(rsPoly.getLength() - 1);
-		for (var x = 0; x < ecdata[r].length; x++) {
-            var modIndex = x + modPoly.getLength() - ecdata[r].length;
-			ecdata[r][x] = (modIndex >= 0)? modPoly.get(modIndex) : 0;
-		}
-	}
-	
-	var totalCodeCount = 0;
-	for (var y = 0; y < rsBlocks.length; y++) { totalCodeCount += rsBlocks[y].totalCount; }
-	var data = new Array(totalCodeCount);
-	var index = 0;
- 
-	for (var z = 0; z < maxDcCount; z++) {
-		for (var s = 0; s < rsBlocks.length; s++) {
-			if (z < dcdata[s].length) { data[index++] = dcdata[s][z]; }
-		}
-	}
-	for (var xx = 0; xx < maxEcCount; xx++) {
-		for (var t = 0; t < rsBlocks.length; t++) {
-			if (xx < ecdata[t].length) { data[index++] = ecdata[t][xx]; }
-		}
-	}
-	return data;
-};
- 
-return { QRCode: QRCode, QRErrorCorrectLevel: QRErrorCorrectLevel };
-})();
- 
-// ini yang harus diubah ya
-const STAFF = [
-  {id:'s1', name:'Bu Ratna Wulandari', dept:'Wali Kelas XI IPA 1'},
-  {id:'s2', name:'Pak Doni Saputra', dept:'Wali Kelas XII IPS 2'},
-  {id:'s3', name:'Bu Amelia Putri', dept:'Wakil Kepala Sekolah'},
-  {id:'s4', name:'Pak Hendra Kusuma', dept:'Kepala Sekolah'},
-];
-const ADMIN_CODE = '246810';
- 
-let appointments = [];
-let seq = 1;
-function uid(prefix){ return prefix + (seq++).toString().padStart(4,'0'); }
-function todayStr(){ return new Date().toISOString().slice(0,10); }
-function initials(name){ return (name||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase(); }
- 
-function seedData(){
-  const t = todayStr();
-  appointments.push({id:uid('APT-'), guest:'Bapak Yusuf Hartono', category:'Kolega', nisn:'', purpose:'Diskusi kerja sama program magang siswa dengan perusahaan', staffId:'s3', date:t, time:'09:30', status:'pending', photo:null});
-  appointments.push({id:uid('APT-'), guest:'Ibu Siti Nurhaliza', category:'Orang Tua', nisn:'', purpose:'Konsultasi pemilihan peminatan dan nilai rapor anak', staffId:'s1', date:t, time:'10:00', status:'approved', code:uid('QR-'), photo:null});
-  appointments.push({id:uid('APT-'), guest:'Bintang Aditya Pratama', category:'Siswa', nisn:'0091234567', purpose:'Izin pulang lebih awal untuk mengikuti lomba OSN Matematika', staffId:'s2', date:t, time:'11:00', status:'checked-in', code:uid('QR-'), photo:null});
-}
-seedData();
- 
-let mode = 'kiosk';
-let adminView = 'host';
-let kioskStep = 1;
-let selectedCategory = 'Kolega';
+// State & Database Simulasi
+let currentView = 'form'; // form | photo | success | admin
+let draftForm = {};
 let draftPhoto = null;
-let myTickets = [];
-
-// Variabel tambahan untuk fitur kamera WebRTC
-let isCameraOpen = false;
 let cameraStream = null;
- 
-function staffName(id){ const s=STAFF.find(x=>x.id===id); return s? s.name : '—'; }
-function staffDept(id){ const s=STAFF.find(x=>x.id===id); return s? s.dept : ''; }
-function slotTaken(staffId, date, time, excludeId){
-  return appointments.some(a => a.staffId===staffId && a.date===date && a.time===time &&
-    a.id!==excludeId && ['pending','approved','checked-in'].includes(a.status));
-}
-function statusLabel(s){
-  return {pending:'Menunggu Persetujuan', approved:'Disetujui', 'checked-in':'Sudah Check-in', cancelled:'Dibatalkan', rejected:'Ditolak'}[s] || s;
-}
- 
-function renderToolbar(){
-  const tr = document.getElementById('toolbarRight');
-  if(mode==='kiosk'){
-    tr.innerHTML = `<button class="btn-lock" id="openAdminModal">🔒 Mode Admin</button>`;
-  } else {
-    tr.innerHTML = `
-      <div class="mode-pill">
-        <button data-adminview="host" class="${adminView==='host'?'active':''}">Admin</button>
-        <button data-adminview="staf" class="${adminView==='staf'?'active':''}">Guru/Staf</button>
-      </div>
-      <div class="admin-badge"><span class="av">A</span><span>Admin aktif</span></div>
-      <button class="btn btn-outline btn-sm" id="exitAdmin">Ke Mode Kios</button>
-    `;
-  }
-  wireToolbar();
-}
-function wireToolbar(){
-  const openBtn = document.getElementById('openAdminModal');
-  if(openBtn) openBtn.addEventListener('click', showAdminCodeModal);
-  document.querySelectorAll('[data-adminview]').forEach(b=>{
-    b.addEventListener('click', ()=>{ adminView=b.dataset.adminview; renderAll(); });
-  });
-  const exitBtn = document.getElementById('exitAdmin');
-  if(exitBtn) exitBtn.addEventListener('click', ()=>{ mode='kiosk'; renderAll(); });
-}
- 
-function showAdminCodeModal(){
-  const root = document.getElementById('modalRoot');
-  root.innerHTML = `
-    <div class="modal-backdrop" id="backdrop">
-      <div class="modal">
-        <div class="ic-circle">🔒</div>
-        <h3>Masuk Mode Admin</h3>
-        <p>Masukkan kode akses staf untuk membuka dashboard pengelolaan.</p>
-        <input type="text" inputmode="numeric" maxlength="6" class="pin-input" id="pinInput" placeholder="••••••" autofocus>
-        <div class="err" id="pinErr"></div>
-        <div class="demo-hint">Kode demo untuk uji coba: <span class="mono">${ADMIN_CODE}</span></div>
-        <div class="modal-actions">
-          <button class="btn btn-outline" id="pinCancel">Batal</button>
-          <button class="btn btn-primary" id="pinSubmit">Masuk</button>
-        </div>
-      </div>
-    </div>`;
-  document.getElementById('pinCancel').addEventListener('click', closeModal);
-  document.getElementById('backdrop').addEventListener('click', e=>{ if(e.target.id==='backdrop') closeModal(); });
-  const submit = ()=>{
-    const val = document.getElementById('pinInput').value.trim();
-    if(val===ADMIN_CODE){
-      mode='admin'; adminView='host';
-      closeModal(); renderAll();
-    } else {
-      document.getElementById('pinErr').textContent = 'Kode akses salah. Coba lagi.';
-    }
-  };
-  document.getElementById('pinSubmit').addEventListener('click', submit);
-  document.getElementById('pinInput').addEventListener('keydown', e=>{ if(e.key==='Enter') submit(); });
-}
-function closeModal(){ document.getElementById('modalRoot').innerHTML=''; }
- 
-function showFaceScanModal(aptId){
-  const a = appointments.find(x=>x.id===aptId);
-  const root = document.getElementById('modalRoot');
-  root.innerHTML = `
-    <div class="modal-backdrop" id="backdrop2">
-      <div class="modal">
-        <div class="scan-frame">
-          ${a.photo ? `<img src="${a.photo}">` : `<div class="photo-placeholder" style="width:100%;height:100%;margin:0;">👤</div>`}
-          <div class="laser"></div>
-        </div>
-        <div class="scan-status" id="scanStatus">Memindai wajah…</div>
-        <div class="scan-progress"><div class="scan-progress-bar" id="scanBar"></div></div>
-        <div class="match-score" id="scanScore">&nbsp;</div>
-        <div class="modal-actions" style="margin-top:18px;">
-          <button class="btn btn-outline" id="scanCancel">Batal</button>
-        </div>
-      </div>
-    </div>`;
-  document.getElementById('scanCancel').addEventListener('click', closeModal);
-  let pct = 0;
-  const bar = document.getElementById('scanBar');
-  const status = document.getElementById('scanStatus');
-  const score = document.getElementById('scanScore');
-  const timer = setInterval(()=>{
-    pct += 8 + Math.random()*10;
-    if(pct>=100){
-      pct=100; clearInterval(timer);
-      bar.style.width='100%';
-      const conf = (96 + Math.random()*3).toFixed(1);
-      status.textContent = 'Wajah terverifikasi';
-      status.style.color = 'var(--approved)';
-      score.textContent = `Tingkat kecocokan: ${conf}%`;
-      setTimeout(()=>{
-        a.status='checked-in';
-        closeModal();
-        renderAll();
-      }, 700);
-      return;
-    }
-    bar.style.width = pct+'%';
-  }, 220);
-}
- 
-function renderAll(){
-  renderToolbar();
-  const page = document.getElementById('page');
-  if(mode==='kiosk') page.innerHTML = viewKiosk();
-  else page.innerHTML = adminView==='host' ? viewHost() : viewStaf();
-  wireEvents();
-  drawAllQr();
-  
-  // Jika kamera sedang dibuka, pasang aliran video (stream) ke tag HTML <video>
-  if(mode==='kiosk' && kioskStep===2 && isCameraOpen && cameraStream){
-    const video = document.getElementById('cameraStream');
-    if(video) {
-        video.srcObject = cameraStream;
-    }
-  }
-}
- 
-function viewKiosk(){
-  const staffOptions = STAFF.map(s=>`<option value="${s.id}">${s.name} — ${s.dept}</option>`).join('');
-  const myTix = appointments.filter(a=> myTickets.includes(a.id));
- 
-  return `
-  <div class="page-head">
-    <h1>Selamat Datang</h1>
-    <p>Daftarkan kunjungan Anda dengan mengisi formulir dan mengambil foto diri.</p>
-  </div>
- 
-  <div class="steps">
-    <div class="step ${kioskStep>=1?(kioskStep>1?'done':'active'):''}"><div class="num">${kioskStep>1?'✓':'1'}</div><div class="lbl">Data Kunjungan</div></div>
-    <div class="step-line ${kioskStep>1?'done':''}"></div>
-    <div class="step ${kioskStep>=2?(kioskStep>2?'done':'active'):''}"><div class="num">${kioskStep>2?'✓':'2'}</div><div class="lbl">Foto / Selfie</div></div>
-    <div class="step-line ${kioskStep>2?'done':''}"></div>
-    <div class="step ${kioskStep>=3?'active':''}"><div class="num">3</div><div class="lbl">Kirim Pengajuan</div></div>
-  </div>
- 
-  <div class="grid cols-2">
-    <div class="card">
-      ${kioskStep===1 ? `
-        <h3>Data Kunjungan</h3>
-        <p class="hint">Lengkapi identitas dan tujuan kunjungan Anda.</p>
-        <div class="field">
-          <label>Nama lengkap</label>
-          <input type="text" id="f_name" placeholder="cth. Budi Santoso">
-        </div>
-        <div class="field">
-          <label>Kategori tamu</label>
-          <div class="chip-select" id="categoryChips">
-            ${['Kolega','Orang Tua','Siswa'].map(c=>`<div class="chip ${c===selectedCategory?'selected':''}" data-cat="${c}">${c}</div>`).join('')}
-          </div>
-        </div>
-        <div class="field" id="nisnField" style="${selectedCategory==='Siswa'?'':'display:none'}">
-          <label>NISN</label>
-          <input type="text" id="f_nisn" placeholder="10 digit NISN">
-        </div>
-        <div class="field">
-          <label>Tujuan kunjungan</label>
-          <textarea id="f_purpose" placeholder="Jelaskan singkat keperluan Anda"></textarea>
-        </div>
-        <div class="field">
-          <label>Pihak yang dituju</label>
-          <select id="f_staff">${staffOptions}</select>
-        </div>
-        <div class="grid cols-2">
-          <div class="field">
-            <label>Tanggal</label>
-            <input type="date" id="f_date" value="${todayStr()}">
-          </div>
-          <div class="field">
-            <label>Waktu (WIB)</label>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <input type="time" id="f_time" value="13:00">
-              <span style="font-weight:600; font-size:13px; color:var(--text-dim);">WIB</span>
-            </div>
-          </div>
-        </div>
-        <div id="conflictWarn"></div>
-        <button class="btn btn-primary btn-block" id="toStep2">Lanjut: Ambil Foto →</button>
-      ` : kioskStep===2 ? `
-        <h3>Foto / Selfie Tamu</h3>
-        <p class="hint">Foto ini digunakan sebagai identitas visual dan referensi verifikasi wajah saat check-in.</p>
-        <div class="photo-zone">
-          ${isCameraOpen ? `
-            <video id="cameraStream" autoplay playsinline class="photo-preview" style="background:#000; transform: scaleX(-1);"></video>
-            <div class="photo-actions">
-              <button type="button" class="btn btn-primary btn-sm" id="btnSnap">📸 Jepret Foto</button>
-              <button type="button" class="btn btn-outline btn-sm" id="btnCloseCamera">Batal</button>
-            </div>
-          ` : draftPhoto ? `
-            <img src="${draftPhoto}" class="photo-preview">
-            <div class="photo-actions">
-              <button type="button" class="btn btn-primary btn-sm" id="btnOpenCamera">📷 Ambil Ulang</button>
-              <button type="button" class="btn btn-outline btn-sm" data-trigger="uploadInput">⬆ Unggah Baru</button>
-              <input type="file" id="uploadInput" accept="image/*" class="visually-hidden">
-            </div>
-          ` : `
-            <div class="photo-placeholder">👤</div>
-            <div class="photo-actions">
-              <button type="button" class="btn btn-primary btn-sm" id="btnOpenCamera">📷 Buka Kamera</button>
-              <button type="button" class="btn btn-outline btn-sm" data-trigger="uploadInput">⬆ Unggah Foto</button>
-              <input type="file" id="uploadInput" accept="image/*" class="visually-hidden">
-            </div>
-          `}
-          <div id="photoErr" class="hint" style="color:var(--danger); margin-top:10px;"></div>
-        </div>
-        <div style="display:flex; gap:8px; margin-top:18px;">
-          <button class="btn btn-outline" id="backStep1">← Kembali</button>
-          <button class="btn btn-primary btn-block" id="toStep3">Lanjut: Kirim Pengajuan →</button>
-        </div>
-      ` : `
-        <div style="text-align:center; padding:20px 6px;">
-          <div style="margin:0 auto 14px; width:54px; height:54px; background:var(--approved-soft); color:var(--approved); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:24px;">✓</div>
-          <h3 style="text-align:center;">Pengajuan Terkirim</h3>
-          <p class="hint" style="text-align:center;">Jadwal Anda berstatus <strong>Menunggu Persetujuan</strong>. QR Code akan terbit otomatis setelah disetujui.</p>
-          <button class="btn btn-primary btn-block" id="newRegistration">Daftarkan Kunjungan Baru</button>
-        </div>
-      `}
-    </div>
- 
-    <div class="card">
-      <h3>Jadwal Saya</h3>
-      <p class="hint">Status pengajuan, tiket QR, dan check-in mandiri via wajah.</p>
-      ${myTix.length ? myTix.map(guestCardHtml).join('') : `<div class="empty">Belum ada pengajuan pada sesi ini.<br>Isi formulir di sebelah kiri untuk memulai.</div>`}
-    </div>
-  </div>`;
-}
- 
-function guestCardHtml(a){
-  const canCancel = ['pending','approved'].includes(a.status);
-  const canCheckin = a.status==='approved';
-  return `
-  <div class="list-item" style="flex-direction:column; align-items:stretch;">
-    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
-      <div class="li-main">
-        ${a.photo ? `<img src="${a.photo}" class="li-avatar">` : `<div class="li-avatar ph">${initials(a.guest)}</div>`}
-        <div class="li-text">
-          <div class="name">${staffName(a.staffId)}</div>
-          <div class="meta">${staffDept(a.staffId)} · ${a.date} ${a.time} WIB · ${a.category}</div>
-        </div>
-      </div>
-      <span class="badge ${a.status}"><span class="dot"></span>${statusLabel(a.status)}</span>
-    </div>
-    ${(a.status==='approved' || a.status==='checked-in') ? `
-      <div class="qr-card" style="margin-top:12px;">
-        <canvas data-qr="${a.code}" width="82" height="82"></canvas>
-        <div class="qr-meta">
-          <div style="font-size:12.5px; color:var(--text-dim); font-weight:700;">Tiket masuk digital</div>
-          <div class="code mono">${a.code}</div>
-        </div>
-      </div>` : ''}
-    ${a.status==='rejected' ? `<div class="hint" style="margin:8px 0 0; color:var(--danger);">Pengajuan ditolak oleh ${staffName(a.staffId)}.</div>` : ''}
-    ${a.status==='cancelled' ? `<div class="hint" style="margin:8px 0 0;">Dibatalkan: ${a.cancelReason||'-'}</div>` : ''}
-    <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
-      ${canCheckin ? `<button class="btn btn-primary btn-sm" data-facescan="${a.id}">📷 Check-in dengan Wajah</button>` : ''}
-      ${canCancel ? `<button class="btn btn-ghost btn-sm" data-cancel="${a.id}">Batalkan jadwal</button>` : ''}
-    </div>
-  </div>`;
-}
- 
-function viewHost(){
-  const pending = appointments.filter(a=>a.status==='pending');
-  const approvedToday = appointments.filter(a=>a.status==='approved');
-  const checkedIn = appointments.filter(a=>a.status==='checked-in');
-  const todaysAll = appointments.filter(a=>a.date===todayStr() && !['cancelled','rejected'].includes(a.status))
-                     .sort((x,y)=> x.time.localeCompare(y.time));
- 
-  return `
-  <div class="page-head">
-    <h1>Dashboard Admin</h1>
-    <p>Kelola persetujuan, pindai kedatangan, dan pantau lalu lintas tamu hari ini.</p>
-  </div>
- 
-  <div class="grid cols-3" style="margin-bottom:22px;">
-    <div class="stat"><div class="num">${pending.length}</div><div class="lbl">Menunggu persetujuan</div></div>
-    <div class="stat"><div class="num">${approvedToday.length}</div><div class="lbl">Siap check-in (punya QR)</div></div>
-    <div class="stat"><div class="num">${checkedIn.length}</div><div class="lbl">Sedang berada di lokasi</div></div>
-  </div>
- 
-  <div class="grid cols-2">
-    <div class="card">
-      <h3>Persetujuan Jadwal</h3>
-      <p class="hint">Setujui atau tolak pengajuan atas nama pihak yang dituju.</p>
-      ${pending.length ? pending.map(a=>`
-        <div class="list-item">
-          <div class="li-main">
-            ${a.photo ? `<img src="${a.photo}" class="li-avatar">` : `<div class="li-avatar ph">${initials(a.guest)}</div>`}
-            <div class="li-text">
-              <div class="name">${a.guest}</div>
-              <div class="meta">${a.category}${a.nisn? ' · NISN '+a.nisn:''} → ${staffName(a.staffId)} · ${a.date} ${a.time} WIB</div>
-            </div>
-          </div>
-          <div class="li-actions">
-            <button class="btn btn-approve btn-sm" data-approve="${a.id}">Setujui</button>
-            <button class="btn btn-reject btn-sm" data-reject="${a.id}">Tolak</button>
-          </div>
-        </div>`).join('') : `<div class="empty">Tidak ada pengajuan menunggu.</div>`}
-    </div>
- 
-    <div class="card">
-      <h3>Scanner Kehadiran (QR)</h3>
-      <p class="hint">Pilih tiket QR yang dipindai di lobi untuk memvalidasi kedatangan.</p>
-      ${approvedToday.length ? approvedToday.map(a=>`
-        <div class="list-item">
-          <div class="li-main">
-            ${a.photo ? `<img src="${a.photo}" class="li-avatar">` : `<div class="li-avatar ph">${initials(a.guest)}</div>`}
-            <div class="li-text">
-              <div class="name">${a.guest}</div>
-              <div class="meta mono">${a.code} · menuju ${staffName(a.staffId)}</div>
-            </div>
-          </div>
-          <button class="btn btn-primary btn-sm" data-checkin="${a.id}">Scan Masuk</button>
-        </div>`).join('') : `<div class="empty">Belum ada tiket QR aktif untuk dipindai.</div>`}
- 
-      <h3 style="margin-top:22px;">Sedang di Lokasi</h3>
-      ${checkedIn.length ? checkedIn.map(a=>`
-        <div class="list-item">
-          <div class="li-main">
-            ${a.photo ? `<img src="${a.photo}" class="li-avatar">` : `<div class="li-avatar ph">${initials(a.guest)}</div>`}
-            <div class="li-text">
-              <div class="name">${a.guest}</div>
-              <div class="meta">Menemui ${staffName(a.staffId)} · check-in ${a.time} WIB</div>
-            </div>
-          </div>
-          <span class="badge checked-in"><span class="dot"></span>Di lokasi</span>
-        </div>`).join('') : `<div class="empty">Tidak ada tamu di lokasi saat ini.</div>`}
-    </div>
-  </div>
- 
-  <div class="card" style="margin-top:18px;">
-    <h3>Kalender Kehadiran Hari Ini</h3>
-    <p class="hint">Lalu lintas kunjungan terjadwal hari ini di seluruh staf.</p>
-    ${todaysAll.length ? `
-    <table>
-      <thead><tr><th>Waktu</th><th>Tamu</th><th>Kategori</th><th>Dituju</th><th>Status</th></tr></thead>
-      <tbody>
-        ${todaysAll.map(a=>`
-        <tr>
-          <td class="mono">${a.time} WIB</td>
-          <td>${a.guest}</td>
-          <td>${a.category}</td>
-          <td>${staffName(a.staffId)}</td>
-          <td><span class="badge ${a.status}"><span class="dot"></span>${statusLabel(a.status)}</span></td>
-        </tr>`).join('')}
-      </tbody>
-    </table>` : `<div class="empty">Belum ada jadwal hari ini.</div>`}
-  </div>`;
-}
- 
-function viewStaf(){
-  const currentStaff = STAFF[0];
-  const mineAll = appointments.filter(a=>a.staffId===currentStaff.id);
-  const pending = mineAll.filter(a=>a.status==='pending');
-  const arrived = mineAll.filter(a=>a.status==='checked-in');
-  const upcoming = mineAll.filter(a=>a.status==='approved');
- 
-  return `
-  <div class="page-head">
-    <h1>Panel Guru / Staf</h1>
-    <p>Tinjau pengajuan jadwal dan pantau kedatangan tamu Anda.</p>
-  </div>
- 
-  <div class="banner">
-    <span class="ic">◆</span>
-    <div>
-      <div style="font-weight:700; font-size:13.5px;">Masuk sebagai ${currentStaff.name}</div>
-      <div style="font-size:12.5px; color:var(--text-dim);">${currentStaff.dept}</div>
-    </div>
-  </div>
- 
-  ${arrived.length ? arrived.map(a=>`
-    <div class="banner success">
-      <span class="ic">✓</span>
-      <div>
-        <div style="font-weight:700; font-size:13.5px;">${a.guest} sudah tiba di lobi</div>
-        <div style="font-size:12.5px; color:var(--text-dim);">${a.category} · tujuan: ${a.purpose}</div>
-      </div>
-    </div>`).join('') : ''}
- 
-  <div class="grid cols-2">
-    <div class="card">
-      <h3>Pengajuan Menunggu Anda</h3>
-      <p class="hint">Setujui untuk menerbitkan QR kepada tamu.</p>
-      ${pending.length ? pending.map(a=>`
-        <div class="list-item">
-          <div class="li-main">
-            ${a.photo ? `<img src="${a.photo}" class="li-avatar">` : `<div class="li-avatar ph">${initials(a.guest)}</div>`}
-            <div class="li-text">
-              <div class="name">${a.guest}</div>
-              <div class="meta">${a.category}${a.nisn? ' · NISN '+a.nisn:''} · ${a.date} ${a.time} WIB</div>
-              <div class="meta" style="margin-top:4px;">"${a.purpose}"</div>
-            </div>
-          </div>
-          <div class="li-actions">
-            <button class="btn btn-approve btn-sm" data-approve="${a.id}">Setujui</button>
-            <button class="btn btn-reject btn-sm" data-reject="${a.id}">Tolak</button>
-          </div>
-        </div>`).join('') : `<div class="empty">Tidak ada pengajuan menunggu.</div>`}
-    </div>
- 
-    <div class="card">
-      <h3>Jadwal Mendatang</h3>
-      ${upcoming.length ? upcoming.map(a=>`
-        <div class="list-item">
-          <div class="li-main">
-            ${a.photo ? `<img src="${a.photo}" class="li-avatar">` : `<div class="li-avatar ph">${initials(a.guest)}</div>`}
-            <div class="li-text">
-              <div class="name">${a.guest}</div>
-              <div class="meta">${a.date} ${a.time} WIB · ${a.category}</div>
-            </div>
-          </div>
-          <span class="badge approved"><span class="dot"></span>Disetujui</span>
-        </div>`).join('') : `<div class="empty">Tidak ada jadwal disetujui mendatang.</div>`}
-    </div>
-  </div>`;
+
+// Password Admin: admin123
+const ADMIN_PIN = 'admin123';
+
+// Simulasi Data (Beberapa sudah di-acc agar masuk ke kalender)
+let appointments = [
+  { id: '1', name: 'Budi Santoso', date: todayStr(), time: '09:00', reason: 'Rapat komite sekolah', photo: null, status: 'approved' },
+  { id: '2', name: 'Ibu Ratna', date: todayStr(), time: '13:30', reason: 'Konsultasi masalah siswa', photo: null, status: 'approved' },
+  { id: '3', name: 'Anton', date: tomorrowStr(), time: '10:00', reason: 'Pengajuan proposal pensi', photo: null, status: 'pending' }
+];
+
+function todayStr() { return new Date().toISOString().slice(0,10); }
+function tomorrowStr() { 
+  let d = new Date(); d.setDate(d.getDate() + 1); 
+  return d.toISOString().slice(0,10); 
 }
 
-// Fungsi Kamera WebRTC
-function startCamera() {
-  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    // Meminta izin kamera depan
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
-    .then(function(stream) {
-      cameraStream = stream;
-      isCameraOpen = true;
-      renderAll(); // Re-render untuk memunculkan tag video HTML
-    })
-    .catch(function(err) {
-      showPhotoErr("Kamera diblokir atau tidak dapat diakses.");
-    });
+// Generate Pilihan Jam 24 Jam (07:00 - 16:30)
+function getTimeOptions() {
+  let opts = '';
+  for(let h=7; h<=16; h++){
+    let hh = h.toString().padStart(2,'0');
+    opts += `<option value="${hh}:00">${hh}:00</option>`;
+    opts += `<option value="${hh}:30">${hh}:30</option>`;
+  }
+  return opts;
+}
+
+// --- RENDER ENGINE ---
+function render() {
+  const container = document.getElementById('appContainer');
+  const btnAdmin = document.getElementById('btnAdminSwitch');
+  
+  // Sembunyikan tombol admin jika sedang di dasbor admin
+  btnAdmin.style.display = (currentView === 'admin') ? 'none' : 'block';
+  container.className = (currentView === 'admin') ? 'admin-container' : '';
+
+  if (currentView === 'form') container.innerHTML = viewForm();
+  else if (currentView === 'photo') container.innerHTML = viewPhoto();
+  else if (currentView === 'success') container.innerHTML = viewSuccess();
+  else if (currentView === 'admin') container.innerHTML = viewAdmin();
+
+  wireEvents();
+}
+
+// --- VIEWS ---
+function viewForm() {
+  return `
+    <div class="glass-card">
+      <h2>Janji Temu</h2>
+      <p class="subtitle">Kepala Sekolah SMA Nusantara</p>
+      
+      <div class="form-group">
+        <label>Nama Lengkap</label>
+        <input type="text" id="v_name" placeholder="Masukkan nama Anda..." required>
+      </div>
+      
+      <div style="display:flex; gap:12px;">
+        <div class="form-group" style="flex:1;">
+          <label>Tanggal</label>
+          <input type="date" id="v_date" value="${todayStr()}">
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label>Waktu (WIB)</label>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <select id="v_time" style="flex:1;">${getTimeOptions()}</select>
+            <span style="font-size:12px; color:var(--text-soft);">WIB</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Alasan Bertemu</label>
+        <textarea id="v_reason" rows="3" placeholder="Jelaskan secara singkat..."></textarea>
+      </div>
+
+      <button class="btn btn-primary" id="btnToPhoto">Lanjut Ambil Foto &rarr;</button>
+    </div>
+  `;
+}
+
+function viewPhoto() {
+  return `
+    <div class="glass-card">
+      <h2>Identitas Visual</h2>
+      <p class="subtitle">Ambil swafoto (selfie) atau unggah pas foto Anda.</p>
+      
+      <div class="camera-box">
+        ${draftPhoto 
+          ? `<img src="${draftPhoto}">` 
+          : `<video id="videoFeed" class="mirror" autoplay playsinline></video>`}
+      </div>
+
+      <div style="display:flex; gap:10px; margin-bottom:20px;">
+        ${draftPhoto 
+          ? `<button class="btn btn-secondary" id="btnRetake">Ulangi</button>` 
+          : `<button class="btn btn-secondary" id="btnSnap">📸 Jepret</button>`}
+        <button class="btn btn-secondary" id="btnUploadTrig">⬆ Unggah</button>
+        <input type="file" id="uploadFile" accept="image/*" style="display:none;">
+      </div>
+
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-secondary" id="btnBackForm">&larr; Batal</button>
+        <button class="btn btn-primary" id="btnSubmit">Kirim Pengajuan</button>
+      </div>
+    </div>
+  `;
+}
+
+function viewSuccess() {
+  return `
+    <div class="glass-card" style="text-align:center;">
+      <div style="font-size:50px; margin-bottom:10px;">✅</div>
+      <h2>Berhasil Terkirim</h2>
+      <p class="subtitle" style="margin-bottom:20px;">Pengajuan jadwal Anda telah masuk. Silakan tunggu persetujuan dari Kepala Sekolah.</p>
+      <button class="btn btn-secondary" id="btnHome">Kembali ke Awal</button>
+    </div>
+  `;
+}
+
+function viewAdmin() {
+  const pending = appointments.filter(a => a.status === 'pending');
+  const approved = appointments.filter(a => a.status === 'approved')
+                               .sort((a, b) => a.time.localeCompare(b.time)); // Urutkan jam
+
+  // Kelompokkan jadwal disetujui berdasarkan tanggal (GCal Style)
+  const grouped = {};
+  approved.forEach(a => {
+    if(!grouped[a.date]) grouped[a.date] = [];
+    grouped[a.date].push(a);
+  });
+
+  let calendarHTML = '';
+  if (Object.keys(grouped).length === 0) {
+    calendarHTML = `<p style="color:var(--text-soft); font-size:13px;">Belum ada jadwal yang disetujui.</p>`;
   } else {
-    showPhotoErr("Browser ini tidak mendukung fitur kamera langsung.");
+    for (const [date, events] of Object.entries(grouped)) {
+      calendarHTML += `<div class="gcal-date-header">🗓️ Tanggal: ${date}</div><div class="gcal-agenda">`;
+      events.forEach(ev => {
+        calendarHTML += `
+          <div class="gcal-event">
+            <div class="gcal-time">🕒 ${ev.time} WIB</div>
+            <div class="gcal-title">${ev.name}</div>
+            <div class="gcal-desc">Tujuan: ${ev.reason}</div>
+          </div>
+        `;
+      });
+      calendarHTML += `</div>`;
+    }
+  }
+
+  let pendingHTML = pending.length === 0 
+    ? `<p style="color:var(--text-soft); font-size:13px;">Semua antrean sudah diproses.</p>` 
+    : pending.map(a => `
+        <div class="list-item">
+          ${a.photo ? `<img src="${a.photo}" class="avatar">` : `<div class="avatar" style="display:flex;align-items:center;justify-content:center;">👤</div>`}
+          <div class="item-info">
+            <h4>${a.name}</h4>
+            <p>📅 ${a.date} | 🕒 ${a.time} WIB</p>
+            <p>📝 ${a.reason}</p>
+            <div style="margin-top:10px; display:flex; gap:8px;">
+              <button class="btn btn-sm btn-approve" data-id="${a.id}">Setujui</button>
+              <button class="btn btn-sm btn-reject" data-id="${a.id}">Tolak</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+  return `
+    <div class="glass-card" style="margin-top: 20px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+        <h2>Dasbor Kepala Sekolah</h2>
+        <button class="btn btn-secondary btn-sm" id="btnLogout">Keluar Mode</button>
+      </div>
+
+      <div class="admin-grid">
+        <!-- Kolom Kiri: Permintaan Masuk -->
+        <div>
+          <h3 style="margin-bottom:15px; font-size:16px; border-bottom:1px solid var(--border); padding-bottom:8px;">Menunggu Persetujuan (${pending.length})</h3>
+          ${pendingHTML}
+        </div>
+
+        <!-- Kolom Kanan: Kalender (GCal Style) -->
+        <div>
+          <h3 style="margin-bottom:15px; font-size:16px; border-bottom:1px solid var(--border); padding-bottom:8px;">Kalender Disetujui</h3>
+          ${calendarHTML}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// --- EVENT LISTENERS & CAMERA LOGIC ---
+function wireEvents() {
+  // 1. Form Kiosk
+  const btnToPhoto = document.getElementById('btnToPhoto');
+  if (btnToPhoto) {
+    btnToPhoto.addEventListener('click', () => {
+      const name = document.getElementById('v_name').value.trim();
+      const reason = document.getElementById('v_reason').value.trim();
+      if (!name || !reason) return alert('Nama dan alasan wajib diisi!');
+      
+      draftForm = {
+        name,
+        date: document.getElementById('v_date').value,
+        time: document.getElementById('v_time').value,
+        reason
+      };
+      currentView = 'photo';
+      render();
+      startCamera();
+    });
+  }
+
+  // 2. Camera & Photo
+  const btnBackForm = document.getElementById('btnBackForm');
+  if (btnBackForm) {
+    btnBackForm.addEventListener('click', () => {
+      stopCamera(); currentView = 'form'; render();
+    });
+  }
+
+  const btnSnap = document.getElementById('btnSnap');
+  if (btnSnap) btnSnap.addEventListener('click', takeSnapshot);
+
+  const btnRetake = document.getElementById('btnRetake');
+  if (btnRetake) {
+    btnRetake.addEventListener('click', () => {
+      draftPhoto = null; render(); startCamera();
+    });
+  }
+
+  const btnUploadTrig = document.getElementById('btnUploadTrig');
+  const uploadFile = document.getElementById('uploadFile');
+  if (btnUploadTrig && uploadFile) {
+    btnUploadTrig.addEventListener('click', () => uploadFile.click());
+    uploadFile.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => { draftPhoto = reader.result; stopCamera(); render(); };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  const btnSubmit = document.getElementById('btnSubmit');
+  if (btnSubmit) {
+    btnSubmit.addEventListener('click', () => {
+      if (!draftPhoto) return alert('Mohon ambil foto terlebih dahulu.');
+      appointments.push({
+        id: Date.now().toString(),
+        ...draftForm,
+        photo: draftPhoto,
+        status: 'pending'
+      });
+      draftForm = {}; draftPhoto = null;
+      currentView = 'success'; render();
+    });
+  }
+
+  const btnHome = document.getElementById('btnHome');
+  if (btnHome) btnHome.addEventListener('click', () => { currentView = 'form'; render(); });
+
+  // 3. Admin Switch
+  const btnAdminSwitch = document.getElementById('btnAdminSwitch');
+  if (btnAdminSwitch) {
+    btnAdminSwitch.addEventListener('click', () => {
+      document.getElementById('modalRoot').innerHTML = `
+        <div class="modal-overlay" id="pinOverlay">
+          <div class="modal-content">
+            <h3>Login Admin</h3>
+            <p style="font-size:12px; color:var(--text-soft);">Masukkan sandi (hint: admin123)</p>
+            <input type="password" id="pinInput" class="pin-input" placeholder="••••">
+            <div style="display:flex; gap:10px;">
+              <button class="btn btn-secondary" id="btnPinCancel">Batal</button>
+              <button class="btn btn-primary" id="btnPinSubmit">Masuk</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('btnPinCancel').addEventListener('click', () => {
+        document.getElementById('modalRoot').innerHTML = '';
+      });
+
+      document.getElementById('btnPinSubmit').addEventListener('click', () => {
+        const val = document.getElementById('pinInput').value;
+        if (val === ADMIN_PIN) {
+          document.getElementById('modalRoot').innerHTML = '';
+          currentView = 'admin'; render();
+        } else {
+          alert('Sandi salah!');
+        }
+      });
+    });
+  }
+
+  // 4. Admin Dashboard Actions
+  const btnLogout = document.getElementById('btnLogout');
+  if (btnLogout) btnLogout.addEventListener('click', () => { currentView = 'form'; render(); });
+
+  document.querySelectorAll('.btn-approve').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = e.target.getAttribute('data-id');
+      appointments.find(a => a.id === id).status = 'approved';
+      render();
+    });
+  });
+
+  document.querySelectorAll('.btn-reject').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = e.target.getAttribute('data-id');
+      appointments.find(a => a.id === id).status = 'rejected';
+      render();
+    });
+  });
+}
+
+// --- WEBRTC CAMERA LOGIC ---
+function startCamera() {
+  const video = document.getElementById('videoFeed');
+  if (!video) return;
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+    .then(stream => {
+      cameraStream = stream;
+      video.srcObject = stream;
+    })
+    .catch(err => console.log("Kamera tidak diizinkan atau tidak ada.", err));
   }
 }
 
@@ -1091,193 +340,23 @@ function stopCamera() {
     cameraStream.getTracks().forEach(track => track.stop());
     cameraStream = null;
   }
-  isCameraOpen = false;
 }
 
 function takeSnapshot() {
-  const video = document.getElementById('cameraStream');
-  if (!video) return;
+  const video = document.getElementById('videoFeed');
+  if (!video || !cameraStream) return alert('Kamera belum siap atau ditolak.');
   
   const canvas = document.createElement('canvas');
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
+  canvas.width = video.videoWidth; canvas.height = video.videoHeight;
   const ctx = canvas.getContext('2d');
   
-  // Karena video kita di-mirror (scaleX(-1)), hasil jepretan kanvas juga harus di-mirror agar tidak terbalik
-  ctx.translate(canvas.width, 0);
-  ctx.scale(-1, 1);
+  // Mirror canvas agar hasil jepretan tidak terbalik
+  ctx.translate(canvas.width, 0); ctx.scale(-1, 1);
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   
-  // Simpan foto dalam format Base64 JPEG
   draftPhoto = canvas.toDataURL('image/jpeg', 0.8);
-  stopCamera();
-  renderAll();
+  stopCamera(); render();
 }
 
-function showPhotoErr(msg){
-  const el = document.getElementById('photoErr');
-  if(el) el.textContent = msg;
-  else alert(msg);
-}
- 
-function wireEvents(){
-  document.querySelectorAll('#categoryChips .chip').forEach(chip=>{
-    chip.addEventListener('click', ()=>{ selectedCategory = chip.dataset.cat; renderAll(); });
-  });
- 
-  const toStep2 = document.getElementById('toStep2');
-  if(toStep2) toStep2.addEventListener('click', ()=>{
-    const name = document.getElementById('f_name').value.trim();
-    if(!name){ showConflict('Nama lengkap wajib diisi.'); return; }
-    if(selectedCategory==='Siswa' && !document.getElementById('f_nisn').value.trim()){
-      showConflict('NISN wajib diisi untuk kategori Siswa.'); return;
-    }
-    const staffId = document.getElementById('f_staff').value;
-    const date = document.getElementById('f_date').value;
-    const time = document.getElementById('f_time').value;
-    if(slotTaken(staffId, date, time, null)){
-      showConflict(`Slot ${time} untuk ${staffName(staffId)} pada ${date} sudah terisi. Pilih waktu lain.`);
-      return;
-    }
-    window._draftForm = {
-      name, nisn: document.getElementById('f_nisn') ? document.getElementById('f_nisn').value.trim() : '',
-      purpose: document.getElementById('f_purpose').value.trim(), staffId, date, time
-    };
-    kioskStep = 2; renderAll();
-  });
- 
-  const backStep1 = document.getElementById('backStep1');
-  // Matikan kamera kalau menekan tombol kembali ke form
-  if(backStep1) backStep1.addEventListener('click', ()=>{ stopCamera(); kioskStep=1; renderAll(); });
- 
-  document.querySelectorAll('[data-trigger]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const inp = document.getElementById(btn.dataset.trigger);
-      if(inp) inp.click();
-    });
-  });
- 
-  // Event untuk Tombol Kamera
-  const btnOpenCam = document.getElementById('btnOpenCamera');
-  if(btnOpenCam) btnOpenCam.addEventListener('click', startCamera);
-  
-  const btnCloseCam = document.getElementById('btnCloseCamera');
-  if(btnCloseCam) btnCloseCam.addEventListener('click', ()=>{ stopCamera(); renderAll(); });
-  
-  const btnSnap = document.getElementById('btnSnap');
-  if(btnSnap) btnSnap.addEventListener('click', takeSnapshot);
-
-  // Fungsi upload manual tetap dipertahankan sebagai alternatif
-  const uploadInput = document.getElementById('uploadInput');
-  if(uploadInput){
-    uploadInput.addEventListener('change', e=>{
-      const errEl = document.getElementById('photoErr');
-      if(errEl) errEl.textContent = '';
-      const file = e.target.files[0];
-      if(!file) return;
-      if(!file.type.startsWith('image/')){
-        if(errEl) errEl.textContent = 'File harus berupa gambar (JPG/PNG).';
-        return;
-      }
-      const reader = new FileReader();
-      reader.onerror = ()=>{ if(errEl) errEl.textContent = 'Gagal membaca foto. Coba lagi.'; };
-      reader.onload = ()=>{ draftPhoto = reader.result; renderAll(); };
-      reader.readAsDataURL(file);
-    });
-  }
- 
-  const toStep3 = document.getElementById('toStep3');
-  if(toStep3) toStep3.addEventListener('click', ()=>{
-    // Jika foto belum ada, wajibkan ambil/unggah terlebih dahulu
-    if(!draftPhoto) {
-      showPhotoErr('Mohon ambil foto / selfie terlebih dahulu.');
-      return;
-    }
-    stopCamera();
-    const f = window._draftForm;
-    const id = uid('APT-');
-    appointments.push({
-      id, guest:f.name, category:selectedCategory, nisn:f.nisn, purpose:f.purpose,
-      staffId:f.staffId, date:f.date, time:f.time, status:'pending', photo:draftPhoto
-    });
-    myTickets.push(id);
-    kioskStep = 3; renderAll();
-  });
- 
-  const newReg = document.getElementById('newRegistration');
-  if(newReg) newReg.addEventListener('click', ()=>{
-    kioskStep = 1; selectedCategory='Kolega'; draftPhoto=null; renderAll();
-  });
- 
-  document.querySelectorAll('[data-cancel]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const reason = prompt('Alasan pembatalan:');
-      if(reason===null) return;
-      const a = appointments.find(x=>x.id===btn.dataset.cancel);
-      a.status='cancelled'; a.cancelReason = reason || 'Tidak disebutkan';
-      renderAll();
-    });
-  });
- 
-  document.querySelectorAll('[data-facescan]').forEach(btn=>{
-    btn.addEventListener('click', ()=> showFaceScanModal(btn.dataset.facescan));
-  });
- 
-  document.querySelectorAll('[data-approve]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const a = appointments.find(x=>x.id===btn.dataset.approve);
-      a.status='approved'; a.code = uid('QR-');
-      renderAll();
-    });
-  });
-  document.querySelectorAll('[data-reject]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      appointments.find(x=>x.id===btn.dataset.reject).status='rejected';
-      renderAll();
-    });
-  });
-  document.querySelectorAll('[data-checkin]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      appointments.find(x=>x.id===btn.dataset.checkin).status='checked-in';
-      renderAll();
-    });
-  });
-}
- 
-function showConflict(msg){
-  const el = document.getElementById('conflictWarn');
-  if(el) el.innerHTML = `<div class="hint" style="color:var(--danger); margin:-8px 0 12px;">${msg}</div>`;
-}
- 
-function drawQR(canvas, text){
-  try{
-    const qr = new QRLib.QRCode(-1, QRLib.QRErrorCorrectLevel.M);
-    qr.addData(text);
-    qr.make();
-    const count = qr.getModuleCount();
-    const size = canvas.width;
-    const margin = 2;
-    const cell = size / (count + margin*2);
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0,0,size,size);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0,0,size,size);
-    ctx.fillStyle = '#1B2A4A';
-    for(let r=0;r<count;r++){
-      for(let c=0;c<count;c++){
-        if(qr.isDark(r,c)){
-          ctx.fillRect((c+margin)*cell, (r+margin)*cell, Math.ceil(cell)+0.5, Math.ceil(cell)+0.5);
-        }
-      }
-    }
-  }catch(e){
-    console.error('QR draw failed', e);
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#FCE7EB'; ctx.fillRect(0,0,canvas.width,canvas.height);
-  }
-}
-function drawAllQr(){
-  document.querySelectorAll('canvas[data-qr]').forEach(cv=> drawQR(cv, cv.dataset.qr));
-}
- 
-renderAll();
+// Inisialisasi awal
+render();
