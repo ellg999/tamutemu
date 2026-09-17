@@ -5,53 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TamuTemu</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Background Glow & Elemen Melayang -->
+  <div class="glow-bg"></div>
+  <div class="floating-item float-1">✦</div>
+  <div class="floating-item float-2">📅</div>
+  <div class="floating-item float-3">⬡</div>
 
-  <!-- Layar Utama -->
-  <div class="mobile-frame">
-    <!-- Efek cahaya gradasi di latar belakang -->
-    <div class="glow-bg"></div>
+  <!-- Area Konten Dinamis -->
+  <div id="appContainer"></div>
 
-    <!-- Ikon melayang untuk estetika -->
-    <div class="floating-item float-1">✦</div>
-    <div class="floating-item float-2">📸</div>
-    <div class="floating-item float-3">⬡</div>
-    <div class="floating-item float-4">📱</div>
+  <!-- Tombol Admin di Pojok Kiri Bawah -->
+  <button id="btnAdminSwitch" class="admin-switch" title="Buka Dasbor Admin">
+    🔒 Admin
+  </button>
 
-    <!-- Navigasi Atas -->
-    <nav class="top-nav">
-      <div class="logo">TamuTemu</div>
-      <!-- Tombol ini nanti diarahkan ke fitur PIN / Mode Admin -->
-      <button class="btn-contact" id="openAdminModal">Login Staf</button>
-    </nav>
-
-    <!-- Konten Utama Halaman Depan -->
-    <main class="hero-content">
-      <h1 class="hero-title">Kunjungan.<br>Digital.</h1>
-      
-      <p class="hero-subtitle">
-        Kelola janji temu dan persetujuan jadwal lebih mudah.<br><br>
-        <span class="highlight">TamuTemu mendigitalisasi setiap kedatangan.</span>
-      </p>
-
-      <div class="cta-group">
-        <!-- Tombol untuk masuk ke formulir pendaftaran (Kiosk Step 1) -->
-        <button class="btn-primary" id="btnMulaiDaftar">
-          Daftarkan Kunjungan Baru <span class="arrow">&rarr;</span>
-        </button>
-        <!-- Tombol untuk fitur pindai masuk (Check-in Wajah / QR) -->
-        <button class="btn-secondary" id="btnCheckInCepat">
-          Check-in Wajah / QR <span class="arrow">&rarr;</span>
-        </button>
-      </div>
-    </main>
-  </div>
-
+  <!-- Modal untuk PIN Admin -->
   <div id="modalRoot"></div>
+
   <script src="script.js"></script>
 </body>
 </html>
