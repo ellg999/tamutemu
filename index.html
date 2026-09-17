@@ -5,26 +5,108 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TamuTemu</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Background Glow & Elemen Melayang -->
-  <div class="glow-bg"></div>
-  <div class="floating-item float-1">✦</div>
-  <div class="floating-item float-2">📅</div>
-  <div class="floating-item float-3">⬡</div>
 
-  <!-- Area Konten Dinamis -->
-  <div id="appContainer"></div>
+  <!-- Background Image Sekolah -->
+  <div class="bg-school"></div>
+  <div class="bg-overlay"></div>
 
-  <!-- Tombol Admin di Pojok Kiri Bawah -->
-  <button id="btnAdminSwitch" class="admin-switch" title="Buka Dasbor Admin">
-    🔒 Admin
-  </button>
+  <!-- Main Container -->
+  <div class="app-container">
+    
+    <!-- LAYAR 1: SPLASH SCREEN -->
+    <div id="view-splash" class="view-section active">
+      <h1 class="splash-title">Jadwalkan pertemuan Anda.</h1
+      <button class="btn btn-primary btn-large" id="btnStart">Mulai Mengisi Data &rarr;</button>
+    </div>
 
-  <!-- Modal untuk PIN Admin -->
-  <div id="modalRoot"></div>
+    <!-- LAYAR 2: FORMULIR MINIMALIS -->
+    <div id="view-form" class="view-section glass-card hidden">
+      <h2>Data Pengunjung</h2>
+      <p class="subtitle">Lengkapi formulir di bawah ini untuk melanjutkan.</p>
+      
+      <div class="form-group">
+        <label>Nama Lengkap</label>
+        <input type="text" id="f_name" placeholder="Masukkan nama Anda" required>
+      </div>
+
+      <div class="form-group">
+        <label>No. Handphone (WA)</label>
+        <input type="tel" id="f_phone" placeholder="08xxxxxxxxxx" required>
+      </div>
+
+      <div class="form-group">
+        <label>Kebutuhan</label>
+        <select id="f_need" required>
+          <option value="" disabled selected>Pilih Kebutuhan...</option>
+          <option value="Dinas/Instansi">Urusan Dinas / Instansi</option>
+          <option value="Orang Tua/Wali">Orang Tua / Wali Murid</option>
+          <option value="Lainnya">Lainnya</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Alasan Ingin Bertemu</label>
+        <textarea id="f_reason" rows="2" placeholder="Tuliskan tujuan spesifik Anda..." required></textarea>
+      </div>
+
+      <!-- Input Fixed (Terkunci) -->
+      <div class="form-group">
+        <label>Pihak yang dituju</label>
+        <input type="text" value="Kepala Sekolah" class="input-locked" readonly disabled>
+      </div>
+
+      <div class="action-row">
+        <button class="btn btn-secondary" id="btnBackToSplash">&larr; Batal</button>
+        <button class="btn btn-primary" id="btnToPhoto">Lanjut &rarr;</button>
+      </div>
+    </div>
+
+    <!-- LAYAR 3: PENGAMBILAN FOTO -->
+    <div id="view-photo" class="view-section glass-card hidden">
+      <h2>Identitas</h2>
+      <p class="subtitle">Ambil swafoto (selfie) atau unggah foto Anda.</p>
+      
+      <div class="camera-box">
+        <video id="cameraStream" class="mirror" autoplay playsinline></video>
+        <img id="photoPreview" class="hidden" src="" alt="Preview">
+      </div>
+
+      <div class="photo-controls" id="controlsCamera">
+        <button class="btn btn-secondary" id="btnSnap">📸 Jepret Foto</button>
+        <button class="btn btn-secondary" id="btnUploadTrig">⬆ Unggah File</button>
+        <input type="file" id="uploadInput" accept="image/*" class="hidden">
+      </div>
+
+      <div class="photo-controls hidden" id="controlsPreview">
+        <button class="btn btn-secondary" id="btnRetake">Ulangi</button>
+      </div>
+
+      <div class="action-row" style="margin-top: 24px;">
+        <button class="btn btn-secondary" id="btnBackToForm">&larr; Kembali</button>
+        <button class="btn btn-primary" id="btnSubmitFinal">Kirim & Dapatkan QR</button>
+      </div>
+    </div>
+
+    <!-- LAYAR 4: QR CODE SUKSES -->
+    <div id="view-qr" class="view-section glass-card hidden text-center">
+      <div class="success-icon">✓</div>
+      <h2>Pendaftaran Berhasil!</h2>
+      <p class="subtitle">Tunjukkan QR Code ini ketika anda datang ke sekolah.</p>
+      
+      <div class="qr-wrapper">
+        <canvas id="qrCanvas" width="150" height="150"></canvas>
+      </div>
+      <p class="qr-id" id="qrTextId">KS-XXXXXX</p>
+
+      <button class="btn btn-primary" id="btnFinish" style="margin-top:20px; width: 100%;">Selesai</button>
+    </div>
+
+  </div>
 
   <script src="script.js"></script>
 </body>
