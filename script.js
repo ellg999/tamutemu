@@ -5,7 +5,7 @@ let draftPhoto = null;
 let cameraStream = null;
 
 // Password Admin: admin123
-const ADMIN_PIN = 'admin123';
+const ADMIN_PIN = '1234';
 
 // Simulasi Data (Beberapa sudah di-acc agar masuk ke kalender)
 let appointments = [
@@ -53,7 +53,6 @@ function viewForm() {
   return `
     <div class="glass-card">
       <h2>Janji Temu</h2>
-      <p class="subtitle">Kepala Sekolah SMA Nusantara</p>
       
       <div class="form-group">
         <label>Nama Lengkap</label>
