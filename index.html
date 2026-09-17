@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TamuTemu - Sistem Buku Tamu Soft Blue</title>
+    <title>TamuTemu - Sistem Buku Tamu</title>
     <!-- Font Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <!-- Pustaka Eksternal -->
@@ -12,17 +12,15 @@
     
     <style>
         :root {
-            --bg-main: #e6f0fa;
-            --card-bg: #ffffff;
-            --primary-blue: #5b9bd5;
-            --primary-hover: #4a84c0;
-            --light-blue: #d6e8f9;
-            --text-dark: #2c3e50;
-            --text-muted: #7f8c8d;
+            --bg-navy: #0a192f;        /* Navy gelap utama */
+            --bg-navy-light: #112240;  /* Navy agak terang untuk sidebar/card */
+            --bg-navy-lighter: #233554;/* Navy untuk hover/border */
+            --primary-accent: #64ffda; /* Cyan soft untuk aksen/tombol */
+            --text-main: #ccd6f6;      /* Putih kebiruan untuk teks utama */
+            --text-muted: #8892b0;     /* Abu-abu kebiruan untuk teks pendukung */
             --success: #2ecc71;
-            --warning: #f39c12;
+            --warning: #f1c40f;
             --danger: #e74c3c;
-            --border-color: #ecf0f1;
         }
 
         * {
@@ -33,229 +31,313 @@
         }
 
         body {
-            background-color: var(--bg-main);
-            color: var(--text-dark);
+            background-color: var(--bg-navy);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
         }
 
-        /* Container & Transisi Halaman */
+        /* Navigasi / Tampilan Halaman */
         .page-view {
             display: none;
             width: 100%;
-            max-width: 1100px;
-            padding: 40px 20px;
-            animation: fadeIn 0.4s ease forwards;
+            min-height: 100vh;
+            animation: fadeIn 0.4s ease;
         }
-        .page-view.active {
-            display: block;
-        }
+        .page-view.active { display: flex; flex-direction: column; }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
-        /* Kartu & Elemen Soft Interactive */
-        .card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(91, 155, 213, 0.1);
-            margin-bottom: 20px;
-            border: 1px solid var(--border-color);
-        }
-
-        h1, h2, h3 { color: var(--primary-blue); margin-bottom: 15px; font-weight: 600; }
+        /* Elemen Umum & Input */
+        h1, h2, h3 { color: var(--text-main); margin-bottom: 15px; font-weight: 600; }
         p { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
 
         .btn {
             display: inline-block;
-            padding: 12px 24px;
-            background: var(--primary-blue);
-            color: white;
+            padding: 14px 28px;
+            background: var(--primary-accent);
+            color: var(--bg-navy);
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 15px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             text-align: center;
         }
-        .btn:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(91, 155, 213, 0.3);
-        }
+        .btn:hover { background: #52e0c4; transform: translateY(-2px); }
         .btn-outline {
             background: transparent;
-            color: var(--primary-blue);
-            border: 2px solid var(--primary-blue);
+            color: var(--primary-accent);
+            border: 2px solid var(--primary-accent);
         }
-        .btn-outline:hover {
-            background: var(--light-blue);
-            color: var(--primary-blue);
-            box-shadow: none;
-        }
-        .btn-small { padding: 6px 12px; font-size: 13px; }
-        .btn-success { background: var(--success); }
-        .btn-danger { background: var(--danger); }
-
-        /* Formulir */
+        .btn-outline:hover { background: rgba(100, 255, 218, 0.1); }
+        .btn-small { padding: 8px 16px; font-size: 13px; }
+        
         .form-group { margin-bottom: 20px; text-align: left; }
-        label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-dark); font-weight: 500;}
+        label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-main); }
         input, textarea {
             width: 100%;
             padding: 14px;
-            background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            color: var(--text-dark);
+            background: var(--bg-navy-light);
+            border: 1px solid var(--bg-navy-lighter);
+            border-radius: 8px;
+            color: var(--text-main);
             font-size: 14px;
             transition: all 0.3s ease;
         }
         input:focus, textarea:focus {
             outline: none;
-            border-color: var(--primary-blue);
-            background: #fff;
-            box-shadow: 0 0 0 4px var(--light-blue);
+            border-color: var(--primary-accent);
         }
 
-        /* Halaman Awal (Landing) */
-        .landing-container { text-align: center; max-width: 600px; margin: auto; padding-top: 10vh; }
-        .landing-actions { display: flex; gap: 15px; justify-content: center; margin-top: 30px; flex-wrap: wrap; }
-        .admin-link { margin-top: 40px; cursor: pointer; color: #a0aec0; font-size: 12px; text-decoration: underline; }
+        /* --- 1. HALAMAN AWAL (LANDING) --- */
+        .top-nav {
+            display: flex;
+            justify-content: flex-end;
+            padding: 20px 40px;
+            position: absolute;
+            top: 0; width: 100%;
+        }
+        .admin-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .admin-link:hover { color: var(--primary-accent); }
 
-        /* Dasbor Admin */
-        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        @media(max-width: 768px) { .dashboard-grid { grid-template-columns: 1fr; } }
+        .landing-center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        .action-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+            margin-top: 30px;
+        }
+        .action-bar {
+            background: var(--bg-navy-light);
+            border: 1px solid var(--bg-navy-lighter);
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+        .action-bar:hover {
+            border-color: var(--primary-accent);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px -15px rgba(100, 255, 218, 0.3);
+        }
+
+        /* Kotak / Card Form */
+        .card-container {
+            width: 100%; max-width: 500px;
+            margin: auto; padding: 40px;
+            background: var(--bg-navy-light);
+            border-radius: 16px;
+            border: 1px solid var(--bg-navy-lighter);
+        }
+
+        /* --- 2. DASHBOARD ADMIN KEPSEK --- */
+        .dashboard-layout {
+            display: flex;
+            flex: 1;
+            height: 100vh;
+            overflow: hidden;
+        }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 13px; }
+        /* Sidebar Kiri */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-navy-light);
+            border-right: 1px solid var(--bg-navy-lighter);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-brand {
+            font-size: 20px; font-weight: 600; color: var(--text-main);
+            margin-bottom: 40px; text-align: center;
+            border-bottom: 1px solid var(--bg-navy-lighter); padding-bottom: 20px;
+        }
+        .menu-item {
+            padding: 15px; margin-bottom: 10px;
+            border-radius: 8px; cursor: pointer;
+            color: var(--text-muted); font-weight: 500;
+            transition: 0.3s;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: var(--bg-navy-lighter);
+            color: var(--primary-accent);
+        }
+        .logout-btn { margin-top: auto; color: var(--danger); }
+
+        /* Konten Kanan */
+        .content-area {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+        .admin-tab { display: none; animation: fadeIn 0.3s ease; }
+        .admin-tab.active { display: block; }
+
+        /* Tabel & Badge */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--bg-navy-lighter); }
         th { color: var(--text-muted); font-weight: 500; }
-        .badge { padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-        .badge.menunggu { background: #fef3c7; color: #d97706; }
-        .badge.terverifikasi { background: #d1fae5; color: #059669; }
 
         /* Kalender */
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: 600;}
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-        .day-name { font-size: 12px; color: var(--text-muted); font-weight: 500; padding-bottom: 10px; }
+        .calendar-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; }
+        .day-name { font-size: 14px; color: var(--text-muted); padding-bottom: 10px; }
         .calendar-day { 
-            padding: 10px 5px; background: #f8fafc; border-radius: 8px; font-size: 13px; cursor: default;
-            border: 1px solid transparent;
+            padding: 15px; background: var(--bg-navy-light); border-radius: 8px; font-size: 14px;
+            border: 1px solid var(--bg-navy-lighter);
         }
-        .calendar-day.has-event { background: var(--light-blue); color: var(--primary-blue); font-weight: 600; border-color: var(--primary-blue); }
-        .calendar-day.today { background: var(--primary-blue); color: white; }
-        .calendar-day.empty { background: transparent; }
+        .calendar-day.has-event { border-color: var(--primary-accent); color: var(--primary-accent); font-weight: 600; }
+        .calendar-day.today { background: var(--primary-accent); color: var(--bg-navy); font-weight: 600; }
 
-        /* QR Code Area */
-        #qr-box { text-align: center; display: none; padding: 20px; background: var(--light-blue); border-radius: 15px; margin-top: 20px;}
-        #qrcode { display: flex; justify-content: center; margin: 15px 0; }
+        /* QR Area */
+        #qr-box { background: white; padding: 20px; border-radius: 12px; display: inline-block; margin-top:20px; }
+        .back-btn { position: absolute; top: 20px; left: 40px; }
+
     </style>
 </head>
 <body>
 
-    <!-- 1. HALAMAN AWAL (LANDING) -->
+    <!-- 1. HALAMAN UTAMA (LANDING) -->
     <div id="view-landing" class="page-view active">
-        <div class="landing-container card">
-            <h1>TamuTemu</h1>
-            <p>Portal Buku Tamu Kepala Sekolah.<br>Silakan pilih layanan yang Anda butuhkan.</p>
-            <div class="landing-actions">
-                <button class="btn" onclick="navigasi('view-buat-janji')">Buat Janji Temu</button>
-                <button class="btn btn-outline" onclick="navigasi('view-cek-status')">Cek Status Janji</button>
+        <div class="top-nav">
+            <span class="admin-link" onclick="navigasi('view-login')">Admin Kepala Sekolah →</span>
+        </div>
+        <div class="landing-center">
+            <h1>Sistem Penerimaan Tamu</h1>
+            <p>Silakan pilih layanan untuk mengatur jadwal pertemuan Anda</p>
+            
+            <div class="action-bars">
+                <div class="action-bar" onclick="navigasi('view-buat-janji')">
+                    📝 Buat Janji Temu
+                </div>
+                <div class="action-bar" onclick="navigasi('view-cek-status')">
+                    🔍 Cek Jadwal & QR Code
+                </div>
             </div>
-            <div class="admin-link" onclick="navigasi('view-login-admin')">Masuk sebagai Admin (Host)</div>
         </div>
     </div>
 
-    <!-- 2. HALAMAN BUAT JANJI TAMU -->
-    <div id="view-buat-janji" class="page-view">
-        <button class="btn btn-outline btn-small" style="margin-bottom: 20px;" onclick="navigasi('view-landing')">← Kembali</button>
-        <div class="card" style="max-width: 600px; margin: auto;">
-            <h2>Pengajuan Janji Temu</h2>
+    <!-- 2. FORM BUAT JANJI -->
+    <div id="view-buat-janji" class="page-view" style="justify-content: center; position:relative;">
+        <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">← Kembali</button>
+        <div class="card-container">
+            <h2>Form Pengajuan Janji</h2>
             <form id="form-tamu" onsubmit="buatJanji(event)">
                 <div class="form-group">
                     <label>Nama Lengkap</label>
-                    <input type="text" id="input-nama" required placeholder="Contoh: Budi Santoso">
+                    <input type="text" id="input-nama" required placeholder="Nama Anda...">
                 </div>
                 <div class="form-group">
                     <label>Tanggal & Waktu</label>
                     <input type="datetime-local" id="input-waktu" required>
                 </div>
                 <div class="form-group">
-                    <label>Tujuan / Kepentingan</label>
-                    <textarea id="input-tujuan" rows="3" required placeholder="Jelaskan secara singkat..."></textarea>
+                    <label>Kepentingan</label>
+                    <textarea id="input-tujuan" rows="3" required placeholder="Tujuan pertemuan..."></textarea>
                 </div>
-                <button type="submit" class="btn" style="width: 100%;">Ajukan Jadwal</button>
+                <button type="submit" class="btn" style="width: 100%;">Kirim Pengajuan</button>
             </form>
-            <div id="hasil-pengajuan" style="display: none; text-align: center; margin-top: 20px;">
-                <h3 style="color: var(--warning);">Pengajuan Berhasil, Menunggu Verifikasi</h3>
-                <p>Simpan ID ini untuk mengecek status Anda:</p>
-                <h2 style="font-family: monospace; letter-spacing: 2px;" id="display-id">TM-XXX</h2>
+
+            <div id="hasil-pengajuan" style="display: none; text-align: center;">
+                <h3 style="color: var(--primary-accent);">Menunggu Persetujuan</h3>
+                <p>Simpan ID ini untuk mengecek status persetujuan nanti:</p>
+                <h2 style="font-family: monospace; color: white;" id="display-id"></h2>
                 <button class="btn btn-outline" onclick="navigasi('view-landing')">Selesai</button>
             </div>
         </div>
     </div>
 
-    <!-- 3. HALAMAN CEK STATUS -->
-    <div id="view-cek-status" class="page-view">
-        <button class="btn btn-outline btn-small" style="margin-bottom: 20px;" onclick="navigasi('view-landing')">← Kembali</button>
-        <div class="card" style="max-width: 500px; margin: auto;">
-            <h2>Cek Status Janji Temu</h2>
-            <div class="form-group">
+    <!-- 3. CEK STATUS & QR -->
+    <div id="view-cek-status" class="page-view" style="justify-content: center; position:relative;">
+        <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">← Kembali</button>
+        <div class="card-container" style="text-align: center;">
+            <h2>Cek Status Janji</h2>
+            <div class="form-group" style="text-align: left;">
                 <input type="text" id="input-cek-id" placeholder="Masukkan ID (Contoh: TM-1234)">
             </div>
-            <button class="btn" style="width: 100%;" onclick="cekStatus()">Periksa</button>
+            <button class="btn" style="width: 100%;" onclick="cekStatus()">Cek Sekarang</button>
             
-            <div id="hasil-cek" style="margin-top: 20px; text-align: center; display: none;">
+            <div id="hasil-cek" style="margin-top: 30px; display: none;">
                 <div id="info-status"></div>
-                <div id="qr-box">
-                    <p style="color: var(--text-dark); font-weight: 500; font-size:13px;">Tunjukkan QR ini saat Anda tiba di lobi</p>
+                <div id="qr-box" style="display: none;">
                     <div id="qrcode"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 4. HALAMAN LOGIN ADMIN -->
-    <div id="view-login-admin" class="page-view">
-        <button class="btn btn-outline btn-small" style="margin-bottom: 20px;" onclick="navigasi('view-landing')">← Kembali</button>
-        <div class="card" style="max-width: 400px; margin: auto; text-align: center;">
-            <h2>Akses Admin</h2>
-            <p>Masukkan kode akses (Demo: <b>kepsek123</b>)</p>
+    <!-- 4. LOGIN ADMIN -->
+    <div id="view-login" class="page-view" style="justify-content: center; position:relative;">
+        <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">← Kembali</button>
+        <div class="card-container" style="text-align: center;">
+            <h2>Otorisasi Admin</h2>
+            <p>Masukkan kata sandi (Demo: <b>123</b>)</p>
             <div class="form-group">
-                <input type="password" id="input-sandi" placeholder="Kode Akses">
+                <input type="password" id="input-sandi" placeholder="Kata Sandi...">
             </div>
             <button class="btn" style="width: 100%;" onclick="loginAdmin()">Masuk Dashboard</button>
         </div>
     </div>
 
-    <!-- 5. HALAMAN DASHBOARD ADMIN -->
-    <div id="view-dashboard-admin" class="page-view">
-        <div class="dashboard-header">
-            <div>
-                <h2>Dashboard Kepala Sekolah</h2>
-                <p style="margin:0;">Manajemen jadwal dan pemantauan tamu.</p>
+    <!-- 5. DASHBOARD ADMIN -->
+    <div id="view-dashboard" class="page-view">
+        <div class="dashboard-layout">
+            <!-- Sidebar Kiri -->
+            <div class="sidebar">
+                <div class="sidebar-brand">Panel Kepsek</div>
+                <div class="menu-item active" onclick="switchAdminTab('tab-persetujuan', this)">
+                    Menunggu Approval
+                </div>
+                <div class="menu-item" onclick="switchAdminTab('tab-kalender', this)">
+                    Kalender Pertemuan
+                </div>
+                <div class="menu-item" onclick="switchAdminTab('tab-grafik', this)">
+                    Grafik Pengunjung
+                </div>
+                <div class="menu-item logout-btn" onclick="navigasi('view-landing')">
+                    ← Keluar
+                </div>
             </div>
-            <button class="btn btn-danger" onclick="navigasi('view-landing')">Keluar</button>
-        </div>
 
-        <div class="dashboard-grid">
-            <!-- Kolom Kiri: Tabel Permintaan & Grafik -->
-            <div>
-                <div class="card">
-                    <h3>Permintaan Jadwal (Pending)</h3>
-                    <div style="overflow-x: auto;">
-                        <table id="tabel-pending">
+            <!-- Konten Kanan -->
+            <div class="content-area">
+                
+                <!-- TAB 1: PERSETUJUAN (PENDING APPROVAL) -->
+                <div id="tab-persetujuan" class="admin-tab active">
+                    <h2>Daftar Menunggu Approval</h2>
+                    <p>Daftar tamu yang mengajukan pertemuan dan butuh verifikasi Anda.</p>
+                    <div style="background: var(--bg-navy-light); border-radius: 12px; padding: 20px;">
+                        <table>
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Nama</th>
-                                    <th>Waktu</th>
+                                    <th>Nama Tamu</th>
+                                    <th>Waktu Pengajuan</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -264,24 +346,26 @@
                     </div>
                 </div>
 
-                <div class="card">
-                    <h3>Grafik Pertemuan (Bulan Ini)</h3>
-                    <canvas id="chartPertemuan" height="200"></canvas>
-                </div>
-            </div>
-
-            <!-- Kolom Kanan: Kalender -->
-            <div>
-                <div class="card">
+                <!-- TAB 2: KALENDER -->
+                <div id="tab-kalender" class="admin-tab">
                     <div class="calendar-header">
-                        <span id="calendar-month-year">September 2026</span>
+                        <h2>Kalender Pertemuan</h2>
+                        <h3 id="calendar-month-year" style="color:var(--primary-accent)"></h3>
                     </div>
                     <div class="calendar-grid" id="calendar-days">
-                        <div class="day-name">Min</div><div class="day-name">Sen</div><div class="day-name">Sel</div>
-                        <div class="day-name">Rab</div><div class="day-name">Kam</div><div class="day-name">Jum</div><div class="day-name">Sab</div>
-                        <!-- Tanggal diisi oleh JS -->
+                        <!-- Rendered by JS -->
                     </div>
                 </div>
+
+                <!-- TAB 3: GRAFIK -->
+                <div id="tab-grafik" class="admin-tab">
+                    <h2>Grafik Pertemuan Bulanan</h2>
+                    <p>Statistik pertemuan yang telah disetujui (Terverifikasi).</p>
+                    <div style="background: var(--bg-navy-light); padding: 30px; border-radius: 12px; max-width: 700px;">
+                        <canvas id="chartPertemuan"></canvas>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -289,47 +373,43 @@
     <script>
         // Simulasi Database
         let databaseJadwal = [
-            // Contoh data statis untuk mengisi kalender dan grafik
-            { id: 'TM-9991', nama: 'Vendor Buku', waktu: '2026-09-05T10:00', tujuan: 'Penawaran', status: 'Terverifikasi' },
-            { id: 'TM-9992', nama: 'Orang Tua Siswa', waktu: '2026-09-17T13:00', tujuan: 'Konsultasi', status: 'Terverifikasi' },
+            { id: 'TM-0001', nama: 'Vendor Seragam', waktu: '2026-09-08T10:00', tujuan: 'Presentasi', status: 'Terverifikasi' },
+            { id: 'TM-0002', nama: 'Orang Tua Murid', waktu: '2026-09-20T13:00', tujuan: 'Konsultasi', status: 'Terverifikasi' }
         ];
         
         let chartInstance = null;
 
-        // FUNGSI NAVIGASI
+        // --- FUNGSI NAVIGASI GLOBAL ---
         function navigasi(viewId) {
             document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
-
-            // Refresh komponen khusus jika membuka dashboard admin
-            if(viewId === 'view-dashboard-admin') {
-                renderDashboard();
+            
+            // Reset form UI jika pindah halaman
+            if(viewId === 'view-buat-janji') {
+                document.getElementById('form-tamu').style.display = 'block';
+                document.getElementById('hasil-pengajuan').style.display = 'none';
             }
         }
 
-        // FUNGSI TAMU: BUAT JANJI
+        // --- FUNGSI TAMU ---
         function buatJanji(e) {
             e.preventDefault();
             const id = 'TM-' + Math.floor(Math.random() * 9000 + 1000);
-            const data = {
+            
+            databaseJadwal.push({
                 id: id,
                 nama: document.getElementById('input-nama').value,
                 waktu: document.getElementById('input-waktu').value,
                 tujuan: document.getElementById('input-tujuan').value,
-                status: 'Menunggu' // Default belum diverifikasi
-            };
-            
-            databaseJadwal.push(data);
+                status: 'Menunggu'
+            });
             
             document.getElementById('form-tamu').style.display = 'none';
             document.getElementById('hasil-pengajuan').style.display = 'block';
             document.getElementById('display-id').innerText = id;
-            
-            // Reset form
             document.getElementById('form-tamu').reset();
         }
 
-        // FUNGSI TAMU: CEK STATUS
         function cekStatus() {
             const id = document.getElementById('input-cek-id').value.trim().toUpperCase();
             const jadwal = databaseJadwal.find(j => j.id === id);
@@ -341,19 +421,16 @@
 
             if(jadwal) {
                 if(jadwal.status === 'Menunggu') {
-                    infoStatus.innerHTML = `<h3 style="color:var(--warning)">Status: Menunggu Verifikasi</h3>
-                                            <p>Kepala sekolah belum menyetujui jadwal ini.</p>`;
+                    infoStatus.innerHTML = `<h3 style="color:var(--warning)">Belum Di-approve</h3><p>Jadwal masih menunggu persetujuan Kepala Sekolah.</p>`;
                     qrBox.style.display = 'none';
                 } else if (jadwal.status === 'Terverifikasi') {
-                    infoStatus.innerHTML = `<h3 style="color:var(--success)">Status: Terverifikasi!</h3>
-                                            <p>Jadwal disetujui untuk ${new Date(jadwal.waktu).toLocaleString('id-ID')}.</p>`;
+                    infoStatus.innerHTML = `<h3 style="color:var(--primary-accent)">Telah Di-approve!</h3><p>Tunjukkan QR Code ini di lobi.</p>`;
+                    qrBox.style.display = 'inline-block';
                     
-                    // Generate QR
-                    qrBox.style.display = 'block';
                     document.getElementById('qrcode').innerHTML = "";
                     new QRCode(document.getElementById("qrcode"), {
-                        text: jadwal.id, width: 120, height: 120,
-                        colorDark : "#2c3e50", colorLight : "#d6e8f9", // Warna QR soft blue
+                        text: jadwal.id, width: 150, height: 150,
+                        colorDark: "#0a192f", colorLight: "#ffffff"
                     });
                 }
             } else {
@@ -362,19 +439,35 @@
             }
         }
 
-        // FUNGSI ADMIN: LOGIN
+        // --- FUNGSI ADMIN ---
         function loginAdmin() {
             const sandi = document.getElementById('input-sandi').value;
-            if(sandi === 'kepsek123') {
+            if(sandi === '123') { // Sandi sederhana untuk demo
                 document.getElementById('input-sandi').value = '';
-                navigasi('view-dashboard-admin');
+                navigasi('view-dashboard');
+                refreshDataAdmin(); // Muat semua data
             } else {
-                alert('Kode Akses Salah!');
+                alert('Sandi salah!');
             }
         }
 
-        // FUNGSI ADMIN: RENDER DASHBOARD (Tabel, Kalender, Grafik)
-        function renderDashboard() {
+        function switchAdminTab(tabId, element) {
+            // Sembunyikan semua tab
+            document.querySelectorAll('.admin-tab').forEach(tab => tab.classList.remove('active'));
+            // Hapus status active dari semua menu sidebar
+            document.querySelectorAll('.menu-item').forEach(menu => menu.classList.remove('active'));
+            
+            // Tampilkan tab yang dipilih
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+            
+            // Render ulang data khusus untuk tab yang aktif
+            if(tabId === 'tab-persetujuan') renderTabelPending();
+            if(tabId === 'tab-kalender') renderKalender();
+            if(tabId === 'tab-grafik') renderGrafik();
+        }
+
+        function refreshDataAdmin() {
             renderTabelPending();
             renderKalender();
             renderGrafik();
@@ -383,47 +476,43 @@
         function renderTabelPending() {
             const tbody = document.getElementById('body-pending');
             tbody.innerHTML = '';
-            
-            // Filter yang statusnya "Menunggu"
             const pending = databaseJadwal.filter(j => j.status === 'Menunggu');
             
             if(pending.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Tidak ada permintaan baru</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Tidak ada pengajuan baru.</td></tr>`;
                 return;
             }
 
             pending.forEach(j => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="font-family:monospace; color:var(--primary-blue)">${j.id}</td>
+                    <td style="color:var(--primary-accent); font-family:monospace;">${j.id}</td>
                     <td>${j.nama}</td>
-                    <td>${new Date(j.waktu).toLocaleDateString('id-ID')}</td>
-                    <td><button class="btn btn-success btn-small" onclick="verifikasiJadwal('${j.id}')">Verifikasi</button></td>
+                    <td>${new Date(j.waktu).toLocaleString('id-ID')}</td>
+                    <td><button class="btn btn-small" onclick="approveJadwal('${j.id}')">Approve</button></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function verifikasiJadwal(id) {
+        function approveJadwal(id) {
             const index = databaseJadwal.findIndex(j => j.id === id);
             if(index > -1) {
                 databaseJadwal[index].status = 'Terverifikasi';
-                renderDashboard(); // Refresh semua komponen dasbor
+                refreshDataAdmin(); // Update tabel, kalender, dan grafik
             }
         }
 
         function renderKalender() {
-            const kalenderGrid = document.getElementById('calendar-days');
-            // Menghapus cell tanggal yang lama, menyisakan header hari (Min-Sab)
-            kalenderGrid.innerHTML = `
+            const grid = document.getElementById('calendar-days');
+            grid.innerHTML = `
                 <div class="day-name">Min</div><div class="day-name">Sen</div><div class="day-name">Sel</div>
                 <div class="day-name">Rab</div><div class="day-name">Kam</div><div class="day-name">Jum</div><div class="day-name">Sab</div>
             `;
 
-            // Setup bulan saat ini (Menggunakan tanggal dari sistem berjalan)
             const date = new Date(); 
             const year = date.getFullYear();
-            const month = date.getMonth(); // 0-11
+            const month = date.getMonth(); 
             
             const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
             document.getElementById('calendar-month-year').innerText = `${monthNames[month]} ${year}`;
@@ -431,58 +520,66 @@
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-            // Ekstrak tanggal dari database yang sudah 'Terverifikasi' di bulan ini
-            const verifiedDates = databaseJadwal
+            // Ambil tanggal dari jadwal yang 'Terverifikasi'
+            const approvedDates = databaseJadwal
                 .filter(j => j.status === 'Terverifikasi')
                 .map(j => new Date(j.waktu).getDate());
 
-            // Slot kosong sebelum tanggal 1
+            // Slot kosong
             for (let i = 0; i < firstDay; i++) {
-                kalenderGrid.innerHTML += `<div class="calendar-day empty"></div>`;
+                grid.innerHTML += `<div></div>`;
             }
 
-            // Render tanggal
+            // Render angka tanggal
             for (let i = 1; i <= daysInMonth; i++) {
-                let kelasTambahan = '';
-                if (i === date.getDate()) kelasTambahan = 'today';
-                else if (verifiedDates.includes(i)) kelasTambahan = 'has-event'; // Jika ada jadwal di tanggal ini
-
-                kalenderGrid.innerHTML += `<div class="calendar-day ${kelasTambahan}">${i}</div>`;
+                let extraClass = '';
+                if (i === date.getDate()) extraClass = 'today';
+                else if (approvedDates.includes(i)) extraClass = 'has-event'; 
+                
+                grid.innerHTML += `<div class="calendar-day ${extraClass}">${i}</div>`;
             }
         }
 
         function renderGrafik() {
             const ctx = document.getElementById('chartPertemuan').getContext('2d');
+            let m1 = 0, m2 = 0, m3 = 0, m4 = 0;
             
-            // Hitung data (Dummy simulasi: Mingguan dalam bulan)
-            let minggu1 = 0, minggu2 = 0, minggu3 = 0, minggu4 = 0;
             databaseJadwal.forEach(j => {
                 if(j.status === 'Terverifikasi') {
-                    const tanggal = new Date(j.waktu).getDate();
-                    if(tanggal <= 7) minggu1++;
-                    else if(tanggal <= 14) minggu2++;
-                    else if(tanggal <= 21) minggu3++;
-                    else minggu4++;
+                    const d = new Date(j.waktu).getDate();
+                    if(d <= 7) m1++; else if(d <= 14) m2++; else if(d <= 21) m3++; else m4++;
                 }
             });
 
             if(chartInstance) chartInstance.destroy();
 
             chartInstance = new Chart(ctx, {
-                type: 'bar',
+                type: 'line', // Diubah menjadi line chart agar elegan
                 data: {
                     labels: ['Minggu 1', 'Minggu 2', 'Minggu 3', 'Minggu 4'],
                     datasets: [{
-                        label: 'Pertemuan Terverifikasi',
-                        data: [minggu1, minggu2, minggu3, minggu4],
-                        backgroundColor: '#5b9bd5',
-                        borderRadius: 5
+                        label: 'Pertemuan Disetujui',
+                        data: [m1, m2, m3, m4],
+                        borderColor: '#64ffda',
+                        backgroundColor: 'rgba(100, 255, 218, 0.2)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.3
                     }]
                 },
                 options: {
                     responsive: true,
-                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
-                    plugins: { legend: { display: false } }
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, ticks: { stepSize: 1, color: '#8892b0' },
+                            grid: { color: '#233554' }
+                        },
+                        x: { 
+                            ticks: { color: '#8892b0' },
+                            grid: { color: '#233554' }
+                        }
+                    },
+                    plugins: { legend: { labels: { color: '#ccd6f6' } } }
                 }
             });
         }
