@@ -39,48 +39,18 @@
             background-attachment: fixed;
         }
 
-        /* --- ANIMASI INTRO MELEDAK --- */
-        #intro-overlay {
-            position: fixed;
-            inset: 0;
-            background: #0f172a;
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-        
-        .circle-burst {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: var(--primary-accent);
-            box-shadow: 0 0 30px var(--primary-accent);
-            animation: burstAnim 1.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
-        }
-
-        @keyframes burstAnim {
-            0% { transform: scale(0); opacity: 1; }
-            50% { transform: scale(1.5); opacity: 1; }
-            100% { transform: scale(150); opacity: 0; }
+        /* --- ANIMASI POP-UP KE ATAS --- */
+        @keyframes popUpUpwards {
+            0% { opacity: 0; transform: translateY(50px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .page-view {
-            display: none; width: 100%; min-height: 100vh; animation: fadeIn 0.4s ease; position: relative;
+            display: none; width: 100%; min-height: 100vh; position: relative;
         }
         .page-view.active { display: flex; flex-direction: column; }
+        
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Delay elemen landing awal agar tunggu animasi meledak selesai */
-        .landing-center, .top-nav {
-            opacity: 0;
-            animation: contentReveal 1s ease 1s forwards; /* Delay 1 detik */
-        }
-        @keyframes contentReveal {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
 
         h1, h2, h3 { color: var(--text-main); margin-bottom: 15px; font-weight: 600; }
         p { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; line-height: 1.6; }
@@ -108,6 +78,7 @@
         .top-nav {
             display: flex; justify-content: flex-end; padding: 20px 40px;
             position: absolute; top: 0; right: 0; width: 100%; z-index: 10;
+            animation: fadeIn 0.8s ease forwards;
         }
         .admin-link {
             color: var(--text-muted); text-decoration: none; font-weight: 500;
@@ -120,6 +91,8 @@
         .landing-center {
             flex: 1; display: flex; flex-direction: column; justify-content: center;
             align-items: center; text-align: center; padding: 20px;
+            /* Terapkan animasi Pop-Up di sini */
+            animation: popUpUpwards 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards; 
         }
 
         .hero-bar {
@@ -149,6 +122,7 @@
             background: var(--modal-bg); color: var(--modal-text);
             width: 90%; max-width: 450px; border-radius: 12px; padding: 30px;
             position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            animation: popUpUpwards 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
         }
         .modal-box h2 { color: var(--modal-text); margin-bottom: 20px; font-size: 20px; text-align: center; }
         .modal-box label { color: #475569; font-weight: 500; font-size: 13px; }
@@ -182,7 +156,7 @@
             0% { transform: translateY(-60px); opacity: 0; clip-path: inset(0 0 100% 0); }
             100% { transform: translateY(0); opacity: 1; clip-path: inset(0 0 0 0); }
         }
-        .ticket-wrapper { text-align: center; margin-top: 20px; width: 100%; max-width: 400px;}
+        .ticket-wrapper { text-align: center; margin-top: 20px; width: 100%; max-width: 400px; animation: fadeIn 0.5s ease; }
         
         .success-bar {
             background: var(--primary-accent); color: #0f172a; padding: 15px;
@@ -214,12 +188,12 @@
         .card-container {
             width: 100%; max-width: 500px; margin: auto; padding: 40px;
             background: var(--bg-navy-light); border-radius: 16px;
-            border: 1px solid var(--bg-navy-lighter);
+            border: 1px solid var(--bg-navy-lighter); animation: popUpUpwards 0.5s ease forwards;
         }
-        .back-btn { position: absolute; top: 20px; left: 40px; z-index: 10; }
+        .back-btn { position: absolute; top: 20px; left: 40px; z-index: 10; animation: fadeIn 1s ease forwards; }
 
         /* --- DASHBOARD SUPERVISOR (3 BAGIAN) --- */
-        .dashboard-layout { display: flex; flex: 1; height: 100vh; overflow: hidden; }
+        .dashboard-layout { display: flex; flex: 1; height: 100vh; overflow: hidden; animation: fadeIn 0.5s ease forwards; }
         .sidebar { width: 260px; background: var(--bg-navy-light); border-right: 1px solid var(--bg-navy-lighter); padding: 30px 20px; display: flex; flex-direction: column; }
         .sidebar-brand { font-size: 20px; font-weight: 600; color: var(--primary-accent); margin-bottom: 40px; text-align: center; border-bottom: 1px solid var(--bg-navy-lighter); padding-bottom: 20px; }
         .menu-item { padding: 15px; margin-bottom: 10px; border-radius: 8px; cursor: pointer; color: var(--text-muted); font-weight: 500; transition: 0.3s; font-size: 14px; }
@@ -287,11 +261,6 @@
     </style>
 </head>
 <body>
-
-    <!-- ANIMASI OVERLAY LINGKARAN MELEDAK -->
-    <div id="intro-overlay">
-        <div class="circle-burst"></div>
-    </div>
 
     <!-- 1. HALAMAN UTAMA (LANDING) -->
     <div id="view-landing" class="page-view active">
@@ -504,16 +473,6 @@
     </div>
 
     <script>
-        // Hapus Overlay Setelah Animasi Meledak
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                const intro = document.getElementById('intro-overlay');
-                if(intro) {
-                    intro.style.display = 'none';
-                }
-            }, 1300); // Sinkron dengan durasi animasi CSS (1.2s + buffer)
-        });
-
         // JS Preview Foto Selfie
         document.getElementById('m-foto').addEventListener('change', function(e) {
             const file = e.target.files[0];
