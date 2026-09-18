@@ -22,7 +22,6 @@
             --warning: #fbbf24;
             --danger: #f87171;
             
-            /* Warna khusus modal putih */
             --modal-bg: #ffffff;
             --modal-text: #0f172a;
             --modal-border: #e2e8f0;
@@ -40,15 +39,12 @@
             background-attachment: fixed;
         }
 
-        /* Navigasi / Tampilan Halaman */
         .page-view {
             display: none; width: 100%; min-height: 100vh; animation: fadeIn 0.4s ease; position: relative;
         }
         .page-view.active { display: flex; flex-direction: column; }
-
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Elemen Umum */
         h1, h2, h3 { color: var(--text-main); margin-bottom: 15px; font-weight: 600; }
         p { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; line-height: 1.6; }
 
@@ -64,8 +60,6 @@
         
         .form-group { margin-bottom: 20px; text-align: left; }
         label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-muted); }
-        
-        /* Input Default (Tema Gelap) */
         input, textarea {
             width: 100%; padding: 14px; background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--bg-navy-lighter); border-radius: 8px; color: var(--text-main);
@@ -91,15 +85,22 @@
             align-items: center; text-align: center; padding: 20px;
         }
 
-        .btn-main {
-            font-size: 18px; padding: 16px 40px; border-radius: 30px; margin-top: 10px;
-            box-shadow: 0 10px 20px rgba(96, 165, 250, 0.2);
+        .hero-bar {
+            display: flex; align-items: center; justify-content: center; gap: 20px;
+            background: rgba(255, 255, 255, 0.05); padding: 15px 30px;
+            border-radius: 50px; border: 1px solid var(--bg-navy-lighter);
+            backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            flex-wrap: wrap;
         }
-
-        .link-cek {
-            margin-top: 20px; color: var(--text-muted); font-size: 14px; cursor: pointer; text-decoration: underline;
+        .hero-bar h1 { margin: 0; font-size: 20px; font-weight: 500; }
+        .hero-bar .divider { width: 1px; height: 30px; background: var(--bg-navy-lighter); display: block; }
+        .hero-bar .btn, .hero-bar .btn-outline { border-radius: 30px; padding: 12px 28px; margin: 0; }
+        
+        @media (max-width: 768px) {
+            .hero-bar { flex-direction: column; border-radius: 20px; padding: 25px; }
+            .hero-bar .divider { display: none; }
+            .hero-bar .btn, .hero-bar .btn-outline { width: 100%; }
         }
-        .link-cek:hover { color: var(--primary-accent); }
 
         /* --- MODAL POP-UP (Formulir Putih) --- */
         .modal-overlay {
@@ -114,8 +115,6 @@
         }
         .modal-box h2 { color: var(--modal-text); margin-bottom: 20px; font-size: 20px; text-align: center; }
         .modal-box label { color: #475569; font-weight: 500; font-size: 13px; }
-        
-        /* Input khusus di dalam modal putih */
         .modal-box input, .modal-box textarea {
             background: var(--modal-input-bg); border: 1px solid var(--modal-border);
             color: var(--modal-text); border-radius: 8px;
@@ -123,17 +122,12 @@
         .modal-box input:focus, .modal-box textarea:focus {
             background: #fff; border-color: var(--primary-accent); box-shadow: 0 0 0 3px rgba(96,165,250,0.2);
         }
-        .modal-box input[readonly] {
-            background: #e2e8f0; color: #64748b; cursor: not-allowed; font-weight: 600;
-        }
-
+        .modal-box input[readonly] { background: #e2e8f0; color: #64748b; cursor: not-allowed; font-weight: 600; }
         .close-btn {
             position: absolute; top: 15px; right: 20px; font-size: 24px;
             color: #94a3b8; cursor: pointer; transition: 0.3s;
         }
         .close-btn:hover { color: #0f172a; }
-
-        /* Step 2 Selfie */
         #step-2 { display: none; text-align: center; }
         .selfie-box {
             border: 2px dashed #cbd5e1; padding: 30px 20px; border-radius: 12px;
@@ -145,26 +139,20 @@
             0% { transform: translateY(-60px); opacity: 0; clip-path: inset(0 0 100% 0); }
             100% { transform: translateY(0); opacity: 1; clip-path: inset(0 0 0 0); }
         }
-        
         .ticket-wrapper { text-align: center; margin-top: 20px; }
         .ticket-card {
             background: #ffffff; color: #0f172a; border-radius: 0 0 12px 12px;
             padding: 30px; max-width: 380px; margin: 0 auto 20px auto;
             box-shadow: 0 15px 35px rgba(0,0,0,0.4); text-align: left;
-            position: relative;
-            /* Efek bergerigi struk di bagian atas */
-            border-top: 2px dashed #cbd5e1;
+            position: relative; border-top: 2px dashed #cbd5e1;
             animation: printEffect 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         }
-        
         .ticket-header { text-align: center; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px;}
         .ticket-header h3 { color: #0f172a; margin: 0; font-size: 18px; }
         .ticket-header p { margin: 5px 0 0 0; font-size: 12px; color: #64748b; }
-        
         .ticket-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
         .ticket-label { color: #64748b; font-weight: 500; }
         .ticket-value { color: #0f172a; font-weight: 600; text-align: right; max-width: 60%; word-wrap: break-word;}
-        
         .status-badge {
             display: inline-block; padding: 6px 12px; border-radius: 6px;
             background: #fef3c7; color: #d97706; font-size: 13px; font-weight: 600;
@@ -193,6 +181,44 @@
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--bg-navy-lighter); font-size: 14px;}
         th { color: var(--text-muted); font-weight: 500; }
 
+        /* --- STYLING KALENDER MODERN MINIMALIS --- */
+        .calendar-container { background: var(--bg-navy-light); border-radius: 12px; padding: 25px; border: 1px solid var(--bg-navy-lighter); max-width: 400px;}
+        .calendar-header { display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center;}
+        .calendar-header h3 { margin: 0; color: var(--text-main); font-size: 16px; font-weight: 500;}
+        .cal-nav-btn { background: rgba(255,255,255,0.05); border: none; color: var(--text-main); border-radius: 6px; padding: 5px 12px; cursor: pointer; transition: 0.2s;}
+        .cal-nav-btn:hover { background: var(--primary-accent); color: #0f172a;}
+        
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
+        .day-name { font-size: 12px; color: var(--text-muted); padding-bottom: 10px; font-weight: 500;}
+        
+        .calendar-day { 
+            position: relative; padding: 10px 5px; border-radius: 8px; font-size: 14px; 
+            cursor: pointer; transition: 0.2s; color: var(--text-muted); border: 1px solid transparent;
+        }
+        .calendar-day:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+        .calendar-day.empty { cursor: default; }
+        .calendar-day.empty:hover { background: transparent; }
+        
+        /* Tanggal yang sedang dipilih (diklik) */
+        .calendar-day.selected { 
+            background: var(--primary-accent); color: #0f172a; font-weight: 600; 
+            box-shadow: 0 4px 10px rgba(96, 165, 250, 0.4);
+        }
+        /* Tanggal hari ini (lingkaran outline jika tidak dipilih) */
+        .calendar-day.today:not(.selected) { border-color: var(--primary-accent); color: var(--primary-accent); }
+
+        /* Titik (dot) indikator jadwal */
+        .event-dot {
+            width: 4px; height: 4px; background: var(--success); border-radius: 50%;
+            position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+        }
+        .calendar-day.selected .event-dot { background: #0f172a; } /* Dot jadi gelap kalau dipilih */
+
+        .schedule-card {
+            background: var(--bg-navy-light); border: 1px solid var(--bg-navy-lighter);
+            padding: 15px 20px; border-radius: 8px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -205,11 +231,13 @@
         </div>
         
         <div class="landing-center">
-            <h1 style="font-size: 32px; margin-bottom: 5px;">Jadwalkan Pertemuan Anda</h1>
-            <p style="margin-bottom: 30px;">Sistem Buku Tamu Cerdas TamuTemu</p>
-            
-            <button class="btn btn-main" onclick="bukaModal()">Jadwalkan</button>
-            <div class="link-cek" onclick="navigasi('view-cek-status')">Sudah punya jadwal? Cek status di sini</div>
+            <!-- Elemen Sejajar / Bar Horizontal -->
+            <div class="hero-bar">
+                <h1>Jadwalkan Pertemuan Anda</h1>
+                <span class="divider"></span>
+                <button class="btn" onclick="bukaModal()">Jadwalkan</button>
+                <button class="btn btn-outline" onclick="navigasi('view-cek-status')">Punya Jadwal?</button>
+            </div>
         </div>
     </div>
 
@@ -250,7 +278,6 @@
                 <p style="color: #64748b; font-size: 13px;">Silakan ambil foto wajah (selfie) atau unggah identitas Anda.</p>
                 
                 <div class="selfie-box">
-                    <!-- capture="user" mengaktifkan kamera depan di HP -->
                     <input type="file" id="m-foto" accept="image/*" capture="user" style="border:none; background:transparent; padding:0;">
                 </div>
                 
@@ -272,7 +299,7 @@
             <div class="ticket-card">
                 <div class="ticket-header">
                     <h3>KARTU PENGUNJUNG</h3>
-                    <p id="t-id">TM-XXXX</p>
+                    <p id="t-id">TAMUTEMU-XXXX</p>
                 </div>
                 
                 <div class="ticket-row">
@@ -315,7 +342,7 @@
         <div class="card-container" style="text-align: center;">
             <h2>Cek Status Janji</h2>
             <div class="form-group" style="text-align: left;">
-                <input type="text" id="input-cek-id" placeholder="Masukkan ID (Contoh: TM-1234)">
+                <input type="text" id="input-cek-id" placeholder="Masukkan ID (Contoh: TAMUTEMU-1234)">
             </div>
             <button class="btn" style="width: 100%;" onclick="cekStatus()">Periksa Jadwal</button>
             
@@ -370,20 +397,60 @@
                     </div>
                 </div>
 
-                <!-- TAB 2: KALENDER -->
+                <!-- TAB 2: KALENDER INTERAKTIF -->
                 <div id="tab-kalender" class="admin-tab">
-                    <h2>Daftar Agenda (Telah Di-approve)</h2>
-                    <div id="schedule-items" style="margin-top: 20px;"></div>
+                    
+                    <div style="display: flex; gap: 40px; flex-wrap: wrap;">
+                        
+                        <!-- Panel Kalender -->
+                        <div class="calendar-container">
+                            <div class="calendar-header">
+                                <button class="cal-nav-btn" onclick="ubahBulan(-1)">&#10094;</button>
+                                <h3 id="cal-month-year">September 2026</h3>
+                                <button class="cal-nav-btn" onclick="ubahBulan(1)">&#10095;</button>
+                            </div>
+                            <div class="calendar-grid" id="calendar-grid-days">
+                                <!-- JS akan mengisi hari dan tanggal -->
+                            </div>
+                        </div>
+
+                        <!-- Panel Detail Jadwal di Hari yang Dipilih -->
+                        <div style="flex: 1; min-width: 300px;">
+                            <h2 style="font-size: 18px; border-bottom: 1px solid var(--bg-navy-lighter); padding-bottom: 10px; margin-bottom: 20px;">
+                                Agenda: <span id="label-tanggal-pilih" style="color: var(--primary-accent);">Hari Ini</span>
+                            </h2>
+                            
+                            <div id="schedule-harian-items">
+                                <!-- JS akan mengisi detail jadwal pada tanggal yang diklik -->
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // Simulasi Database
+        // Menggunakan waktu bulan ini (berdasarkan sistem) sebagai dummy agar titik di kalender terlihat
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const d = String(now.getDate()).padStart(2, '0');
+        // Buat dummy 1 di hari ini, 1 di 2 hari ke depan
+        const dummyDate1 = `${y}-${m}-${d}T10:00`;
+        const dummyDate2 = `${y}-${m}-${String(now.getDate()+2).padStart(2, '0')}T14:00`;
+
         let databaseJadwal = [
-            { id: 'TM-0001', nama: 'Vendor Seragam', hp: '08123456789', waktu: '2026-09-08T10:00', tujuan: 'Presentasi Penawaran', status: 'Terverifikasi' },
-            { id: 'TM-0002', nama: 'Budi Santoso', hp: '08571234123', waktu: '2026-09-20T13:30', tujuan: 'Konsultasi Akademik', status: 'Terverifikasi' }
+            { id: 'TAMUTEMU-0001', nama: 'Vendor Seragam', hp: '08123456789', waktu: dummyDate1, tujuan: 'Presentasi Penawaran', status: 'Terverifikasi' },
+            { id: 'TAMUTEMU-0002', nama: 'Budi Santoso', hp: '08571234123', waktu: dummyDate2, tujuan: 'Konsultasi Akademik', status: 'Terverifikasi' }
         ];
+
+        // State Kalender
+        let currentCalDate = new Date(); // Bulan/Tahun kalender yang sedang dilihat
+        let selectedDate = new Date();   // Tanggal spesifik yang sedang di-klik/aktif
 
         // NAVIGASI VIEW
         function navigasi(viewId) {
@@ -396,7 +463,6 @@
             document.getElementById('modal-form').style.display = 'flex';
             document.getElementById('step-1').style.display = 'block';
             document.getElementById('step-2').style.display = 'none';
-            // Bersihkan inputan lama
             document.getElementById('m-nama').value = '';
             document.getElementById('m-hp').value = '';
             document.getElementById('m-waktu').value = '';
@@ -418,7 +484,6 @@
                 alert("Mohon lengkapi semua data pertemuan.");
                 return;
             }
-
             document.getElementById('step-1').style.display = 'none';
             document.getElementById('step-2').style.display = 'block';
         }
@@ -429,27 +494,24 @@
         }
 
         function submitJadwal() {
-            const id = 'TM-' + Math.floor(Math.random() * 9000 + 1000);
+            const id = 'TAMUTEMU-' + Math.floor(Math.random() * 9000 + 1000);
             const nama = document.getElementById('m-nama').value;
             const hp = document.getElementById('m-hp').value;
             const waktu = document.getElementById('m-waktu').value;
             const tujuan = document.getElementById('m-tujuan').value;
             
-            // Simpan ke DB
             databaseJadwal.push({
                 id: id, nama: nama, hp: hp, waktu: waktu, tujuan: tujuan, status: 'Menunggu'
             });
             
             tutupModal();
             
-            // Isi data ke Kartu Tiket Print
             document.getElementById('t-id').innerText = id;
             document.getElementById('t-nama').innerText = nama;
             document.getElementById('t-hp').innerText = hp;
             document.getElementById('t-waktu').innerText = new Date(waktu).toLocaleString('id-ID');
             document.getElementById('t-tujuan').innerText = tujuan;
 
-            // Buka View Tiket
             navigasi('view-tiket');
         }
 
@@ -504,6 +566,7 @@
         }
 
         function refreshDataAdmin() {
+            // Render Tabel Pending
             const tbody = document.getElementById('body-pending');
             tbody.innerHTML = '';
             const pending = databaseJadwal.filter(j => j.status === 'Menunggu');
@@ -523,31 +586,8 @@
                 });
             }
 
-            // Render Jadwal Approved
-            const scheduleList = document.getElementById('schedule-items');
-            scheduleList.innerHTML = ''; 
-            const approvedSchedules = databaseJadwal.filter(j => j.status === 'Terverifikasi');
-            approvedSchedules.sort((a, b) => new Date(a.waktu) - new Date(b.waktu));
-
-            if(approvedSchedules.length === 0) {
-                scheduleList.innerHTML = `<p>Belum ada agenda disetujui.</p>`;
-            } else {
-                approvedSchedules.forEach(j => {
-                    const jDate = new Date(j.waktu);
-                    const div = document.createElement('div');
-                    div.style.cssText = 'background: var(--bg-navy-light); border: 1px solid var(--bg-navy-lighter); padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;';
-                    div.innerHTML = `
-                        <div>
-                            <h4 style="color:var(--text-main); margin-bottom:5px; font-size:15px;">${j.nama}</h4>
-                            <p style="margin:0; font-size:13px; color:var(--text-muted);">${jDate.toLocaleDateString('id-ID')} • ${j.tujuan}</p>
-                        </div>
-                        <div style="background: rgba(96,165,250,0.15); color: var(--primary-accent); padding: 8px 12px; border-radius: 6px; font-weight: 600; font-size: 14px;">
-                            ${jDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
-                        </div>
-                    `;
-                    scheduleList.appendChild(div);
-                });
-            }
+            // Render UI Kalender
+            renderKalender();
         }
 
         function approveJadwal(id) {
@@ -555,6 +595,112 @@
             if(index > -1) {
                 databaseJadwal[index].status = 'Terverifikasi';
                 refreshDataAdmin(); 
+            }
+        }
+
+        // --- SISTEM KALENDER INTERAKTIF ---
+        function ubahBulan(offset) {
+            currentCalDate.setMonth(currentCalDate.getMonth() + offset);
+            renderKalender();
+        }
+
+        function pilihTanggal(year, month, day) {
+            selectedDate = new Date(year, month, day);
+            renderKalender();
+        }
+
+        function renderKalender() {
+            const grid = document.getElementById('calendar-grid-days');
+            grid.innerHTML = `
+                <div class="day-name">Min</div><div class="day-name">Sen</div><div class="day-name">Sel</div>
+                <div class="day-name">Rab</div><div class="day-name">Kam</div><div class="day-name">Jum</div><div class="day-name">Sab</div>
+            `;
+
+            const year = currentCalDate.getFullYear();
+            const month = currentCalDate.getMonth(); 
+            
+            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            document.getElementById('cal-month-year').innerText = `${monthNames[month]}${year}`;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            // Tanggal hari ini di dunia nyata
+            const realToday = new Date();
+
+            // Kotak kosong awal bulan
+            for (let i = 0; i < firstDay; i++) {
+                grid.innerHTML += `<div class="calendar-day empty"></div>`;
+            }
+
+            // Loop per tanggal
+            for (let day = 1; day <= daysInMonth; day++) {
+                // Cek apakah tanggal ini = hari ini
+                const isToday = (day === realToday.getDate() && month === realToday.getMonth() && year === realToday.getFullYear());
+                // Cek apakah tanggal ini = tanggal yang sedang di-klik/dipilih
+                const isSelected = (day === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear());
+                
+                // Cek apakah ada jadwal terverifikasi di tanggal ini
+                const hasEvent = databaseJadwal.some(j => {
+                    if(j.status !== 'Terverifikasi') return false;
+                    const jd = new Date(j.waktu);
+                    return (jd.getDate() === day && jd.getMonth() === month && jd.getFullYear() === year);
+                });
+
+                let classNames = "calendar-day";
+                if(isToday) classNames += " today";
+                if(isSelected) classNames += " selected";
+
+                let dotHtml = hasEvent ? `<span class="event-dot"></span>` : ``;
+
+                grid.innerHTML += `<div class="${classNames}" onclick="pilihTanggal(${year}, ${month}, ${day})">
+                                      ${day}
+                                      ${dotHtml}
+                                   </div>`;
+            }
+
+            // Update Label List Jadwal
+            const isSelToday = (selectedDate.getDate() === realToday.getDate() && selectedDate.getMonth() === realToday.getMonth() && selectedDate.getFullYear() === realToday.getFullYear());
+            document.getElementById('label-tanggal-pilih').innerText = isSelToday ? "Hari Ini" : selectedDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
+            // Panggil render list jadwal spesifik
+            renderJadwalHarian();
+        }
+
+        function renderJadwalHarian() {
+            const container = document.getElementById('schedule-harian-items');
+            container.innerHTML = '';
+
+            // Filter jadwal hanya yang statusnya terverifikasi dan tanggalnya match dengan selectedDate
+            let jadwalHariIni = databaseJadwal.filter(j => {
+                if (j.status !== 'Terverifikasi') return false;
+                const jd = new Date(j.waktu);
+                return (jd.getDate() === selectedDate.getDate() && 
+                        jd.getMonth() === selectedDate.getMonth() && 
+                        jd.getFullYear() === selectedDate.getFullYear());
+            });
+
+            // Urutkan berdasarkan jam
+            jadwalHariIni.sort((a, b) => new Date(a.waktu) - new Date(b.waktu));
+
+            if(jadwalHariIni.length === 0) {
+                container.innerHTML = `<p style="color: var(--text-muted); font-size: 14px;">Tidak ada jadwal pertemuan pada tanggal ini.</p>`;
+            } else {
+                jadwalHariIni.forEach(j => {
+                    const jd = new Date(j.waktu);
+                    const card = document.createElement('div');
+                    card.className = 'schedule-card';
+                    card.innerHTML = `
+                        <div>
+                            <h4 style="color:var(--text-main); margin-bottom:5px; font-size:15px;">${j.nama}</h4>
+                            <p style="margin:0; font-size:13px; color:var(--text-muted);">${j.tujuan}</p>
+                        </div>
+                        <div style="background: rgba(96,165,250,0.15); color: var(--primary-accent); padding: 8px 12px; border-radius: 6px; font-weight: 600; font-size: 14px; white-space: nowrap;">
+                            ${jd.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
             }
         }
     </script>
