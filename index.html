@@ -128,10 +128,16 @@
             color: #94a3b8; cursor: pointer; transition: 0.3s;
         }
         .close-btn:hover { color: #0f172a; }
+        
         #step-2 { display: none; text-align: center; }
         .selfie-box {
-            border: 2px dashed #cbd5e1; padding: 30px 20px; border-radius: 12px;
+            border: 2px dashed #cbd5e1; padding: 20px; border-radius: 12px;
             margin-bottom: 20px; background: #f8fafc;
+        }
+        input[type="file"]::file-selector-button {
+            background: var(--primary-accent); color: #0f172a; border: none;
+            padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 500;
+            margin-right: 15px; transition: 0.3s;
         }
 
         /* --- EFEK PRINT KARTU TIKET --- */
@@ -139,13 +145,23 @@
             0% { transform: translateY(-60px); opacity: 0; clip-path: inset(0 0 100% 0); }
             100% { transform: translateY(0); opacity: 1; clip-path: inset(0 0 0 0); }
         }
-        .ticket-wrapper { text-align: center; margin-top: 20px; }
+        .ticket-wrapper { text-align: center; margin-top: 20px; width: 100%; max-width: 400px;}
+        
+        /* Bar Sukses */
+        .success-bar {
+            background: var(--primary-accent); color: #0f172a; padding: 15px;
+            border-radius: 8px; font-size: 16px; font-weight: 600;
+            box-shadow: 0 4px 15px rgba(96, 165, 250, 0.4); margin-bottom: -10px; /* Menyambung ke struk */
+            position: relative; z-index: 2;
+        }
+
         .ticket-card {
             background: #ffffff; color: #0f172a; border-radius: 0 0 12px 12px;
-            padding: 30px; max-width: 380px; margin: 0 auto 20px auto;
+            padding: 40px 30px 30px 30px; margin: 0 auto 20px auto;
             box-shadow: 0 15px 35px rgba(0,0,0,0.4); text-align: left;
             position: relative; border-top: 2px dashed #cbd5e1;
             animation: printEffect 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            z-index: 1;
         }
         .ticket-header { text-align: center; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px;}
         .ticket-header h3 { color: #0f172a; margin: 0; font-size: 18px; }
@@ -159,7 +175,6 @@
             width: 100%; text-align: center; margin-top: 15px;
         }
 
-        /* Kotak / Card Form General */
         .card-container {
             width: 100%; max-width: 500px; margin: auto; padding: 40px;
             background: var(--bg-navy-light); border-radius: 16px;
@@ -167,71 +182,87 @@
         }
         .back-btn { position: absolute; top: 20px; left: 40px; z-index: 10; }
 
-        /* Dashboard & Table */
+        /* --- DASHBOARD SUPERVISOR (3 BAGIAN) --- */
         .dashboard-layout { display: flex; flex: 1; height: 100vh; overflow: hidden; }
+        /* 1. KIRI (Sidebar) */
         .sidebar { width: 260px; background: var(--bg-navy-light); border-right: 1px solid var(--bg-navy-lighter); padding: 30px 20px; display: flex; flex-direction: column; }
         .sidebar-brand { font-size: 20px; font-weight: 600; color: var(--primary-accent); margin-bottom: 40px; text-align: center; border-bottom: 1px solid var(--bg-navy-lighter); padding-bottom: 20px; }
         .menu-item { padding: 15px; margin-bottom: 10px; border-radius: 8px; cursor: pointer; color: var(--text-muted); font-weight: 500; transition: 0.3s; font-size: 14px; }
         .menu-item:hover, .menu-item.active { background: rgba(255, 255, 255, 0.05); color: var(--text-main); border-left: 4px solid var(--primary-accent); }
         .logout-btn { margin-top: auto; color: var(--danger); border-left: none !important; }
-        .content-area { flex: 1; padding: 40px; overflow-y: auto; }
+        
+        /* 2 & 3. KANAN (Content Area) */
+        .content-area { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; gap: 30px; }
         .admin-tab { display: none; animation: fadeIn 0.3s ease; }
         .admin-tab.active { display: block; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--bg-navy-lighter); font-size: 14px;}
         th { color: var(--text-muted); font-weight: 500; }
 
-        /* --- STYLING KALENDER MODERN MINIMALIS --- */
-        .calendar-container { background: var(--bg-navy-light); border-radius: 12px; padding: 25px; border: 1px solid var(--bg-navy-lighter); max-width: 400px;}
-        .calendar-header { display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center;}
-        .calendar-header h3 { margin: 0; color: var(--text-main); font-size: 16px; font-weight: 500;}
-        .cal-nav-btn { background: rgba(255,255,255,0.05); border: none; color: var(--text-main); border-radius: 6px; padding: 5px 12px; cursor: pointer; transition: 0.2s;}
-        .cal-nav-btn:hover { background: var(--primary-accent); color: #0f172a;}
-        
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-        .day-name { font-size: 12px; color: var(--text-muted); padding-bottom: 10px; font-weight: 500;}
-        
-        .calendar-day { 
-            position: relative; padding: 10px 5px; border-radius: 8px; font-size: 14px; 
-            cursor: pointer; transition: 0.2s; color: var(--text-muted); border: 1px solid transparent;
+        /* TEMA PUTIH UNTUK KALENDER (Kanan Atas) */
+        .calendar-container.white-theme { 
+            background: #ffffff; border-radius: 12px; padding: 30px; 
+            border: 1px solid #e2e8f0; width: 100%; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
-        .calendar-day:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
-        .calendar-day.empty { cursor: default; }
-        .calendar-day.empty:hover { background: transparent; }
+        .calendar-container.white-theme .calendar-header { display: flex; justify-content: space-between; margin-bottom: 25px; align-items: center;}
+        .calendar-container.white-theme .calendar-header h3 { margin: 0; color: #0f172a; font-size: 22px; font-weight: 600;}
+        .calendar-container.white-theme .cal-nav-btn { background: #f8fafc; border: 1px solid #e2e8f0; color: #0f172a; border-radius: 6px; padding: 8px 15px; cursor: pointer; transition: 0.2s;}
+        .calendar-container.white-theme .cal-nav-btn:hover { background: var(--primary-accent); color: white; border-color: var(--primary-accent);}
+        
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; }
+        .calendar-container.white-theme .day-name { font-size: 14px; color: #64748b; padding-bottom: 10px; font-weight: 600;}
+        
+        .calendar-container.white-theme .calendar-day { 
+            position: relative; padding: 15px 5px; border-radius: 8px; font-size: 16px; 
+            cursor: pointer; transition: 0.2s; color: #334155; border: 1px solid transparent; font-weight: 500;
+        }
+        .calendar-container.white-theme .calendar-day:hover { background: #f1f5f9; color: #0f172a; }
+        .calendar-container.white-theme .calendar-day.empty { cursor: default; }
+        .calendar-container.white-theme .calendar-day.empty:hover { background: transparent; }
         
         /* Tanggal yang sedang dipilih (diklik) */
-        .calendar-day.selected { 
+        .calendar-container.white-theme .calendar-day.selected { 
             background: var(--primary-accent); color: #0f172a; font-weight: 600; 
-            box-shadow: 0 4px 10px rgba(96, 165, 250, 0.4);
+            box-shadow: 0 4px 10px rgba(96, 165, 250, 0.3);
         }
         /* Tanggal hari ini (lingkaran outline jika tidak dipilih) */
-        .calendar-day.today:not(.selected) { border-color: var(--primary-accent); color: var(--primary-accent); }
+        .calendar-container.white-theme .calendar-day.today:not(.selected) { border-color: var(--primary-accent); color: var(--primary-accent); }
+        .event-dot { width: 5px; height: 5px; background: var(--success); border-radius: 50%; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); }
+        .calendar-container.white-theme .calendar-day.selected .event-dot { background: #ffffff; } 
 
-        /* Titik (dot) indikator jadwal */
-        .event-dot {
-            width: 4px; height: 4px; background: var(--success); border-radius: 50%;
-            position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+        /* TEMA PUTIH UNTUK JADWAL HARIAN (Kanan Bawah) */
+        .schedule-box.white-theme {
+            background: #ffffff; border-radius: 12px; padding: 30px; 
+            border: 1px solid #e2e8f0; width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
-        .calendar-day.selected .event-dot { background: #0f172a; } /* Dot jadi gelap kalau dipilih */
-
-        .schedule-card {
-            background: var(--bg-navy-light); border: 1px solid var(--bg-navy-lighter);
-            padding: 15px 20px; border-radius: 8px; margin-bottom: 10px;
+        .schedule-box.white-theme h2 {
+            font-size: 18px; border-bottom: 1px solid #e2e8f0; 
+            padding-bottom: 15px; margin-bottom: 20px; color: #0f172a;
+        }
+        .schedule-card.white-theme {
+            background: #f8fafc; border: 1px solid #e2e8f0;
+            padding: 15px 20px; border-radius: 8px; margin-bottom: 15px;
             display: flex; justify-content: space-between; align-items: center;
         }
+        .schedule-card.white-theme h4 { color: #0f172a; margin-bottom: 5px; font-size: 16px; }
+        .schedule-card.white-theme p { margin: 0; font-size: 13px; color: #64748b; }
+        .schedule-time {
+            background: rgba(96, 165, 250, 0.15); color: var(--primary-accent);
+            padding: 8px 12px; border-radius: 6px; font-weight: 600; font-size: 14px;
+        }
+
     </style>
 </head>
 <body>
 
     <!-- 1. HALAMAN UTAMA (LANDING) -->
     <div id="view-landing" class="page-view active">
-        <!-- Toolbar Kanan Atas -->
         <div class="top-nav">
             <span class="admin-link" onclick="navigasi('view-login')">Supervisor Mode</span>
         </div>
         
         <div class="landing-center">
-            <!-- Elemen Sejajar / Bar Horizontal -->
             <div class="hero-bar">
                 <h1>Jadwalkan Pertemuan Anda</h1>
                 <span class="divider"></span>
@@ -278,7 +309,11 @@
                 <p style="color: #64748b; font-size: 13px;">Silakan ambil foto wajah (selfie) atau unggah identitas Anda.</p>
                 
                 <div class="selfie-box">
-                    <input type="file" id="m-foto" accept="image/*" capture="user" style="border:none; background:transparent; padding:0;">
+                    <input type="file" id="m-foto" accept="image/*" capture="user">
+                    <!-- Preview Foto -->
+                    <div id="selfie-preview-container" style="display:none; margin-top: 15px;">
+                        <img id="selfie-preview" src="" alt="Preview Foto" style="max-width: 100%; border-radius: 8px; max-height: 200px; object-fit: cover;">
+                    </div>
                 </div>
                 
                 <div style="display: flex; gap: 10px;">
@@ -290,11 +325,14 @@
     </div>
 
     <!-- VIEW TIKET KARTU PRINT -->
-    <div id="view-tiket" class="page-view" style="justify-content: center;">
+    <div id="view-tiket" class="page-view" style="justify-content: center; align-items: center;">
         <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">Kembali ke Beranda</button>
         
         <div class="ticket-wrapper">
-            <h2 style="color: var(--primary-accent); margin-bottom: 20px;">Pengajuan Berhasil Dikirim!</h2>
+            <!-- BAR SUKSES -->
+            <div class="success-bar">
+                ✨ Pengajuan Berhasil Dikirim!
+            </div>
             
             <div class="ticket-card">
                 <div class="ticket-header">
@@ -332,7 +370,7 @@
                 </p>
             </div>
             
-            <button class="btn" onclick="navigasi('view-landing')">Selesai</button>
+            <button class="btn" style="width: 100%; max-width: 380px;" onclick="navigasi('view-landing')">Selesai</button>
         </div>
     </div>
 
@@ -371,6 +409,7 @@
     <!-- 5. DASHBOARD ADMIN -->
     <div id="view-dashboard" class="page-view">
         <div class="dashboard-layout">
+            <!-- 1. KIRI: TOOLS (Sidebar) -->
             <div class="sidebar">
                 <div class="sidebar-brand">Supervisor</div>
                 <div class="menu-item active" onclick="switchAdminTab('tab-persetujuan', this)">Menunggu Approval</div>
@@ -397,13 +436,13 @@
                     </div>
                 </div>
 
-                <!-- TAB 2: KALENDER INTERAKTIF -->
+                <!-- TAB 2: KALENDER & JADWAL (2 & 3 Kanan Atas dan Bawah) -->
                 <div id="tab-kalender" class="admin-tab">
                     
-                    <div style="display: flex; gap: 40px; flex-wrap: wrap;">
+                    <div style="display: flex; flex-direction: column; gap: 30px;">
                         
-                        <!-- Panel Kalender -->
-                        <div class="calendar-container">
+                        <!-- 2. KANAN ATAS: KALENDER PUTIH -->
+                        <div class="calendar-container white-theme">
                             <div class="calendar-header">
                                 <button class="cal-nav-btn" onclick="ubahBulan(-1)">&#10094;</button>
                                 <h3 id="cal-month-year">September 2026</h3>
@@ -414,12 +453,11 @@
                             </div>
                         </div>
 
-                        <!-- Panel Detail Jadwal di Hari yang Dipilih -->
-                        <div style="flex: 1; min-width: 300px;">
-                            <h2 style="font-size: 18px; border-bottom: 1px solid var(--bg-navy-lighter); padding-bottom: 10px; margin-bottom: 20px;">
+                        <!-- 3. KANAN BAWAH: DAFTAR JADWAL PUTIH -->
+                        <div class="schedule-box white-theme">
+                            <h2>
                                 Agenda: <span id="label-tanggal-pilih" style="color: var(--primary-accent);">Hari Ini</span>
                             </h2>
-                            
                             <div id="schedule-harian-items">
                                 <!-- JS akan mengisi detail jadwal pada tanggal yang diklik -->
                             </div>
@@ -433,13 +471,24 @@
     </div>
 
     <script>
-        // Simulasi Database
-        // Menggunakan waktu bulan ini (berdasarkan sistem) sebagai dummy agar titik di kalender terlihat
+        // JS Preview Foto Selfie
+        document.getElementById('m-foto').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('selfie-preview').src = e.target.result;
+                    document.getElementById('selfie-preview-container').style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Simulasi Database (Disesuaikan dengan bulan ini agar indikator kalender terlihat)
         const now = new Date();
         const y = now.getFullYear();
         const m = String(now.getMonth() + 1).padStart(2, '0');
         const d = String(now.getDate()).padStart(2, '0');
-        // Buat dummy 1 di hari ini, 1 di 2 hari ke depan
         const dummyDate1 = `${y}-${m}-${d}T10:00`;
         const dummyDate2 = `${y}-${m}-${String(now.getDate()+2).padStart(2, '0')}T14:00`;
 
@@ -448,26 +497,26 @@
             { id: 'TAMUTEMU-0002', nama: 'Budi Santoso', hp: '08571234123', waktu: dummyDate2, tujuan: 'Konsultasi Akademik', status: 'Terverifikasi' }
         ];
 
-        // State Kalender
-        let currentCalDate = new Date(); // Bulan/Tahun kalender yang sedang dilihat
-        let selectedDate = new Date();   // Tanggal spesifik yang sedang di-klik/aktif
+        let currentCalDate = new Date(); 
+        let selectedDate = new Date();   
 
-        // NAVIGASI VIEW
         function navigasi(viewId) {
             document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
         }
 
-        // --- FUNGSI MODAL & FORM ---
+        // --- FUNGSI MODAL ---
         function bukaModal() {
             document.getElementById('modal-form').style.display = 'flex';
             document.getElementById('step-1').style.display = 'block';
             document.getElementById('step-2').style.display = 'none';
+            // Reset form input
             document.getElementById('m-nama').value = '';
             document.getElementById('m-hp').value = '';
             document.getElementById('m-waktu').value = '';
             document.getElementById('m-tujuan').value = '';
             document.getElementById('m-foto').value = '';
+            document.getElementById('selfie-preview-container').style.display = 'none';
         }
 
         function tutupModal() {
@@ -527,7 +576,7 @@
 
             if(jadwal) {
                 if(jadwal.status === 'Menunggu') {
-                    infoStatus.innerHTML = `<h3 style="color:var(--warning)">Belum Di-approve</h3><p>Jadwal masih menunggu persetujuan Kepala Sekolah.</p>`;
+                    infoStatus.innerHTML = `<h3 style="color:var(--warning)">Belum Di-approve</h3><p>Jadwal masih menunggu persetujuan.</p>`;
                     qrBox.style.display = 'none';
                 } else if (jadwal.status === 'Terverifikasi') {
                     infoStatus.innerHTML = `<h3 style="color:var(--primary-accent)">Telah Di-approve!</h3><p>Tunjukkan QR Code ini di lobi.</p>`;
@@ -566,7 +615,6 @@
         }
 
         function refreshDataAdmin() {
-            // Render Tabel Pending
             const tbody = document.getElementById('body-pending');
             tbody.innerHTML = '';
             const pending = databaseJadwal.filter(j => j.status === 'Menunggu');
@@ -586,7 +634,6 @@
                 });
             }
 
-            // Render UI Kalender
             renderKalender();
         }
 
@@ -598,7 +645,7 @@
             }
         }
 
-        // --- SISTEM KALENDER INTERAKTIF ---
+        // --- SISTEM KALENDER INTERAKTIF (TEMA PUTIH) ---
         function ubahBulan(offset) {
             currentCalDate.setMonth(currentCalDate.getMonth() + offset);
             renderKalender();
@@ -624,23 +671,16 @@
 
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-            // Tanggal hari ini di dunia nyata
             const realToday = new Date();
 
-            // Kotak kosong awal bulan
             for (let i = 0; i < firstDay; i++) {
                 grid.innerHTML += `<div class="calendar-day empty"></div>`;
             }
 
-            // Loop per tanggal
             for (let day = 1; day <= daysInMonth; day++) {
-                // Cek apakah tanggal ini = hari ini
                 const isToday = (day === realToday.getDate() && month === realToday.getMonth() && year === realToday.getFullYear());
-                // Cek apakah tanggal ini = tanggal yang sedang di-klik/dipilih
                 const isSelected = (day === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear());
                 
-                // Cek apakah ada jadwal terverifikasi di tanggal ini
                 const hasEvent = databaseJadwal.some(j => {
                     if(j.status !== 'Terverifikasi') return false;
                     const jd = new Date(j.waktu);
@@ -659,11 +699,9 @@
                                    </div>`;
             }
 
-            // Update Label List Jadwal
             const isSelToday = (selectedDate.getDate() === realToday.getDate() && selectedDate.getMonth() === realToday.getMonth() && selectedDate.getFullYear() === realToday.getFullYear());
             document.getElementById('label-tanggal-pilih').innerText = isSelToday ? "Hari Ini" : selectedDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
-            // Panggil render list jadwal spesifik
             renderJadwalHarian();
         }
 
@@ -671,7 +709,6 @@
             const container = document.getElementById('schedule-harian-items');
             container.innerHTML = '';
 
-            // Filter jadwal hanya yang statusnya terverifikasi dan tanggalnya match dengan selectedDate
             let jadwalHariIni = databaseJadwal.filter(j => {
                 if (j.status !== 'Terverifikasi') return false;
                 const jd = new Date(j.waktu);
@@ -680,22 +717,21 @@
                         jd.getFullYear() === selectedDate.getFullYear());
             });
 
-            // Urutkan berdasarkan jam
             jadwalHariIni.sort((a, b) => new Date(a.waktu) - new Date(b.waktu));
 
             if(jadwalHariIni.length === 0) {
-                container.innerHTML = `<p style="color: var(--text-muted); font-size: 14px;">Tidak ada jadwal pertemuan pada tanggal ini.</p>`;
+                container.innerHTML = `<p style="color: #64748b; font-size: 14px;">Tidak ada jadwal pertemuan pada tanggal ini.</p>`;
             } else {
                 jadwalHariIni.forEach(j => {
                     const jd = new Date(j.waktu);
                     const card = document.createElement('div');
-                    card.className = 'schedule-card';
+                    card.className = 'schedule-card white-theme';
                     card.innerHTML = `
                         <div>
-                            <h4 style="color:var(--text-main); margin-bottom:5px; font-size:15px;">${j.nama}</h4>
-                            <p style="margin:0; font-size:13px; color:var(--text-muted);">${j.tujuan}</p>
+                            <h4>${j.nama}</h4>
+                            <p>${j.tujuan}</p>
                         </div>
-                        <div style="background: rgba(96,165,250,0.15); color: var(--primary-accent); padding: 8px 12px; border-radius: 6px; font-weight: 600; font-size: 14px; white-space: nowrap;">
+                        <div class="schedule-time">
                             ${jd.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
                         </div>
                     `;
