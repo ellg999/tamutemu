@@ -41,7 +41,7 @@
 
         /* --- ANIMASI POP-UP KE ATAS --- */
         @keyframes popUpUpwards {
-            0% { opacity: 0; transform: translateY(50px) scale(0.95); }
+            0% { opacity: 0; transform: translateY(40px) scale(0.98); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
@@ -91,8 +91,7 @@
         .landing-center {
             flex: 1; display: flex; flex-direction: column; justify-content: center;
             align-items: center; text-align: center; padding: 20px;
-            /* Terapkan animasi Pop-Up di sini */
-            animation: popUpUpwards 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards; 
+            animation: popUpUpwards 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards; 
         }
 
         .hero-bar {
@@ -100,12 +99,27 @@
             background: rgba(255, 255, 255, 0.05); padding: 15px 30px;
             border-radius: 50px; border: 1px solid var(--bg-navy-lighter);
             backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            flex-wrap: wrap;
+            flex-wrap: wrap; z-index: 2;
         }
         .hero-bar h1 { margin: 0; font-size: 20px; font-weight: 500; }
         .hero-bar .divider { width: 1px; height: 30px; background: var(--bg-navy-lighter); display: block; }
         .hero-bar .btn, .hero-bar .btn-outline { border-radius: 30px; padding: 12px 28px; margin: 0; }
         
+        /* Panduan Singkat (How it Works) */
+        .guide-container {
+            display: flex; gap: 20px; margin-top: 50px; flex-wrap: wrap; justify-content: center;
+            animation: popUpUpwards 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+            animation-delay: 0.2s; opacity: 0;
+        }
+        .guide-card {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--bg-navy-lighter);
+            padding: 20px 25px; border-radius: 16px; text-align: left; min-width: 220px; max-width: 250px;
+            transition: 0.3s;
+        }
+        .guide-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.05); border-color: var(--primary-accent); }
+        .guide-card h4 { margin-bottom: 8px; font-size: 16px; }
+        .guide-card p { margin: 0; font-size: 13px; color: var(--text-muted); }
+
         @media (max-width: 768px) {
             .hero-bar { flex-direction: column; border-radius: 20px; padding: 25px; }
             .hero-bar .divider { display: none; }
@@ -194,7 +208,9 @@
 
         /* --- DASHBOARD SUPERVISOR (3 BAGIAN) --- */
         .dashboard-layout { display: flex; flex: 1; height: 100vh; overflow: hidden; animation: fadeIn 0.5s ease forwards; }
-        .sidebar { width: 260px; background: var(--bg-navy-light); border-right: 1px solid var(--bg-navy-lighter); padding: 30px 20px; display: flex; flex-direction: column; }
+        
+        /* SIDEBAR DIPERLEBAR (320px) */
+        .sidebar { width: 320px; background: var(--bg-navy-light); border-right: 1px solid var(--bg-navy-lighter); padding: 30px 25px; display: flex; flex-direction: column; }
         .sidebar-brand { font-size: 20px; font-weight: 600; color: var(--primary-accent); margin-bottom: 40px; text-align: center; border-bottom: 1px solid var(--bg-navy-lighter); padding-bottom: 20px; }
         .menu-item { padding: 15px; margin-bottom: 10px; border-radius: 8px; cursor: pointer; color: var(--text-muted); font-weight: 500; transition: 0.3s; font-size: 14px; }
         .menu-item:hover, .menu-item.active { background: rgba(255, 255, 255, 0.05); color: var(--text-main); border-left: 4px solid var(--primary-accent); }
@@ -213,8 +229,14 @@
             border: 1px solid #e2e8f0; width: 100%; 
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
+        
+        /* PEMISAHAN BULAN (KIRI) DAN TAHUN (KANAN) */
         .calendar-container.white-theme .calendar-header { display: flex; justify-content: space-between; margin-bottom: 25px; align-items: center;}
-        .calendar-container.white-theme .calendar-header h3 { margin: 0; color: #0f172a; font-size: 22px; font-weight: 600;}
+        
+        .cal-nav-group { display: flex; align-items: center; gap: 15px; }
+        .cal-nav-group h3 { margin: 0; color: #0f172a; font-size: 22px; font-weight: 600;}
+        .cal-year-text { margin: 0; color: #64748b; font-size: 22px; font-weight: 500; }
+        
         .calendar-container.white-theme .cal-nav-btn { background: #f8fafc; border: 1px solid #e2e8f0; color: #0f172a; border-radius: 6px; padding: 8px 15px; cursor: pointer; transition: 0.2s;}
         .calendar-container.white-theme .cal-nav-btn:hover { background: var(--primary-accent); color: white; border-color: var(--primary-accent);}
         
@@ -269,12 +291,30 @@
         </div>
         
         <div class="landing-center">
+            
             <div class="hero-bar">
                 <h1>Jadwalkan Pertemuan Anda</h1>
                 <span class="divider"></span>
                 <button class="btn" onclick="bukaModal()">Jadwalkan</button>
                 <button class="btn btn-outline" onclick="navigasi('view-cek-status')">Punya Jadwal?</button>
             </div>
+
+            <!-- Panduan Singkat / Cara Kerja -->
+            <div class="guide-container">
+                <div class="guide-card">
+                    <h4 style="color: var(--primary-accent);">📝 1. Isi Formulir</h4>
+                    <p>Lengkapi biodata dan tujuan Anda bertemu Kepala Sekolah secara mandiri.</p>
+                </div>
+                <div class="guide-card">
+                    <h4 style="color: var(--warning);">⏳ 2. Verifikasi</h4>
+                    <p>Tunggu pihak sekolah meninjau dan memberikan persetujuan (approval) jadwal.</p>
+                </div>
+                <div class="guide-card">
+                    <h4 style="color: var(--success);">📱 3. Akses Masuk</h4>
+                    <p>Setelah disetujui, tunjukkan QR Code pada petugas lobi di hari kedatangan.</p>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -413,7 +453,7 @@
     <!-- 5. DASHBOARD ADMIN -->
     <div id="view-dashboard" class="page-view">
         <div class="dashboard-layout">
-            <!-- 1. KIRI: TOOLS (Sidebar) -->
+            <!-- 1. KIRI: TOOLS (Sidebar Diperlebar) -->
             <div class="sidebar">
                 <div class="sidebar-brand">Supervisor</div>
                 <div class="menu-item active" onclick="switchAdminTab('tab-persetujuan', this)">Menunggu Approval</div>
@@ -447,11 +487,17 @@
                         
                         <!-- 2. KANAN ATAS: KALENDER PUTIH -->
                         <div class="calendar-container white-theme">
+                            
+                            <!-- PEMISAHAN BULAN DI KIRI, TAHUN DI KANAN -->
                             <div class="calendar-header">
-                                <button class="cal-nav-btn" onclick="ubahBulan(-1)">&#10094;</button>
-                                <h3 id="cal-month-year">September 2026</h3>
-                                <button class="cal-nav-btn" onclick="ubahBulan(1)">&#10095;</button>
+                                <div class="cal-nav-group">
+                                    <button class="cal-nav-btn" onclick="ubahBulan(-1)">&#10094;</button>
+                                    <h3 id="cal-month-text">September</h3>
+                                    <button class="cal-nav-btn" onclick="ubahBulan(1)">&#10095;</button>
+                                </div>
+                                <h3 class="cal-year-text" id="cal-year-text">2026</h3>
                             </div>
+                            
                             <div class="calendar-grid" id="calendar-grid-days">
                             </div>
                         </div>
@@ -667,7 +713,10 @@
             const month = currentCalDate.getMonth(); 
             
             const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            document.getElementById('cal-month-year').innerText = `${monthNames[month]}${year}`;
+            
+            // UPDATE TEKS BULAN DAN TAHUN SECARA TERPISAH
+            document.getElementById('cal-month-text').innerText = monthNames[month];
+            document.getElementById('cal-year-text').innerText = year;
 
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
