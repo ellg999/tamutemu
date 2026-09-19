@@ -39,17 +39,13 @@
             background-attachment: fixed;
         }
 
-        /* --- ANIMASI POP-UP KE ATAS --- */
         @keyframes popUpUpwards {
             0% { opacity: 0; transform: translateY(40px) scale(0.98); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        .page-view {
-            display: none; width: 100%; min-height: 100vh; position: relative;
-        }
+        .page-view { display: none; width: 100%; min-height: 100vh; position: relative; }
         .page-view.active { display: flex; flex-direction: column; }
-        
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         h1, h2, h3 { color: var(--text-main); margin-bottom: 15px; font-weight: 600; }
@@ -67,16 +63,17 @@
         
         .form-group { margin-bottom: 20px; text-align: left; }
         label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-muted); }
-        input, textarea {
+        input, textarea, select {
             width: 100%; padding: 14px; background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--bg-navy-lighter); border-radius: 8px; color: var(--text-main);
             font-size: 14px; transition: all 0.3s ease;
         }
-        input:focus, textarea:focus { outline: none; border-color: var(--primary-accent); }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary-accent); }
+        select option { background: var(--bg-navy-light); color: var(--text-main); }
 
         /* --- 1. HALAMAN AWAL (LANDING) --- */
         .top-nav {
-            display: flex; justify-content: flex-end; padding: 20px 40px;
+            display: flex; justify-content: flex-end; gap: 10px; padding: 20px 40px;
             position: absolute; top: 0; right: 0; width: 100%; z-index: 10;
             animation: fadeIn 0.8s ease forwards;
         }
@@ -105,7 +102,6 @@
         .hero-bar .divider { width: 1px; height: 30px; background: var(--bg-navy-lighter); display: block; }
         .hero-bar .btn, .hero-bar .btn-outline { border-radius: 30px; padding: 12px 28px; margin: 0; }
         
-        /* Panduan Singkat (How it Works) */
         .guide-container {
             display: flex; gap: 20px; margin-top: 50px; flex-wrap: wrap; justify-content: center;
             animation: popUpUpwards 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
@@ -120,34 +116,28 @@
         .guide-card h4 { margin-bottom: 8px; font-size: 16px; }
         .guide-card p { margin: 0; font-size: 13px; color: var(--text-muted); }
 
-        @media (max-width: 768px) {
-            .hero-bar { flex-direction: column; border-radius: 20px; padding: 25px; }
-            .hero-bar .divider { display: none; }
-            .hero-bar .btn, .hero-bar .btn-outline { width: 100%; }
-        }
-
         /* --- MODAL POP-UP (Formulir Putih) --- */
         .modal-overlay {
             display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-            z-index: 100; align-items: center; justify-content: center;
-            backdrop-filter: blur(4px); animation: fadeIn 0.3s ease;
+            z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(4px);
         }
         .modal-box {
             background: var(--modal-bg); color: var(--modal-text);
             width: 90%; max-width: 450px; border-radius: 12px; padding: 30px;
             position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
             animation: popUpUpwards 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+            max-height: 90vh; overflow-y: auto;
         }
         .modal-box h2 { color: var(--modal-text); margin-bottom: 20px; font-size: 20px; text-align: center; }
         .modal-box label { color: #475569; font-weight: 500; font-size: 13px; }
-        .modal-box input, .modal-box textarea {
+        .modal-box input, .modal-box textarea, .modal-box select {
             background: var(--modal-input-bg); border: 1px solid var(--modal-border);
             color: var(--modal-text); border-radius: 8px;
         }
-        .modal-box input:focus, .modal-box textarea:focus {
+        .modal-box select option { background: #fff; color: #000; }
+        .modal-box input:focus, .modal-box textarea:focus, .modal-box select:focus {
             background: #fff; border-color: var(--primary-accent); box-shadow: 0 0 0 3px rgba(96,165,250,0.2);
         }
-        .modal-box input[readonly] { background: #e2e8f0; color: #64748b; cursor: not-allowed; font-weight: 600; }
         .close-btn {
             position: absolute; top: 15px; right: 20px; font-size: 24px;
             color: #94a3b8; cursor: pointer; transition: 0.3s;
@@ -206,11 +196,9 @@
         }
         .back-btn { position: absolute; top: 20px; left: 40px; z-index: 10; animation: fadeIn 1s ease forwards; }
 
-        /* --- DASHBOARD SUPERVISOR (3 BAGIAN) --- */
+        /* --- DASHBOARD SUPERVISOR & RESEPSIONIS --- */
         .dashboard-layout { display: flex; flex: 1; height: 100vh; overflow: hidden; animation: fadeIn 0.5s ease forwards; }
-        
-        /* SIDEBAR DIPERLEBAR (320px) */
-        .sidebar { width: 320px; background: var(--bg-navy-light); border-right: 1px solid var(--bg-navy-lighter); padding: 30px 25px; display: flex; flex-direction: column; }
+        .sidebar { width: 280px; background: var(--bg-navy-light); border-right: 1px solid var(--bg-navy-lighter); padding: 30px 20px; display: flex; flex-direction: column; }
         .sidebar-brand { font-size: 20px; font-weight: 600; color: var(--primary-accent); margin-bottom: 40px; text-align: center; border-bottom: 1px solid var(--bg-navy-lighter); padding-bottom: 20px; }
         .menu-item { padding: 15px; margin-bottom: 10px; border-radius: 8px; cursor: pointer; color: var(--text-muted); font-weight: 500; transition: 0.3s; font-size: 14px; }
         .menu-item:hover, .menu-item.active { background: rgba(255, 255, 255, 0.05); color: var(--text-main); border-left: 4px solid var(--primary-accent); }
@@ -223,26 +211,19 @@
         th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--bg-navy-lighter); font-size: 14px;}
         th { color: var(--text-muted); font-weight: 500; }
 
-        /* TEMA PUTIH UNTUK KALENDER (Kanan Atas) */
+        /* Kalender Putih */
         .calendar-container.white-theme { 
             background: #ffffff; border-radius: 12px; padding: 30px; 
-            border: 1px solid #e2e8f0; width: 100%; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0; width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
-        
-        /* PEMISAHAN BULAN (KIRI) DAN TAHUN (KANAN) */
         .calendar-container.white-theme .calendar-header { display: flex; justify-content: space-between; margin-bottom: 25px; align-items: center;}
-        
         .cal-nav-group { display: flex; align-items: center; gap: 15px; }
         .cal-nav-group h3 { margin: 0; color: #0f172a; font-size: 22px; font-weight: 600;}
         .cal-year-text { margin: 0; color: #64748b; font-size: 22px; font-weight: 500; }
-        
         .calendar-container.white-theme .cal-nav-btn { background: #f8fafc; border: 1px solid #e2e8f0; color: #0f172a; border-radius: 6px; padding: 8px 15px; cursor: pointer; transition: 0.2s;}
         .calendar-container.white-theme .cal-nav-btn:hover { background: var(--primary-accent); color: white; border-color: var(--primary-accent);}
-        
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; }
         .calendar-container.white-theme .day-name { font-size: 14px; color: #64748b; padding-bottom: 10px; font-weight: 600;}
-        
         .calendar-container.white-theme .calendar-day { 
             position: relative; padding: 15px 5px; border-radius: 8px; font-size: 16px; 
             cursor: pointer; transition: 0.2s; color: #334155; border: 1px solid transparent; font-weight: 500;
@@ -250,35 +231,33 @@
         .calendar-container.white-theme .calendar-day:hover { background: #f1f5f9; color: #0f172a; }
         .calendar-container.white-theme .calendar-day.empty { cursor: default; }
         .calendar-container.white-theme .calendar-day.empty:hover { background: transparent; }
-        
-        .calendar-container.white-theme .calendar-day.selected { 
-            background: var(--primary-accent); color: #0f172a; font-weight: 600; 
-            box-shadow: 0 4px 10px rgba(96, 165, 250, 0.3);
-        }
+        .calendar-container.white-theme .calendar-day.selected { background: var(--primary-accent); color: #0f172a; font-weight: 600; box-shadow: 0 4px 10px rgba(96, 165, 250, 0.3);}
         .calendar-container.white-theme .calendar-day.today:not(.selected) { border-color: var(--primary-accent); color: var(--primary-accent); }
         .event-dot { width: 5px; height: 5px; background: var(--success); border-radius: 50%; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); }
         .calendar-container.white-theme .calendar-day.selected .event-dot { background: #ffffff; } 
 
-        /* TEMA PUTIH UNTUK JADWAL HARIAN (Kanan Bawah) */
         .schedule-box.white-theme {
             background: #ffffff; border-radius: 12px; padding: 30px; 
             border: 1px solid #e2e8f0; width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
-        .schedule-box.white-theme h2 {
-            font-size: 18px; border-bottom: 1px solid #e2e8f0; 
-            padding-bottom: 15px; margin-bottom: 20px; color: #0f172a;
-        }
-        .schedule-card.white-theme {
-            background: #f8fafc; border: 1px solid #e2e8f0;
-            padding: 15px 20px; border-radius: 8px; margin-bottom: 15px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .schedule-box.white-theme h2 { font-size: 18px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px; color: #0f172a;}
+        .schedule-card.white-theme { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px 20px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;}
         .schedule-card.white-theme h4 { color: #0f172a; margin-bottom: 5px; font-size: 16px; }
         .schedule-card.white-theme p { margin: 0; font-size: 13px; color: #64748b; }
-        .schedule-time {
-            background: rgba(96, 165, 250, 0.15); color: var(--primary-accent);
-            padding: 8px 12px; border-radius: 6px; font-weight: 600; font-size: 14px;
+        .schedule-time { background: rgba(96, 165, 250, 0.15); color: var(--primary-accent); padding: 8px 12px; border-radius: 6px; font-weight: 600; font-size: 14px;}
+
+        /* CSS KHUSUS SCANNER RESEPSIONIS */
+        .scanner-box {
+            width: 250px; height: 250px; border: 4px dashed var(--primary-accent);
+            margin: 0 auto 20px auto; position: relative; overflow: hidden; border-radius: 12px;
+            background: #f1f5f9;
         }
+        .scanner-line {
+            width: 100%; height: 4px; background: var(--success);
+            position: absolute; top: 0; left: 0; box-shadow: 0 0 15px var(--success);
+            animation: scanAnim 2.5s linear infinite;
+        }
+        @keyframes scanAnim { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
 
     </style>
 </head>
@@ -287,11 +266,11 @@
     <!-- 1. HALAMAN UTAMA (LANDING) -->
     <div id="view-landing" class="page-view active">
         <div class="top-nav">
-            <span class="admin-link" onclick="navigasi('view-login')">Supervisor Mode</span>
+            <span class="admin-link" onclick="navigasi('view-login-resepsionis')" style="background: transparent; border-color: var(--text-muted); color: var(--text-muted);">Resepsionis</span>
+            <span class="admin-link" onclick="navigasi('view-login')">Supervisor</span>
         </div>
         
         <div class="landing-center">
-            
             <div class="hero-bar">
                 <h1>Jadwalkan Pertemuan Anda</h1>
                 <span class="divider"></span>
@@ -299,22 +278,20 @@
                 <button class="btn btn-outline" onclick="navigasi('view-cek-status')">Punya Jadwal?</button>
             </div>
 
-            <!-- Panduan Singkat / Cara Kerja -->
             <div class="guide-container">
                 <div class="guide-card">
                     <h4 style="color: var(--primary-accent);">📝 1. Isi Formulir</h4>
-                    <p>Lengkapi biodata dan tujuan Anda bertemu Kepala Sekolah secara mandiri.</p>
+                    <p>Lengkapi biodata dan pilih tujuan Anda secara mandiri.</p>
                 </div>
                 <div class="guide-card">
                     <h4 style="color: var(--warning);">⏳ 2. Verifikasi</h4>
-                    <p>Tunggu pihak sekolah meninjau dan memberikan persetujuan (approval) jadwal.</p>
+                    <p>Tunggu pihak sekolah meninjau dan memberikan persetujuan.</p>
                 </div>
                 <div class="guide-card">
                     <h4 style="color: var(--success);">📱 3. Akses Masuk</h4>
-                    <p>Setelah disetujui, tunjukkan QR Code pada petugas lobi di hari kedatangan.</p>
+                    <p>Tunjukkan QR Code pada Resepsionis/Satpam saat tiba.</p>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -323,7 +300,6 @@
         <div class="modal-box">
             <span class="close-btn" onclick="tutupModal()">&times;</span>
             
-            <!-- STEP 1: Data Diri -->
             <div id="step-1">
                 <h2>Data Pertemuan</h2>
                 <div class="form-group">
@@ -333,6 +309,17 @@
                 <div class="form-group">
                     <label>Nomor HP / WhatsApp</label>
                     <input type="tel" id="m-hp" placeholder="Contoh: 081234567890">
+                    <p style="font-size: 11px; color: var(--primary-accent); margin-top: 5px; margin-bottom: 0;">*Notifikasi persetujuan/penolakan akan dikirim ke WhatsApp ini.</p>
+                </div>
+                <div class="form-group">
+                    <label>Ingin Bertemu Dengan</label>
+                    <select id="m-host">
+                        <option value="Kepala Sekolah">Kepala Sekolah</option>
+                        <option value="Wakil Kepala Sekolah">Wakil Kepala Sekolah</option>
+                        <option value="Guru BK">Guru Bimbingan Konseling (BK)</option>
+                        <option value="Wali Kelas">Wali Kelas</option>
+                        <option value="Tata Usaha">Bagian Tata Usaha</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Tanggal & Waktu</label>
@@ -342,14 +329,9 @@
                     <label>Tujuan / Keperluan</label>
                     <textarea id="m-tujuan" rows="2" placeholder="Keperluan pertemuan..."></textarea>
                 </div>
-                <div class="form-group">
-                    <label>Ingin Bertemu Dengan</label>
-                    <input type="text" value="Kepala Sekolah" readonly>
-                </div>
                 <button class="btn" style="width: 100%; margin-top: 10px;" onclick="lanjutStep2()">Selanjutnya</button>
             </div>
 
-            <!-- STEP 2: Selfie / Upload -->
             <div id="step-2">
                 <h2>Verifikasi Identitas</h2>
                 <p style="color: #64748b; font-size: 13px;">Silakan ambil foto wajah (selfie) atau unggah identitas Anda.</p>
@@ -374,46 +356,20 @@
         <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">Kembali</button>
         
         <div class="ticket-wrapper">
-            <div class="success-bar">
-                ✨ Pengajuan Berhasil Dikirim!
-            </div>
-            
+            <div class="success-bar">✨ Pengajuan Berhasil Dikirim!</div>
             <div class="ticket-card">
                 <div class="ticket-header">
                     <h3>KARTU PENGUNJUNG</h3>
                     <p id="t-id">TAMUTEMU-XXXX</p>
                 </div>
-                
-                <div class="ticket-row">
-                    <span class="ticket-label">Nama</span>
-                    <span class="ticket-value" id="t-nama">-</span>
-                </div>
-                <div class="ticket-row">
-                    <span class="ticket-label">No. HP</span>
-                    <span class="ticket-value" id="t-hp">-</span>
-                </div>
-                <div class="ticket-row">
-                    <span class="ticket-label">Bertemu</span>
-                    <span class="ticket-value">Kepala Sekolah</span>
-                </div>
-                <div class="ticket-row">
-                    <span class="ticket-label">Keperluan</span>
-                    <span class="ticket-value" id="t-tujuan">-</span>
-                </div>
-                <div class="ticket-row">
-                    <span class="ticket-label">Waktu</span>
-                    <span class="ticket-value" id="t-waktu">-</span>
-                </div>
-                
-                <div class="status-badge">
-                    Belum di-approve
-                </div>
-                
-                <p style="font-size: 11px; color: #94a3b8; text-align: center; margin-top: 15px; margin-bottom: 0;">
-                    *Harap menunggu approval. Silakan cek status secara berkala.
-                </p>
+                <div class="ticket-row"><span class="ticket-label">Nama</span><span class="ticket-value" id="t-nama">-</span></div>
+                <div class="ticket-row"><span class="ticket-label">No. HP</span><span class="ticket-value" id="t-hp">-</span></div>
+                <div class="ticket-row"><span class="ticket-label">Bertemu</span><span class="ticket-value" id="t-host">-</span></div>
+                <div class="ticket-row"><span class="ticket-label">Keperluan</span><span class="ticket-value" id="t-tujuan">-</span></div>
+                <div class="ticket-row"><span class="ticket-label">Waktu</span><span class="ticket-value" id="t-waktu">-</span></div>
+                <div class="status-badge">Belum di-approve</div>
+                <p style="font-size: 11px; color: #94a3b8; text-align: center; margin-top: 15px; margin-bottom: 0;">*Harap menunggu approval. Silakan cek status secara berkala.</p>
             </div>
-            
             <button class="btn" style="width: 100%; max-width: 380px;" onclick="navigasi('view-landing')">Selesai</button>
         </div>
     </div>
@@ -437,23 +393,31 @@
         </div>
     </div>
 
-    <!-- 4. LOGIN ADMIN -->
+    <!-- 4. LOGIN SUPERVISOR -->
     <div id="view-login" class="page-view" style="justify-content: center; position:relative;">
         <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">Kembali</button>
         <div class="card-container" style="text-align: center;">
             <h2>Supervisor</h2>
             <p>Masukkan kata sandi</p>
-            <div class="form-group">
-                <input type="password" id="input-sandi" placeholder="Kata Sandi...">
-            </div>
+            <div class="form-group"><input type="password" id="input-sandi" placeholder="Kata Sandi..."></div>
             <button class="btn" style="width: 100%;" onclick="loginAdmin()">Masuk Dashboard</button>
         </div>
     </div>
 
-    <!-- 5. DASHBOARD ADMIN -->
+    <!-- 4B. LOGIN RESEPSIONIS -->
+    <div id="view-login-resepsionis" class="page-view" style="justify-content: center; position:relative;">
+        <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">Kembali</button>
+        <div class="card-container" style="text-align: center;">
+            <h2>Resepsionis / Satpam</h2>
+            <p>Masukkan kata sandi (Ketik apa saja untuk demo)</p>
+            <div class="form-group"><input type="password" id="input-sandi-satpam" placeholder="Kata Sandi..."></div>
+            <button class="btn" style="width: 100%;" onclick="loginResepsionis()">Akses Scanner</button>
+        </div>
+    </div>
+
+    <!-- 5. DASHBOARD SUPERVISOR -->
     <div id="view-dashboard" class="page-view">
         <div class="dashboard-layout">
-            <!-- 1. KIRI: TOOLS (Sidebar Diperlebar) -->
             <div class="sidebar">
                 <div class="sidebar-brand">Supervisor</div>
                 <div class="menu-item active" onclick="switchAdminTab('tab-persetujuan', this)">Menunggu Approval</div>
@@ -462,15 +426,20 @@
             </div>
 
             <div class="content-area">
+                <!-- Header Ekspor Data -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h2 style="margin: 0;">Dasbor Utama</h2>
+                    <button class="btn btn-outline btn-small" onclick="unduhLaporan()">📥 Unduh Laporan (CSV)</button>
+                </div>
+
                 <!-- TAB 1: PERSETUJUAN -->
                 <div id="tab-persetujuan" class="admin-tab active">
-                    <h2>Daftar Menunggu Approval</h2>
                     <div style="background: var(--bg-navy-light); border-radius: 12px; padding: 20px;">
                         <table>
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Nama Tamu (HP)</th>
+                                    <th>Tamu & Host</th>
                                     <th>Waktu Pengajuan</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -480,15 +449,10 @@
                     </div>
                 </div>
 
-                <!-- TAB 2: KALENDER & JADWAL (2 & 3 Kanan Atas dan Bawah) -->
+                <!-- TAB 2: KALENDER & JADWAL -->
                 <div id="tab-kalender" class="admin-tab">
-                    
                     <div style="display: flex; flex-direction: column; gap: 30px;">
-                        
-                        <!-- 2. KANAN ATAS: KALENDER PUTIH -->
                         <div class="calendar-container white-theme">
-                            
-                            <!-- PEMISAHAN BULAN DI KIRI, TAHUN DI KANAN -->
                             <div class="calendar-header">
                                 <div class="cal-nav-group">
                                     <button class="cal-nav-btn" onclick="ubahBulan(-1)">&#10094;</button>
@@ -497,22 +461,65 @@
                                 </div>
                                 <h3 class="cal-year-text" id="cal-year-text">2026</h3>
                             </div>
-                            
-                            <div class="calendar-grid" id="calendar-grid-days">
-                            </div>
+                            <div class="calendar-grid" id="calendar-grid-days"></div>
                         </div>
 
-                        <!-- 3. KANAN BAWAH: DAFTAR JADWAL PUTIH -->
                         <div class="schedule-box white-theme">
-                            <h2>
-                                Agenda: <span id="label-tanggal-pilih" style="color: var(--primary-accent);">Hari Ini</span>
-                            </h2>
-                            <div id="schedule-harian-items">
-                            </div>
+                            <h2>Agenda: <span id="label-tanggal-pilih" style="color: var(--primary-accent);">Hari Ini</span></h2>
+                            <div id="schedule-harian-items"></div>
                         </div>
-
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- 6. DASHBOARD RESEPSIONIS (SCANNER) -->
+    <div id="view-dashboard-resepsionis" class="page-view">
+        <div class="dashboard-layout">
+            <div class="sidebar">
+                <div class="sidebar-brand">Resepsionis Lobi</div>
+                <div class="menu-item active" onclick="switchResepsionisTab('tab-scanner', this)">Scanner QR Code</div>
+                <div class="menu-item" onclick="switchResepsionisTab('tab-riwayat-hadir', this)">Tamu Hadir Hari Ini</div>
+                <div class="menu-item logout-btn" onclick="navigasi('view-landing')">Keluar</div>
+            </div>
+
+            <div class="content-area">
+                <!-- TAB SCANNER -->
+                <div id="tab-scanner" class="admin-tab active" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                    <div class="schedule-box white-theme" style="text-align: center; max-width: 500px; margin: auto;">
+                        <h2 style="color: #0f172a; border-bottom: none;">Pemindai Tiket Kedatangan</h2>
+                        <p style="color: #64748b;">Arahkan QR Code ke kamera atau ketik ID secara manual.</p>
+                        
+                        <div class="scanner-box">
+                            <div class="scanner-line"></div>
+                            <p style="margin-top: 110px; color: var(--text-muted); font-size: 14px;">[ Kamera Aktif ]</p>
+                        </div>
+                        
+                        <input type="text" id="input-scan-id" placeholder="Atau ketik ID Tamu (Cth: TAMUTEMU-1234)" style="max-width: 350px; margin: 0 auto 20px auto; display: block; border-color: #cbd5e1; color: #000; background: #fff;">
+                        
+                        <button class="btn" style="width: 100%; max-width: 350px;" onclick="scanQR()">Verifikasi Kedatangan</button>
+                        
+                        <div id="scan-result" style="margin-top: 25px; padding: 15px; border-radius: 8px; display: none;"></div>
+                    </div>
+                </div>
+
+                <!-- TAB RIWAYAT HADIR -->
+                <div id="tab-riwayat-hadir" class="admin-tab">
+                    <h2>Daftar Tamu Tiba (Check-In)</h2>
+                    <div style="background: var(--bg-navy-light); border-radius: 12px; padding: 20px;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nama Tamu</th>
+                                    <th>Bertemu</th>
+                                    <th>Status Kehadiran</th>
+                                </tr>
+                            </thead>
+                            <tbody id="body-hadir"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -532,7 +539,7 @@
             }
         });
 
-        // Simulasi Database
+        // Simulasi Database dengan field Host dan Alasan
         const now = new Date();
         const y = now.getFullYear();
         const m = String(now.getMonth() + 1).padStart(2, '0');
@@ -541,8 +548,8 @@
         const dummyDate2 = `${y}-${m}-${String(now.getDate()+2).padStart(2, '0')}T14:00`;
 
         let databaseJadwal = [
-            { id: 'TAMUTEMU-0001', nama: 'Vendor Seragam', hp: '08123456789', waktu: dummyDate1, tujuan: 'Presentasi Penawaran', status: 'Terverifikasi' },
-            { id: 'TAMUTEMU-0002', nama: 'Budi Santoso', hp: '08571234123', waktu: dummyDate2, tujuan: 'Konsultasi Akademik', status: 'Terverifikasi' }
+            { id: 'TAMUTEMU-0001', nama: 'Vendor Seragam', hp: '08123456789', waktu: dummyDate1, tujuan: 'Presentasi Penawaran', host: 'Kepala Sekolah', status: 'Terverifikasi', alasan: '' },
+            { id: 'TAMUTEMU-0002', nama: 'Budi Santoso', hp: '08571234123', waktu: dummyDate2, tujuan: 'Konsultasi Akademik', host: 'Guru BK', status: 'Terverifikasi', alasan: '' }
         ];
 
         let currentCalDate = new Date(); 
@@ -560,58 +567,49 @@
             document.getElementById('step-2').style.display = 'none';
             document.getElementById('m-nama').value = '';
             document.getElementById('m-hp').value = '';
+            document.getElementById('m-host').value = 'Kepala Sekolah';
             document.getElementById('m-waktu').value = '';
             document.getElementById('m-tujuan').value = '';
             document.getElementById('m-foto').value = '';
             document.getElementById('selfie-preview-container').style.display = 'none';
         }
-
-        function tutupModal() {
-            document.getElementById('modal-form').style.display = 'none';
-        }
-
+        function tutupModal() { document.getElementById('modal-form').style.display = 'none'; }
         function lanjutStep2() {
-            const nama = document.getElementById('m-nama').value;
-            const hp = document.getElementById('m-hp').value;
-            const waktu = document.getElementById('m-waktu').value;
-            const tujuan = document.getElementById('m-tujuan').value;
-
-            if(!nama || !hp || !waktu || !tujuan) {
+            if(!document.getElementById('m-nama').value || !document.getElementById('m-hp').value || !document.getElementById('m-waktu').value || !document.getElementById('m-tujuan').value) {
                 alert("Mohon lengkapi semua data pertemuan.");
                 return;
             }
             document.getElementById('step-1').style.display = 'none';
             document.getElementById('step-2').style.display = 'block';
         }
-
         function kembaliStep1() {
             document.getElementById('step-2').style.display = 'none';
             document.getElementById('step-1').style.display = 'block';
         }
-
         function submitJadwal() {
             const id = 'TAMUTEMU-' + Math.floor(Math.random() * 9000 + 1000);
             const nama = document.getElementById('m-nama').value;
             const hp = document.getElementById('m-hp').value;
+            const host = document.getElementById('m-host').value;
             const waktu = document.getElementById('m-waktu').value;
             const tujuan = document.getElementById('m-tujuan').value;
             
-            databaseJadwal.push({
-                id: id, nama: nama, hp: hp, waktu: waktu, tujuan: tujuan, status: 'Menunggu'
-            });
-            
+            databaseJadwal.push({ id: id, nama: nama, hp: hp, host: host, waktu: waktu, tujuan: tujuan, status: 'Menunggu', alasan: '' });
             tutupModal();
+            
+            // Simulasi notif WA
+            setTimeout(() => { alert(`Sistem: Pesan WhatsApp konfirmasi telah dikirim ke nomor ${hp}`); }, 500);
             
             document.getElementById('t-id').innerText = id;
             document.getElementById('t-nama').innerText = nama;
             document.getElementById('t-hp').innerText = hp;
+            document.getElementById('t-host').innerText = host;
             document.getElementById('t-waktu').innerText = new Date(waktu).toLocaleString('id-ID');
             document.getElementById('t-tujuan').innerText = tujuan;
-
             navigasi('view-tiket');
         }
 
-        // --- FUNGSI CEK STATUS ---
+        // --- FUNGSI CEK STATUS TAMU ---
         function cekStatus() {
             const id = document.getElementById('input-cek-id').value.trim().toUpperCase();
             const jadwal = databaseJadwal.find(j => j.id === id);
@@ -620,44 +618,39 @@
             const qrBox = document.getElementById('qr-box');
             
             hasilBox.style.display = 'block';
+            qrBox.style.display = 'none';
 
             if(jadwal) {
                 if(jadwal.status === 'Menunggu') {
-                    infoStatus.innerHTML = `<h3 style="color:var(--warning)">Belum Di-approve</h3><p>Jadwal masih menunggu persetujuan Kepala Sekolah.</p>`;
-                    qrBox.style.display = 'none';
+                    infoStatus.innerHTML = `<h3 style="color:var(--warning)">Belum Di-approve</h3><p>Jadwal masih menunggu persetujuan dari ${jadwal.host}.</p>`;
                 } else if (jadwal.status === 'Terverifikasi') {
                     infoStatus.innerHTML = `<h3 style="color:var(--primary-accent)">Telah Di-approve!</h3><p>Tunjukkan QR Code ini di lobi.</p>`;
                     qrBox.style.display = 'block';
-                    
                     document.getElementById('qrcode').innerHTML = "";
-                    new QRCode(document.getElementById("qrcode"), {
-                        text: jadwal.id, width: 140, height: 140,
-                        colorDark: "#1e293b", colorLight: "#ffffff"
-                    });
+                    new QRCode(document.getElementById("qrcode"), { text: jadwal.id, width: 140, height: 140, colorDark: "#1e293b", colorLight: "#ffffff" });
+                } else if (jadwal.status === 'Ditolak') {
+                    infoStatus.innerHTML = `<h3 style="color:var(--danger)">Pengajuan Ditolak</h3><p>Alasan: ${jadwal.alasan}</p><p style="font-size:12px; color:var(--text-muted);">Silakan ajukan ulang jadwal Anda.</p>`;
+                } else if (jadwal.status === 'Hadir') {
+                    infoStatus.innerHTML = `<h3 style="color:var(--success)">Selesai / Hadir</h3><p>Anda telah tercatat hadir pada jadwal ini.</p>`;
                 }
             } else {
                 infoStatus.innerHTML = `<h3 style="color:var(--danger)">ID Tidak Ditemukan</h3>`;
-                qrBox.style.display = 'none';
             }
         }
 
-        // --- FUNGSI ADMIN ---
+        // --- FUNGSI ADMIN SUPERVISOR ---
         function loginAdmin() {
             const sandi = document.getElementById('input-sandi').value;
             if(sandi.trim() !== '') { 
                 document.getElementById('input-sandi').value = '';
-                navigasi('view-dashboard');
-                refreshDataAdmin(); 
-            } else {
-                alert('Sandi tidak boleh kosong!');
-            }
+                navigasi('view-dashboard'); refreshDataAdmin(); 
+            } else { alert('Sandi tidak boleh kosong!'); }
         }
 
         function switchAdminTab(tabId, element) {
-            document.querySelectorAll('.admin-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.menu-item').forEach(menu => menu.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            element.classList.add('active');
+            document.querySelectorAll('#view-dashboard .admin-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('#view-dashboard .menu-item').forEach(menu => menu.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active'); element.classList.add('active');
             refreshDataAdmin();
         }
 
@@ -673,9 +666,12 @@
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td style="color:var(--primary-accent); font-family:monospace;">${j.id}</td>
-                        <td>${j.nama}<br><span style="font-size:12px; color:var(--text-muted);">${j.hp || '-'}</span></td>
+                        <td>${j.nama} <br><span style="font-size:12px; color:var(--warning);">Bertemu: ${j.host}</span></td>
                         <td>${new Date(j.waktu).toLocaleString('id-ID')}</td>
-                        <td><button class="btn btn-small" onclick="approveJadwal('${j.id}')">Approve</button></td>
+                        <td style="display:flex; gap:8px;">
+                            <button class="btn btn-small" style="background:var(--success); color:#0f172a;" onclick="approveJadwal('${j.id}')">Approve</button>
+                            <button class="btn btn-small" style="background:var(--danger); color:#fff;" onclick="tolakJadwal('${j.id}')">Tolak</button>
+                        </td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -685,36 +681,48 @@
 
         function approveJadwal(id) {
             const index = databaseJadwal.findIndex(j => j.id === id);
-            if(index > -1) {
-                databaseJadwal[index].status = 'Terverifikasi';
-                refreshDataAdmin(); 
+            if(index > -1) { databaseJadwal[index].status = 'Terverifikasi'; refreshDataAdmin(); }
+        }
+
+        function tolakJadwal(id) {
+            const index = databaseJadwal.findIndex(j => j.id === id);
+            if(index > -1) { 
+                const alasan = prompt("Masukkan alasan penolakan (misal: Sedang dinas luar):");
+                if(alasan !== null) {
+                    databaseJadwal[index].status = 'Ditolak';
+                    databaseJadwal[index].alasan = alasan || 'Tidak ada alasan spesifik';
+                    refreshDataAdmin();
+                }
             }
         }
 
-        // --- SISTEM KALENDER INTERAKTIF (TEMA PUTIH) ---
-        function ubahBulan(offset) {
-            currentCalDate.setMonth(currentCalDate.getMonth() + offset);
-            renderKalender();
+        function unduhLaporan() {
+            let csvContent = "data:text/csv;charset=utf-8,ID,Nama Tamu,No HP,Bertemu Dengan,Tujuan,Waktu,Status\n";
+            databaseJadwal.forEach(j => {
+                let row = `"${j.id}","${j.nama}","${j.hp}","${j.host}","${j.tujuan}","${new Date(j.waktu).toLocaleString('id-ID')}","${j.status}"`;
+                csvContent += row + "\r\n";
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Laporan_TamuTemu.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
-        function pilihTanggal(year, month, day) {
-            selectedDate = new Date(year, month, day);
-            renderKalender();
-        }
+        // --- SISTEM KALENDER INTERAKTIF (TEMA PUTIH) ---
+        function ubahBulan(offset) { currentCalDate.setMonth(currentCalDate.getMonth() + offset); renderKalender(); }
+        function pilihTanggal(year, month, day) { selectedDate = new Date(year, month, day); renderKalender(); }
 
         function renderKalender() {
             const grid = document.getElementById('calendar-grid-days');
-            grid.innerHTML = `
-                <div class="day-name">Min</div><div class="day-name">Sen</div><div class="day-name">Sel</div>
-                <div class="day-name">Rab</div><div class="day-name">Kam</div><div class="day-name">Jum</div><div class="day-name">Sab</div>
-            `;
+            grid.innerHTML = `<div class="day-name">Min</div><div class="day-name">Sen</div><div class="day-name">Sel</div><div class="day-name">Rab</div><div class="day-name">Kam</div><div class="day-name">Jum</div><div class="day-name">Sab</div>`;
 
             const year = currentCalDate.getFullYear();
             const month = currentCalDate.getMonth(); 
-            
             const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
             
-            // UPDATE TEKS BULAN DAN TAHUN SECARA TERPISAH
             document.getElementById('cal-month-text').innerText = monthNames[month];
             document.getElementById('cal-year-text').innerText = year;
 
@@ -722,16 +730,14 @@
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const realToday = new Date();
 
-            for (let i = 0; i < firstDay; i++) {
-                grid.innerHTML += `<div class="calendar-day empty"></div>`;
-            }
+            for (let i = 0; i < firstDay; i++) { grid.innerHTML += `<div class="calendar-day empty"></div>`; }
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const isToday = (day === realToday.getDate() && month === realToday.getMonth() && year === realToday.getFullYear());
                 const isSelected = (day === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear());
                 
                 const hasEvent = databaseJadwal.some(j => {
-                    if(j.status !== 'Terverifikasi') return false;
+                    if(j.status !== 'Terverifikasi' && j.status !== 'Hadir') return false;
                     const jd = new Date(j.waktu);
                     return (jd.getDate() === day && jd.getMonth() === month && jd.getFullYear() === year);
                 });
@@ -739,13 +745,9 @@
                 let classNames = "calendar-day";
                 if(isToday) classNames += " today";
                 if(isSelected) classNames += " selected";
-
                 let dotHtml = hasEvent ? `<span class="event-dot"></span>` : ``;
 
-                grid.innerHTML += `<div class="${classNames}" onclick="pilihTanggal(${year}, ${month}, ${day})">
-                                      ${day}
-                                      ${dotHtml}
-                                   </div>`;
+                grid.innerHTML += `<div class="${classNames}" onclick="pilihTanggal(${year}, ${month}, ${day})">${day}${dotHtml}</div>`;
             }
 
             const isSelToday = (selectedDate.getDate() === realToday.getDate() && selectedDate.getMonth() === realToday.getMonth() && selectedDate.getFullYear() === realToday.getFullYear());
@@ -759,11 +761,9 @@
             container.innerHTML = '';
 
             let jadwalHariIni = databaseJadwal.filter(j => {
-                if (j.status !== 'Terverifikasi') return false;
+                if (j.status !== 'Terverifikasi' && j.status !== 'Hadir') return false;
                 const jd = new Date(j.waktu);
-                return (jd.getDate() === selectedDate.getDate() && 
-                        jd.getMonth() === selectedDate.getMonth() && 
-                        jd.getFullYear() === selectedDate.getFullYear());
+                return (jd.getDate() === selectedDate.getDate() && jd.getMonth() === selectedDate.getMonth() && jd.getFullYear() === selectedDate.getFullYear());
             });
 
             jadwalHariIni.sort((a, b) => new Date(a.waktu) - new Date(b.waktu));
@@ -775,16 +775,94 @@
                     const jd = new Date(j.waktu);
                     const card = document.createElement('div');
                     card.className = 'schedule-card white-theme';
+                    let statusLabel = j.status === 'Hadir' ? '<span style="color:#059669; font-size:12px; font-weight:bold;">(Telah Hadir)</span>' : '';
                     card.innerHTML = `
                         <div>
-                            <h4>${j.nama}</h4>
-                            <p>${j.tujuan}</p>
+                            <h4>${j.nama} ${statusLabel}</h4>
+                            <p>Bertemu: ${j.host} • ${j.tujuan}</p>
                         </div>
-                        <div class="schedule-time">
-                            ${jd.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
-                        </div>
+                        <div class="schedule-time">${jd.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB</div>
                     `;
                     container.appendChild(card);
+                });
+            }
+        }
+
+        // --- FUNGSI RESEPSIONIS (SATPAM LOBI) ---
+        function loginResepsionis() {
+            const sandi = document.getElementById('input-sandi-satpam').value;
+            if(sandi.trim() !== '') { 
+                document.getElementById('input-sandi-satpam').value = '';
+                navigasi('view-dashboard-resepsionis'); 
+                document.getElementById('scan-result').style.display = 'none';
+                document.getElementById('input-scan-id').value = '';
+                renderRiwayatSatpam();
+            } else { alert('Sandi tidak boleh kosong!'); }
+        }
+
+        function switchResepsionisTab(tabId, element) {
+            document.querySelectorAll('#view-dashboard-resepsionis .admin-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('#view-dashboard-resepsionis .menu-item').forEach(menu => menu.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active'); element.classList.add('active');
+            renderRiwayatSatpam();
+        }
+
+        function scanQR() {
+            const inputId = document.getElementById('input-scan-id').value.trim().toUpperCase();
+            const resultBox = document.getElementById('scan-result');
+            const jadwalIndex = databaseJadwal.findIndex(j => j.id === inputId);
+
+            resultBox.style.display = 'block';
+
+            if(jadwalIndex > -1) {
+                const j = databaseJadwal[jadwalIndex];
+                if(j.status === 'Terverifikasi') {
+                    // Berhasil masuk
+                    databaseJadwal[jadwalIndex].status = 'Hadir';
+                    resultBox.style.background = '#d1fae5'; // Hijau soft
+                    resultBox.style.color = '#065f46';
+                    resultBox.innerHTML = `✅ <b>Akses Diberikan!</b><br>Tamu: ${j.nama}<br>Silakan arahkan ke ruangan ${j.host}.`;
+                    // Simulasi Notif host
+                    setTimeout(() => { alert(`Sistem: Notifikasi kedatangan dikirim ke ${j.host}!`); }, 300);
+                } else if (j.status === 'Hadir') {
+                    resultBox.style.background = '#fef3c7'; // Kuning soft
+                    resultBox.style.color = '#92400e';
+                    resultBox.innerHTML = `⚠️ <b>Sudah Check-In</b><br>Tamu ${j.nama} sudah tercatat hadir sebelumnya.`;
+                } else if (j.status === 'Menunggu') {
+                    resultBox.style.background = '#fee2e2'; // Merah soft
+                    resultBox.style.color = '#991b1b';
+                    resultBox.innerHTML = `❌ <b>Akses Ditolak</b><br>Jadwal tamu belum di-approve oleh Host.`;
+                } else if (j.status === 'Ditolak') {
+                    resultBox.style.background = '#fee2e2';
+                    resultBox.style.color = '#991b1b';
+                    resultBox.innerHTML = `❌ <b>Akses Ditolak</b><br>Jadwal tamu telah ditolak oleh Host.`;
+                }
+            } else {
+                resultBox.style.background = '#fee2e2';
+                resultBox.style.color = '#991b1b';
+                resultBox.innerHTML = `❌ <b>ID Tidak Valid</b><br>Tidak ditemukan data pengunjung.`;
+            }
+            document.getElementById('input-scan-id').value = '';
+        }
+
+        function renderRiwayatSatpam() {
+            const tbody = document.getElementById('body-hadir');
+            tbody.innerHTML = '';
+            // Tampilkan yang sudah hadir saja
+            const hadirList = databaseJadwal.filter(j => j.status === 'Hadir');
+            
+            if(hadirList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Belum ada tamu yang check-in.</td></tr>`;
+            } else {
+                hadirList.forEach(j => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="color:var(--primary-accent); font-family:monospace;">${j.id}</td>
+                        <td>${j.nama}</td>
+                        <td>${j.host}</td>
+                        <td><span style="background:var(--success); color:#0f172a; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:bold;">Telah Masuk</span></td>
+                    `;
+                    tbody.appendChild(tr);
                 });
             }
         }
