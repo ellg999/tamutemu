@@ -8,11 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <!-- Pustaka Eksternal -->
-    <!-- Untuk Membuat QR Code -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- Untuk Grafik -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Untuk SCANNER Kamera Asli -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     
     <style>
@@ -135,13 +132,15 @@
         }
         .modal-box h2 { color: var(--modal-text); margin-bottom: 20px; font-size: 20px; text-align: center; }
         .modal-box label { color: #475569; font-weight: 500; font-size: 13px; }
-        .modal-box input, .modal-box textarea {
+        .modal-box input, .modal-box textarea, .modal-box select {
             background: var(--modal-input-bg); border: 1px solid var(--modal-border);
             color: var(--modal-text); border-radius: 8px;
         }
-        .modal-box input:focus, .modal-box textarea:focus {
+        .modal-box select option { background: #fff; color: #000; }
+        .modal-box input:focus, .modal-box textarea:focus, .modal-box select:focus {
             background: #fff; border-color: var(--primary-accent); box-shadow: 0 0 0 3px rgba(96,165,250,0.2);
         }
+        .modal-box input[readonly] { background: #e2e8f0; color: #64748b; cursor: not-allowed; font-weight: 600; }
         .close-btn {
             position: absolute; top: 15px; right: 20px; font-size: 24px;
             color: #94a3b8; cursor: pointer; transition: 0.3s;
@@ -153,10 +152,15 @@
             border: 2px dashed #cbd5e1; padding: 20px; border-radius: 12px;
             margin-bottom: 20px; background: #f8fafc;
         }
-        input[type="file"]::file-selector-button {
-            background: var(--primary-accent); color: #0f172a; border: none;
-            padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 500;
-            margin-right: 15px; transition: 0.3s;
+        
+        /* Video & Kamera Internal Formulir */
+        #kamera-video {
+            width: 100%; border-radius: 8px; background: #000;
+            display: none; transform: scaleX(-1); /* Efek Mirror untuk Kamera Depan */
+        }
+        #selfie-preview {
+            width: 100%; border-radius: 8px; display: none; object-fit: cover;
+            transform: scaleX(-1);
         }
 
         /* --- EFEK PRINT KARTU TIKET --- */
@@ -241,7 +245,7 @@
         .schedule-card.white-theme p { margin: 0; font-size: 13px; color: #64748b; }
         .schedule-time { background: rgba(96, 165, 250, 0.15); color: var(--primary-accent); padding: 8px 12px; border-radius: 6px; font-weight: 600; font-size: 14px;}
 
-        /* CSS KHUSUS KAMERA SCANNER */
+        /* CSS KHUSUS KAMERA SCANNER (SUPERVISOR) */
         #reader {
             width: 100%; max-width: 400px; margin: 0 auto 20px auto; 
             border-radius: 12px; overflow: hidden; border: 2px solid var(--bg-navy-lighter);
@@ -319,19 +323,27 @@
                 <button class="btn" style="width: 100%; margin-top: 10px;" onclick="lanjutStep2()">Selanjutnya</button>
             </div>
 
+            <!-- STEP 2: Kamera Aktif / Selfie -->
             <div id="step-2">
-                <h2>Verifikasi Identitas</h2>
-                <p style="color: #64748b; font-size: 13px;">Silakan ambil foto wajah (selfie) atau unggah identitas Anda sebagai validasi keamanan.</p>
+                <h2>Verifikasi Wajah</h2>
+                <p style="color: #64748b; font-size: 13px;">Silakan ambil foto wajah (selfie) secara langsung untuk validasi keamanan lobi.</p>
                 
-                <div class="selfie-box">
-                    <!-- Atribut capture="user" secara otomatis akan memanggil kamera depan untuk berselfie (bila dibuka dari mobile) -->
-                    <input type="file" id="m-foto" accept="image/*" capture="user">
-                    <div id="selfie-preview-container" style="display:none; margin-top: 15px;">
-                        <img id="selfie-preview" src="" alt="Preview Foto" style="max-width: 100%; border-radius: 8px; max-height: 200px; object-fit: cover;">
+                <div class="selfie-box" id="kamera-container">
+                    <!-- Video Output untuk Kamera -->
+                    <video id="kamera-video" autoplay playsinline></video>
+                    <!-- Preview Foto Hasil Jepretan -->
+                    <img id="selfie-preview" src="">
+                    <!-- Canvas (Hidden) untuk konversi gambar -->
+                    <canvas id="kamera-canvas" style="display: none;"></canvas>
+
+                    <div style="margin-top: 15px;" id="kamera-controls">
+                        <button class="btn btn-outline" id="btn-buka-kamera" onclick="bukaKamera()" style="width: 100%;">📸 Buka Kamera</button>
+                        <button class="btn" id="btn-jepret" onclick="jepretFoto()" style="width: 100%; display: none;">Tarik Foto</button>
+                        <button class="btn btn-outline" id="btn-ulang" onclick="bukaKamera()" style="width: 100%; display: none; margin-top: 10px;">🔄 Ulangi Foto</button>
                     </div>
                 </div>
                 
-                <div style="display: flex; gap: 10px;">
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
                     <button class="btn btn-outline" style="flex: 1;" onclick="kembaliStep1()">Kembali</button>
                     <button class="btn" style="flex: 1;" onclick="submitJadwal()">Kirim Form</button>
                 </div>
@@ -352,7 +364,8 @@
                 </div>
                 <div class="ticket-row"><span class="ticket-label">Nama</span><span class="ticket-value" id="t-nama">-</span></div>
                 <div class="ticket-row"><span class="ticket-label">Email</span><span class="ticket-value" id="t-email">-</span></div>
-                <div class="ticket-row"><span class="ticket-label">Tujuan</span><span class="ticket-value" id="t-tujuan">-</span></div>
+                <div class="ticket-row"><span class="ticket-label">Bertemu</span><span class="ticket-value" id="t-host">Kepala Sekolah</span></div>
+                <div class="ticket-row"><span class="ticket-label">Keperluan</span><span class="ticket-value" id="t-tujuan">-</span></div>
                 <div class="ticket-row"><span class="ticket-label">Waktu</span><span class="ticket-value" id="t-waktu">-</span></div>
                 <div class="status-badge">Belum di-approve</div>
                 <p style="font-size: 11px; color: #94a3b8; text-align: center; margin-top: 15px; margin-bottom: 0;">*Cek Kotak Masuk email Anda secara berkala untuk notifikasi persetujuan.</p>
@@ -452,7 +465,7 @@
                 <div id="tab-scanner" class="admin-tab" style="text-align: center;">
                     <div class="schedule-box white-theme" style="max-width: 600px; margin: auto;">
                         <h2 style="color: #0f172a; border-bottom: none;">Pemindai Tiket Lobi (Kamera)</h2>
-                        <p style="color: #64748b; margin-bottom: 20px;">Arahkan kamera ke QR Code tamu untuk memvalidasi kedatangan.</p>
+                        <p style="color: #64748b; margin-bottom: 20px;">Arahkan kamera ke QR Code tamu untuk memvalidasi kedatangan secara langsung.</p>
                         
                         <!-- Area Kamera Asli HTML5-QRCode -->
                         <div id="reader"></div>
@@ -472,19 +485,6 @@
     </div>
 
     <script>
-        // JS Preview Foto Selfie
-        document.getElementById('m-foto').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('selfie-preview').src = e.target.result;
-                    document.getElementById('selfie-preview-container').style.display = 'block';
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
         // Simulasi Database dengan field Email
         const now = new Date();
         const y = now.getFullYear();
@@ -500,16 +500,76 @@
 
         let currentCalDate = new Date(); 
         let selectedDate = new Date();   
-        let html5QrcodeScanner = null; // Variable untuk objek scanner kamera
+        let html5QrcodeScanner = null; // Variable Scanner Lobi
+        let streamKameraMuka = null;   // Variable Selfie Stream
+        let dataFotoSelfie = "";       // Variable penyimpanan foto tamu
 
         function navigasi(viewId) {
             document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
             
-            // Matikan scanner jika pindah ke landing page (keluar dashboard)
+            // Matikan scanner lobi jika pindah view
             if(html5QrcodeScanner) {
                 html5QrcodeScanner.clear().catch(err => console.error(err));
                 html5QrcodeScanner = null;
+            }
+            // Matikan kamera selfie form jika pindah view
+            matikanKameraMuka();
+        }
+
+        // --- FUNGSI KAMERA SELFIE FORMULIR PENGUNJUNG ---
+        async function bukaKamera() {
+            document.getElementById('btn-buka-kamera').style.display = 'none';
+            document.getElementById('btn-ulang').style.display = 'none';
+            document.getElementById('selfie-preview').style.display = 'none';
+            
+            const video = document.getElementById('kamera-video');
+            const btnJepret = document.getElementById('btn-jepret');
+
+            try {
+                streamKameraMuka = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                video.srcObject = streamKameraMuka;
+                video.style.display = 'block';
+                btnJepret.style.display = 'inline-block';
+            } catch (err) {
+                alert("Gagal mengakses kamera. Pastikan browser Anda mengizinkan akses kamera.");
+                document.getElementById('btn-buka-kamera').style.display = 'inline-block';
+                console.error(err);
+            }
+        }
+
+        function jepretFoto() {
+            const video = document.getElementById('kamera-video');
+            const canvas = document.getElementById('kamera-canvas');
+            const preview = document.getElementById('selfie-preview');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            // Gambar frame video ke canvas
+            const ctx = canvas.getContext('2d');
+            // Menambahkan efek mirror pada canvas jika perlu
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Simpan gambar sbg base64 URL
+            dataFotoSelfie = canvas.toDataURL('image/png');
+
+            preview.src = dataFotoSelfie;
+            preview.style.display = 'block';
+            
+            video.style.display = 'none';
+            document.getElementById('btn-jepret').style.display = 'none';
+            document.getElementById('btn-ulang').style.display = 'inline-block';
+
+            matikanKameraMuka();
+        }
+
+        function matikanKameraMuka() {
+            if (streamKameraMuka) {
+                streamKameraMuka.getTracks().forEach(track => track.stop());
+                streamKameraMuka = null;
             }
         }
 
@@ -518,28 +578,42 @@
             document.getElementById('modal-form').style.display = 'flex';
             document.getElementById('step-1').style.display = 'block';
             document.getElementById('step-2').style.display = 'none';
+            
             document.getElementById('m-nama').value = '';
             document.getElementById('m-hp').value = '';
             document.getElementById('m-email').value = '';
             document.getElementById('m-waktu').value = '';
             document.getElementById('m-tujuan').value = '';
-            document.getElementById('m-foto').value = '';
-            document.getElementById('selfie-preview-container').style.display = 'none';
+            
+            // Reset Kamera UI
+            dataFotoSelfie = "";
+            document.getElementById('kamera-video').style.display = 'none';
+            document.getElementById('selfie-preview').style.display = 'none';
+            document.getElementById('btn-jepret').style.display = 'none';
+            document.getElementById('btn-ulang').style.display = 'none';
+            document.getElementById('btn-buka-kamera').style.display = 'inline-block';
         }
-        function tutupModal() { document.getElementById('modal-form').style.display = 'none'; }
+
+        function tutupModal() { 
+            matikanKameraMuka();
+            document.getElementById('modal-form').style.display = 'none'; 
+        }
         
         function lanjutStep2() {
             if(!document.getElementById('m-nama').value || !document.getElementById('m-hp').value || !document.getElementById('m-email').value || !document.getElementById('m-waktu').value || !document.getElementById('m-tujuan').value) {
-                alert("Mohon lengkapi semua data pertemuan.");
+                alert("Mohon lengkapi semua data pertemuan di Langkah 1.");
                 return;
             }
             document.getElementById('step-1').style.display = 'none';
             document.getElementById('step-2').style.display = 'block';
         }
+
         function kembaliStep1() {
+            matikanKameraMuka();
             document.getElementById('step-2').style.display = 'none';
             document.getElementById('step-1').style.display = 'block';
         }
+
         function submitJadwal() {
             const id = 'TAMUTEMU-' + Math.floor(Math.random() * 9000 + 1000);
             const nama = document.getElementById('m-nama').value;
@@ -547,6 +621,11 @@
             const email = document.getElementById('m-email').value;
             const waktu = document.getElementById('m-waktu').value;
             const tujuan = document.getElementById('m-tujuan').value;
+            
+            if(dataFotoSelfie === "") {
+                const lanjut = confirm("Anda belum mengambil foto selfie. Lanjutkan tanpa foto?");
+                if(!lanjut) return;
+            }
             
             databaseJadwal.push({ id: id, nama: nama, hp: hp, email: email, waktu: waktu, tujuan: tujuan, status: 'Menunggu', alasan: '' });
             tutupModal();
@@ -603,7 +682,7 @@
             document.querySelectorAll('#view-dashboard .menu-item').forEach(menu => menu.classList.remove('active'));
             document.getElementById(tabId).classList.add('active'); element.classList.add('active');
             
-            // Logic Menyalakan dan Mematikan Kamera Scanner
+            // Mengatur hidup matinya kamera scanner
             if (tabId === 'tab-scanner') {
                 if (!html5QrcodeScanner) {
                     html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
@@ -615,7 +694,6 @@
                     html5QrcodeScanner = null;
                 }
             }
-            
             refreshDataAdmin();
         }
 
@@ -650,7 +728,7 @@
                 databaseJadwal[index].status = 'Terverifikasi'; 
                 refreshDataAdmin(); 
                 // Simulasi Sistem Mengirim Email Otomatis
-                alert(`Sistem: Email persetujuan jadwal telah dikirim otomatis ke alamat email: ${databaseJadwal[index].email}`);
+                alert(`Sistem: Notifikasi & QR Code telah dikirim otomatis ke alamat email: ${databaseJadwal[index].email}`);
             }
         }
 
@@ -676,7 +754,7 @@
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "Laporan_TamuTemu.csv");
+            link.setAttribute("download", "Laporan_TamuTemu_Kepsek.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -746,7 +824,7 @@
                     const jd = new Date(j.waktu);
                     const card = document.createElement('div');
                     card.className = 'schedule-card white-theme';
-                    let statusLabel = j.status === 'Hadir' ? '<span style="color:#059669; font-size:12px; font-weight:bold;">(Sudah Tiba)</span>' : '';
+                    let statusLabel = j.status === 'Hadir' ? '<span style="color:#059669; font-size:12px; font-weight:bold;">(Telah Hadir)</span>' : '';
                     card.innerHTML = `
                         <div>
                             <h4>${j.nama} ${statusLabel}</h4>
@@ -762,7 +840,7 @@
         // --- SISTEM SCANNER KAMERA SUPERVISOR ---
         function onScanSuccess(decodedText, decodedResult) {
             document.getElementById('input-scan-id').value = decodedText;
-            scanQR(); // Otomatis proses verifikasi setelah QR berhasil dibaca kamera
+            scanQR(); 
         }
 
         function scanQR() {
@@ -779,8 +857,8 @@
                     databaseJadwal[jadwalIndex].status = 'Hadir';
                     resultBox.style.background = '#d1fae5';
                     resultBox.style.color = '#065f46';
-                    resultBox.innerHTML = `✅ <b>Akses Masuk Diberikan!</b><br>Tamu: ${j.nama}<br>Silakan arahkan ke ruangan Kepala Sekolah.`;
-                    renderJadwalHarian(); // Refresh tulisan di kalender menjadi (Sudah Tiba)
+                    resultBox.innerHTML = `✅ <b>Akses Masuk Diberikan!</b><br>Tamu: ${j.nama}<br>Status telah diperbarui menjadi Hadir.`;
+                    renderJadwalHarian(); 
                 } else if (j.status === 'Hadir') {
                     resultBox.style.background = '#fef3c7';
                     resultBox.style.color = '#92400e';
@@ -800,7 +878,6 @@
                 resultBox.innerHTML = `❌ <b>ID Tidak Valid</b><br>Tidak ditemukan data pengunjung dari QR ini.`;
             }
             
-            // Bersihkan input manual
             document.getElementById('input-scan-id').value = '';
         }
     </script>
