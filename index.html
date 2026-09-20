@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TamuTemu</title>
-    <!-- Font Poppins yang bersih dan ramah -->
+    <title>TamuTemu - Sistem Buku Tamu</title>
+    <!-- Font Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Pustaka Eksternal -->
@@ -14,20 +14,23 @@
     <style>
         :root {
             /* Palette Clean Institutional */
-            --bg-body: #f4f7f6;        /* Abu-abu sangat lembut untuk background luar */
-            --bg-card: #ffffff;        /* Putih bersih untuk kartu/konten */
-            --bg-sidebar: #1e293b;     /* Navy gelap untuk sidebar admin */
+            --bg-body: #f8fafc;        /* Abu-abu sangat terang/bersih */
+            --bg-card: #ffffff;        /* Putih bersih */
+            --bg-sidebar: #0f172a;     /* Navy sangat gelap untuk sidebar */
             
-            --primary-blue: #2563eb;   /* Biru pendidikan / Royal blue */
+            --primary-blue: #2563eb;   /* Biru elegan */
             --primary-hover: #1d4ed8;
             
-            --text-dark: #0f172a;      /* Teks utama (hitam kebiruan) */
-            --text-muted: #64748b;     /* Teks sekunder (abu-abu) */
-            --border-color: #e2e8f0;   /* Garis batas halus */
+            --text-dark: #1e293b;      /* Hitam kebiruan untuk judul */
+            --text-muted: #64748b;     /* Abu-abu untuk deskripsi */
+            --border-color: #e2e8f0;   /* Garis batas */
             
             --success: #10b981;
+            --success-light: #d1fae5;
             --warning: #f59e0b;
+            --warning-light: #fef3c7;
             --danger: #ef4444;
+            --danger-light: #fee2e2;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
@@ -44,35 +47,36 @@
         h1, h2, h3, h4 { font-weight: 600; color: var(--text-dark); }
         p { line-height: 1.6; font-size: 14px; color: var(--text-muted); }
 
-        .page-view { display: none; width: 100%; min-height: 100vh; position: relative; animation: fadeIn 0.5s ease; }
+        .page-view { display: none; width: 100%; min-height: 100vh; position: relative; animation: fadeIn 0.4s ease; }
         .page-view.active { display: flex; flex-direction: column; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { 
-            from { opacity: 0; transform: translateY(30px); } 
+            from { opacity: 0; transform: translateY(20px); } 
             to { opacity: 1; transform: translateY(0); } 
         }
 
         /* --- BUTTONS --- */
         .btn {
-            display: inline-block; padding: 12px 24px; background: var(--primary-blue);
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 12px 28px; background: var(--primary-blue);
             color: #ffffff; border: 1px solid var(--primary-blue); border-radius: 8px; 
-            font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; text-align: center;
+            font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;
         }
-        .btn:hover { background: var(--primary-hover); border-color: var(--primary-hover); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
-        .btn-outline { background: transparent; color: var(--primary-blue); }
-        .btn-outline:hover { background: #eff6ff; }
+        .btn:hover { background: var(--primary-hover); border-color: var(--primary-hover); box-shadow: 0 6px 15px rgba(37, 99, 235, 0.2); transform: translateY(-1px); }
+        .btn-outline { background: transparent; color: var(--primary-blue); border-color: var(--border-color); }
+        .btn-outline:hover { background: #f1f5f9; border-color: #cbd5e1; box-shadow: none; color: var(--text-dark);}
         .btn-small { padding: 8px 16px; font-size: 13px; }
 
         /* --- FORM INPUTS --- */
-        .form-group { margin-bottom: 20px; text-align: left; }
-        label { display: block; margin-bottom: 6px; font-size: 13px; color: var(--text-dark); font-weight: 500;}
+        .form-group { margin-bottom: 22px; text-align: left; }
+        label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-dark); font-weight: 500;}
         input, textarea {
             width: 100%; padding: 12px 16px; background: #ffffff;
             border: 1px solid #cbd5e1; border-radius: 8px; color: var(--text-dark);
             font-size: 14px; transition: 0.3s;
         }
-        input:focus, textarea:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-        input[readonly] { background: #f1f5f9; color: var(--text-muted); cursor: not-allowed; }
+        input:focus, textarea:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+        input[readonly] { background: #f8fafc; color: var(--text-muted); cursor: not-allowed; border-color: var(--border-color); }
 
         /* --- LANDING PAGE --- */
         .top-nav {
@@ -82,68 +86,68 @@
         .brand { font-size: 20px; font-weight: 700; color: var(--primary-blue); letter-spacing: 0.5px; }
         .nav-link { 
             color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 500;
-            padding: 8px 16px; border-radius: 20px; transition: 0.3s; border: 1px solid transparent;
+            padding: 8px 20px; border-radius: 20px; transition: 0.3s; border: 1px solid var(--border-color); background: #ffffff;
         }
-        .nav-link:hover { color: var(--primary-blue); background: #ffffff; border-color: var(--border-color); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .nav-link:hover { color: var(--primary-blue); border-color: var(--primary-blue); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
         .landing-center {
             flex: 1; display: flex; flex-direction: column; justify-content: center;
-            align-items: center; text-align: center; padding: 20px 5vw; margin-top: 40px;
+            align-items: center; text-align: center; padding: 20px 5vw; margin-top: 60px;
         }
-        .hero-title { font-size: clamp(2rem, 5vw, 3.5rem); margin-bottom: 15px; color: var(--text-dark); line-height: 1.2; animation: slideUp 0.6s ease forwards;}
-        .hero-subtitle { font-size: 16px; max-width: 600px; margin-bottom: 40px; animation: slideUp 0.6s ease 0.1s forwards; opacity: 0; }
+        .hero-title { font-size: clamp(2.5rem, 5vw, 4rem); margin-bottom: 15px; color: var(--text-dark); line-height: 1.15; animation: slideUp 0.6s ease forwards; letter-spacing: -0.5px;}
+        .hero-subtitle { font-size: 16px; max-width: 600px; margin-bottom: 40px; animation: slideUp 0.6s ease 0.1s forwards; opacity: 0; color: var(--text-muted); }
         
         .hero-action { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; animation: slideUp 0.6s ease 0.2s forwards; opacity: 0; }
 
         .guide-container {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px; margin-top: 60px; width: 100%; max-width: 1000px;
+            gap: 25px; margin-top: 70px; width: 100%; max-width: 1000px;
             animation: slideUp 0.6s ease 0.3s forwards; opacity: 0;
         }
         .guide-card {
             background: var(--bg-card); border: 1px solid var(--border-color);
-            padding: 25px; border-radius: 12px; text-align: left;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); transition: 0.3s;
+            padding: 30px 25px; border-radius: 16px; text-align: left;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.02); transition: 0.3s;
         }
-        .guide-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-        .guide-icon { font-size: 24px; margin-bottom: 15px; display: inline-block; padding: 10px; background: #eff6ff; border-radius: 8px; color: var(--primary-blue);}
-        .guide-card h4 { font-size: 16px; margin-bottom: 8px; }
-        .guide-card p { margin: 0; font-size: 13px; }
+        .guide-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); border-color: #cbd5e1; }
+        .guide-icon { font-size: 24px; margin-bottom: 20px; display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; background: #eff6ff; border-radius: 12px; color: var(--primary-blue);}
+        .guide-card h4 { font-size: 16px; margin-bottom: 8px; color: var(--text-dark); }
+        .guide-card p { margin: 0; font-size: 13px; color: var(--text-muted); }
 
         /* --- MODAL FORM --- */
         .modal-overlay {
-            display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
-            z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(3px);
+            display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5);
+            z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(4px);
         }
         .modal-box {
-            background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 16px; padding: 40px; 
-            position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto;
-            transform: translateY(30px); opacity: 0; transition: 0.4s ease;
+            background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 20px; padding: 40px; 
+            position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); max-height: 90vh; overflow-y: auto;
+            transform: translateY(30px); opacity: 0; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .modal-overlay.open .modal-box { transform: translateY(0); opacity: 1; }
         
-        .modal-box h2 { font-size: 22px; margin-bottom: 5px; color: var(--text-dark); text-align: center;}
-        .modal-desc { text-align: center; margin-bottom: 25px; font-size: 13px; }
+        .modal-box h2 { font-size: 22px; margin-bottom: 8px; color: var(--text-dark); text-align: center;}
+        .modal-desc { text-align: center; margin-bottom: 30px; font-size: 13px; color: var(--text-muted); }
         
-        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: var(--text-muted); transition: 0.3s;}
-        .close-btn:hover { color: var(--danger); }
+        .close-btn { position: absolute; top: 20px; right: 25px; font-size: 26px; cursor: pointer; color: #94a3b8; transition: 0.3s; line-height: 1;}
+        .close-btn:hover { color: var(--danger); transform: rotate(90deg); }
 
         /* Kamera Selfie Box */
-        .selfie-box { background: #f8fafc; padding: 20px; text-align: center; margin-bottom: 25px; border: 2px dashed #cbd5e1; border-radius: 12px; }
+        .selfie-box { background: #f8fafc; padding: 25px; text-align: center; margin-bottom: 25px; border: 2px dashed #cbd5e1; border-radius: 12px; }
         #kamera-video { width: 100%; display: none; transform: scaleX(-1); border-radius: 8px; }
-        #selfie-preview { width: 100%; display: none; object-fit: cover; transform: scaleX(-1); border-radius: 8px; }
+        #selfie-preview { width: 100%; display: none; object-fit: cover; transform: scaleX(-1); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         
         input[type="file"]::file-selector-button {
             background: #e2e8f0; color: var(--text-dark); border: none;
-            padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 500; margin-right: 15px; transition: 0.3s;
+            padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; margin-right: 15px; transition: 0.3s;
         }
         input[type="file"]::file-selector-button:hover { background: #cbd5e1; }
 
-        /* --- KOTAK KARTU UMUM --- */
+        /* --- KOTAK KARTU UMUM (Untuk Login, Cek Status, Dll) --- */
         .card-container {
-            width: 100%; max-width: 500px; margin: auto; padding: 40px;
-            background: var(--bg-card); border-radius: 16px;
-            border: 1px solid var(--border-color); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            width: 100%; max-width: 480px; margin: auto; padding: 40px;
+            background: var(--bg-card); border-radius: 20px;
+            border: 1px solid var(--border-color); box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.05);
             animation: slideUp 0.5s ease forwards; text-align: center;
         }
         .back-btn { position: absolute; top: 25px; left: 5vw; z-index: 10; background: white; }
@@ -151,10 +155,11 @@
         /* --- TICKET RECEIPT --- */
         .ticket-card {
             background: #ffffff; padding: 30px; text-align: left; position: relative; 
-            border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 20px;
+            border: 1px solid var(--border-color); border-radius: 16px; margin-bottom: 25px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
         }
-        .ticket-header { border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 15px; text-align: center; }
-        .ticket-header h3 { font-size: 18px; margin: 0; color: var(--primary-blue); }
+        .ticket-header { border-bottom: 1px dashed #cbd5e1; padding-bottom: 15px; margin-bottom: 15px; text-align: center; }
+        .ticket-header h3 { font-size: 16px; margin: 0; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;}
         .ticket-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px;}
         .ticket-label { color: var(--text-muted); }
         .ticket-value { font-weight: 600; text-align: right; color: var(--text-dark);}
@@ -164,42 +169,49 @@
         
         /* Sidebar Admin */
         .sidebar {
-            width: 260px; background: var(--bg-sidebar); padding: 30px 20px; 
+            width: 260px; background: var(--bg-sidebar); padding: 35px 20px; 
             display: flex; flex-direction: column; color: #ffffff;
         }
-        .sidebar-brand { font-size: 20px; margin-bottom: 40px; text-align: center; font-weight: 700; color: #ffffff; }
+        .sidebar-brand { font-size: 20px; margin-bottom: 45px; text-align: center; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;}
         .menu-item {
             font-size: 14px; padding: 12px 16px; margin-bottom: 8px; cursor: pointer; color: #94a3b8;
-            border-radius: 8px; transition: 0.3s; font-weight: 500;
+            border-radius: 8px; transition: 0.3s; font-weight: 500; display: flex; align-items: center; gap: 10px;
         }
         .menu-item:hover, .menu-item.active { background: rgba(255,255,255,0.1); color: #ffffff; }
         .logout-btn { margin-top: auto; color: #fca5a5; }
         .logout-btn:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
         /* Kanan: Content */
-        .content-area { flex: 1; padding: 40px; overflow-y: auto; }
+        .content-area { flex: 1; padding: 40px 50px; overflow-y: auto; }
         .admin-tab { display: none; animation: fadeIn 0.4s ease; }
         .admin-tab.active { display: block; }
         
         .header-dash { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .header-dash h2 { font-size: 24px; margin: 0; }
+        .header-dash h2 { font-size: 24px; margin: 0; font-weight: 600;}
         
-        .table-wrapper { background: white; border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02);}
+        .table-wrapper { background: white; border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02);}
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 16px 20px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 14px;}
-        th { font-size: 13px; color: var(--text-muted); background: #f8fafc; font-weight: 600;}
+        th { font-size: 12px; color: var(--text-muted); background: #f8fafc; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;}
+        
+        /* Modifikasi Tombol Aksi Tabel */
+        .action-btns { display: flex; gap: 10px; }
+        .btn-approve { background: var(--success-light); color: #047857; border: none; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.3s;}
+        .btn-approve:hover { background: #a7f3d0; }
+        .btn-reject { background: var(--danger-light); color: #b91c1c; border: none; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.3s;}
+        .btn-reject:hover { background: #fecaca; }
 
         /* KALENDER MINIMALIS */
         .calendar-section { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start;}
         @media (max-width: 992px) { .calendar-section { grid-template-columns: 1fr; } }
         
-        .calendar-wrapper { background: white; border: 1px solid var(--border-color); padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);}
+        .calendar-wrapper { background: white; border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);}
         .cal-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;}
         .cal-month-group { display: flex; align-items: center; gap: 15px; }
         .cal-month-group h3 { font-size: 18px; margin: 0; }
         .cal-year { font-size: 18px; color: var(--text-muted); font-weight: 500;}
-        .cal-nav-btn { background: #f1f5f9; border: none; color: var(--text-dark); border-radius: 6px; padding: 6px 12px; cursor: pointer; transition: 0.3s; font-weight: bold;}
-        .cal-nav-btn:hover { background: var(--primary-blue); color: white; }
+        .cal-nav-btn { background: #f1f5f9; border: none; color: var(--text-dark); border-radius: 8px; padding: 6px 14px; cursor: pointer; transition: 0.3s; font-weight: bold;}
+        .cal-nav-btn:hover { background: #e2e8f0; }
 
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; gap: 5px;}
         .day-name { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; font-weight: 600;}
@@ -216,15 +228,16 @@
         .calendar-day.selected .event-dot { background: white; }
 
         /* JADWAL HARIAN */
-        .schedule-box { background: white; border: 1px solid var(--border-color); padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);}
+        .schedule-box { background: white; border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);}
         .schedule-box h3 { font-size: 16px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;}
-        .schedule-card { display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 15px; background: #f8fafc;}
+        .schedule-card { display: flex; justify-content: space-between; align-items: center; padding: 16px; border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 15px; background: #f8fafc; transition: 0.3s;}
+        .schedule-card:hover { border-color: #cbd5e1; }
         .schedule-card h4 { font-size: 15px; margin-bottom: 4px; }
-        .schedule-time { background: #e0e7ff; color: var(--primary-blue); padding: 6px 10px; border-radius: 6px; font-size: 13px; font-weight: 600;}
+        .schedule-time { background: #eff6ff; color: var(--primary-blue); padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600;}
 
         /* SCANNER */
-        #reader { width: 100%; max-width: 400px; margin: 0 auto 20px auto; border: 2px dashed #cbd5e1; border-radius: 12px; overflow: hidden; background: white;}
-        #reader button { background: #f1f5f9; color: var(--text-dark); border: 1px solid #cbd5e1; padding: 8px 15px; font-size: 13px; border-radius: 6px; cursor: pointer; margin-bottom: 10px; font-family: 'Poppins';}
+        #reader { width: 100%; max-width: 400px; margin: 0 auto 20px auto; border: 2px dashed #cbd5e1; border-radius: 16px; overflow: hidden; background: white;}
+        #reader button { background: #f1f5f9; color: var(--text-dark); border: 1px solid #cbd5e1; padding: 8px 16px; font-size: 13px; border-radius: 8px; cursor: pointer; margin-bottom: 10px; font-family: 'Poppins'; font-weight: 500;}
 
     </style>
 </head>
@@ -234,15 +247,15 @@
     <div id="view-landing" class="page-view active">
         <div class="top-nav">
             <div class="brand">TamuTemu</div>
-            <span class="nav-link" onclick="navigasi('view-login')">Supervisor</span>
+            <span class="nav-link" onclick="navigasi('view-login')">Masuk Pengelola</span>
         </div>
         
         <div class="landing-center">
-            <h1 class="hero-title">TamuTemu</h
-            <p class="hero-subtitle">Jadwalkan pertemuan Anda.</p>
+            <h1 class="hero-title">Jadwalkan Pertemuan Anda</h1>
+            <p class="hero-subtitle">Sistem buku tamu digital untuk mengatur jadwal pertemuan dengan Kepala Sekolah secara praktis dan terstruktur.</p>
             
             <div class="hero-action">
-                <button class="btn" onclick="bukaModal()">Buat Jadwal</button>
+                <button class="btn" onclick="bukaModal()">Buat Jadwal Baru</button>
                 <button class="btn btn-outline" onclick="navigasi('view-cek-status')">Cek Status & QR Code</button>
             </div>
 
@@ -255,12 +268,12 @@
                 <div class="guide-card">
                     <div class="guide-icon">⏳</div>
                     <h4>2. Tunggu Verifikasi</h4>
-                    <p>Pihak sekolah akan meninjau. Notifikasi dan QR Code akan dikirim otomatis ke email Anda.</p>
+                    <p>Pihak sekolah akan meninjau. Notifikasi dan QR Code akan dikirim ke email Anda.</p>
                 </div>
                 <div class="guide-card">
                     <div class="guide-icon">📱</div>
                     <h4>3. Validasi Kehadiran</h4>
-                    <p>Saat Anda tiba di sekolah, tunjukkan QR Code pada petugas terkait untuk di-scan.</p>
+                    <p>Saat tiba di sekolah, tunjukkan QR Code pada petugas lobi untuk di-scan.</p>
                 </div>
             </div>
         </div>
@@ -273,7 +286,7 @@
             
             <div id="step-1">
                 <h2>Formulir Pengajuan</h2>
-                <p class="modal-desc">Jadwal Pertemuan</p>
+                <p class="modal-desc">Jadwal Bertemu Kepala Sekolah</p>
                 
                 <div class="form-group">
                     <label>Nama Lengkap</label>
@@ -296,13 +309,13 @@
                     <label>Keperluan Pertemuan</label>
                     <input type="text" id="m-tujuan" placeholder="Cth: Konsultasi program pendidikan">
                 </div>
-                <button class="btn" style="width: 100%; margin-top: 15px;" onclick="lanjutStep2()">Lanjutkan Verifikasi</button>
+                <button class="btn" style="width: 100%; margin-top: 10px;" onclick="lanjutStep2()">Lanjutkan Verifikasi</button>
             </div>
 
             <!-- STEP 2: Kamera Aktif / Selfie -->
             <div id="step-2">
                 <h2>Verifikasi Wajah</h2>
-                <p class="modal-desc">Silakan ambil foto wajah (selfie) secara langsung untuk pendataan identitas keamanan sekolah.</p>
+                <p class="modal-desc" style="margin-bottom: 20px;">Silakan ambil foto wajah secara langsung untuk pendataan identitas keamanan lobi.</p>
                 
                 <div class="selfie-box" id="kamera-container">
                     <video id="kamera-video" autoplay playsinline></video>
@@ -310,9 +323,9 @@
                     <canvas id="kamera-canvas" style="display: none;"></canvas>
 
                     <div style="margin-top: 15px;" id="kamera-controls">
-                        <button class="btn btn-outline btn-small" id="btn-buka-kamera" onclick="bukaKamera()" style="width: 100%;">Buka Kamera</button>
+                        <button class="btn btn-outline btn-small" id="btn-buka-kamera" onclick="bukaKamera()" style="width: 100%;">📸 Buka Kamera</button>
                         <button class="btn btn-small" id="btn-jepret" onclick="jepretFoto()" style="width: 100%; display: none;">Ambil Gambar</button>
-                        <button class="btn btn-outline btn-small" id="btn-ulang" onclick="bukaKamera()" style="width: 100%; display: none; margin-top: 10px;">Ulangi</button>
+                        <button class="btn btn-outline btn-small" id="btn-ulang" onclick="bukaKamera()" style="width: 100%; display: none; margin-top: 10px;">🔄 Ulangi Foto</button>
                     </div>
                 </div>
                 
@@ -328,23 +341,23 @@
     <div id="view-tiket" class="page-view" style="justify-content: center; align-items: center;">
         <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">Kembali ke Beranda</button>
         
-        <div class="ticket-wrapper" style="width: 100%; max-width: 450px; text-align: center;">
-            <div style="background: #ecfdf5; color: #065f46; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: 500; border: 1px solid #a7f3d0;">
+        <div class="ticket-wrapper" style="width: 100%; max-width: 450px; text-align: center; padding: 20px;">
+            <div style="background: var(--success-light); color: #065f46; padding: 15px; border-radius: 12px; margin-bottom: 20px; font-weight: 500; border: 1px solid #a7f3d0;">
                 ✓ Pengajuan Berhasil Terkirim
             </div>
             
             <div class="ticket-card">
                 <div class="ticket-header">
                     <h3>TIKET SEMENTARA</h3>
-                    <p id="t-id" style="margin-top: 5px; color: var(--text-dark); font-family: monospace;">TAMUTEMU-XXXX</p>
+                    <p id="t-id" style="margin-top: 5px; color: var(--text-dark); font-family: monospace; font-size: 16px; font-weight: 600;">TAMUTEMU-XXXX</p>
                 </div>
                 <div class="ticket-row"><span class="ticket-label">Nama</span><span class="ticket-value" id="t-nama">-</span></div>
                 <div class="ticket-row"><span class="ticket-label">Email</span><span class="ticket-value" id="t-email">-</span></div>
                 <div class="ticket-row"><span class="ticket-label">Tujuan</span><span class="ticket-value" id="t-tujuan">-</span></div>
                 <div class="ticket-row"><span class="ticket-label">Waktu</span><span class="ticket-value" id="t-waktu">-</span></div>
                 
-                <div style="text-align: center; margin-top: 25px; padding-top: 15px; border-top: 1px dashed var(--border-color);">
-                    <span style="display: inline-block; background: #fffbeb; color: #b45309; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;">Status: Menunggu Persetujuan</span>
+                <div style="text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px dashed var(--border-color);">
+                    <span style="display: inline-block; background: var(--warning-light); color: #b45309; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;">Status: Menunggu Persetujuan</span>
                     <p style="font-size: 11px; color: var(--text-muted); margin-top: 10px; margin-bottom: 0;">*Kami akan mengirimkan notifikasi persetujuan beserta QR Code ke email Anda.</p>
                 </div>
             </div>
@@ -354,11 +367,11 @@
     </div>
 
     <!-- 3. CEK STATUS & QR -->
-    <div id="view-cek-status" class="page-view" style="justify-content: center; align-items: center;">
+    <div id="view-cek-status" class="page-view" style="justify-content: center; align-items: center; padding: 20px;">
         <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">Kembali</button>
         
         <div class="card-container">
-            <h2>Cek Status Pengajuan</h2>
+            <h2 style="margin-bottom: 5px;">Cek Status Pengajuan</h2>
             <p style="margin-bottom: 25px;">Masukkan ID Tiket Anda untuk melihat status jadwal dan QR Code akses.</p>
             
             <div class="form-group">
@@ -368,7 +381,7 @@
             
             <div id="hasil-cek" style="margin-top: 30px; display: none; text-align: center; border-top: 1px solid var(--border-color); padding-top: 20px;">
                 <div id="info-status"></div>
-                <div id="qr-box" style="background: white; padding: 15px; display: none; margin: 20px auto 0 auto; width: fit-content; border: 1px solid var(--border-color); border-radius: 8px;">
+                <div id="qr-box" style="background: white; padding: 15px; display: none; margin: 20px auto 0 auto; width: fit-content; border: 1px solid var(--border-color); border-radius: 12px;">
                     <div id="qrcode"></div>
                 </div>
             </div>
@@ -376,11 +389,11 @@
     </div>
 
     <!-- 4. LOGIN SUPERVISOR -->
-    <div id="view-login" class="page-view" style="justify-content: center; align-items: center;">
+    <div id="view-login" class="page-view" style="justify-content: center; align-items: center; padding: 20px;">
         <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">Kembali</button>
         
         <div class="card-container">
-            <h2 style="margin-bottom: 5px;">Supervisor Mode</h2>
+            <h2 style="margin-bottom: 5px;">Portal Admin</h2>
             <p style="margin-bottom: 30px;">Silakan otorisasi akun Anda.</p>
             <div class="form-group">
                 <label>Kata Sandi</label>
@@ -395,11 +408,11 @@
         <div class="dashboard-layout">
             
             <div class="sidebar">
-                <div class="sidebar-brand">Panel Admin</div>
+                <div class="sidebar-brand">TamuTemu Admin</div>
                 <div class="menu-item active" onclick="switchAdminTab('tab-persetujuan', this)">Persetujuan Jadwal</div>
                 <div class="menu-item" onclick="switchAdminTab('tab-kalender', this)">Kalender & Agenda</div>
-                <div class="menu-item" onclick="switchAdminTab('tab-scanner', this)">Scanner QR Code</div>
-                <div class="menu-item logout-btn" onclick="navigasi('view-landing')">Keluar</div>
+                <div class="menu-item" onclick="switchAdminTab('tab-scanner', this)">Scanner Kamera Lobi</div>
+                <div class="menu-item logout-btn" onclick="navigasi('view-landing')">Keluar Akun</div>
             </div>
 
             <div class="content-area">
@@ -428,7 +441,7 @@
 
                 <!-- TAB 2: KALENDER & JADWAL -->
                 <div id="tab-kalender" class="admin-tab">
-                    <div class="header-dash"><h2>Agenda</h2></div>
+                    <div class="header-dash"><h2>Agenda Kepala Sekolah</h2></div>
                     
                     <div class="calendar-section">
                         <!-- Box Kalender -->
@@ -456,15 +469,15 @@
                 <!-- TAB 3: SCANNER ASLI -->
                 <div id="tab-scanner" class="admin-tab">
                     <div class="header-dash"><h2>Pemindai Tiket Kedatangan</h2></div>
-                    <div style="background: white; border: 1px solid var(--border-color); padding: 40px; border-radius: 12px; max-width: 600px; margin: 0 auto; text-align: center;">
-                        <p style="margin-bottom: 25px;">Arahkan kamera ke QR Code milik tamu yang sudah disetujui untuk memvalidasi akses masuk secara instan.</p>
+                    <div style="background: white; border: 1px solid var(--border-color); padding: 40px; border-radius: 16px; max-width: 600px; margin: 0 auto; text-align: center;">
+                        <p style="margin-bottom: 25px; color: var(--text-muted);">Arahkan kamera ke QR Code milik tamu yang sudah disetujui untuk memvalidasi akses masuk secara instan.</p>
                         
                         <div id="reader"></div>
                         
                         <div style="margin-top: 30px; border-top: 1px dashed var(--border-color); padding-top: 20px;">
-                            <p style="font-size: 13px; font-weight: 500; margin-bottom: 10px;">Atau Validasi Manual</p>
+                            <p style="font-size: 13px; font-weight: 500; margin-bottom: 12px; color: var(--text-muted);">Atau Validasi Manual</p>
                             <div style="display:flex; justify-content: center; gap: 10px;">
-                                <input type="text" id="input-scan-id" placeholder="Cth: TAMUTEMU-1234" style="max-width: 250px; text-align:center;">
+                                <input type="text" id="input-scan-id" placeholder="Cth: TAMUTEMU-1234" style="max-width: 220px; text-align:center;">
                                 <button class="btn" onclick="scanQR()">Verifikasi</button>
                             </div>
                         </div>
@@ -624,19 +637,19 @@
 
             if(jadwal) {
                 if(jadwal.status === 'Menunggu') {
-                    infoStatus.innerHTML = `<h3 style="color:var(--warning);">Menunggu Persetujuan</h3><p>Pihak sekolah sedang meninjau jadwal Anda.</p>`;
+                    infoStatus.innerHTML = `<h3 style="color:var(--warning); margin-bottom:5px;">Menunggu Persetujuan</h3><p>Pihak sekolah sedang meninjau jadwal Anda.</p>`;
                 } else if (jadwal.status === 'Terverifikasi') {
-                    infoStatus.innerHTML = `<h3 style="color:var(--success);">Jadwal Disetujui</h3><p>Gunakan QR Code ini pada scanner satpam di lobi.</p>`;
+                    infoStatus.innerHTML = `<h3 style="color:var(--success); margin-bottom:5px;">Jadwal Disetujui</h3><p>Gunakan QR Code ini pada scanner satpam di lobi.</p>`;
                     qrBox.style.display = 'block';
                     document.getElementById('qrcode').innerHTML = "";
-                    new QRCode(document.getElementById("qrcode"), { text: jadwal.id, width: 150, height: 150, colorDark: "#000000", colorLight: "#ffffff" });
+                    new QRCode(document.getElementById("qrcode"), { text: jadwal.id, width: 160, height: 160, colorDark: "#000000", colorLight: "#ffffff" });
                 } else if (jadwal.status === 'Ditolak') {
-                    infoStatus.innerHTML = `<h3 style="color:var(--danger);">Pengajuan Ditolak</h3><p>Alasan: ${jadwal.alasan}</p><p style="font-size:12px;">Silakan ajukan ulang jadwal di hari lain.</p>`;
+                    infoStatus.innerHTML = `<h3 style="color:var(--danger); margin-bottom:5px;">Pengajuan Ditolak</h3><p>Alasan: <span style="font-weight:600;">${jadwal.alasan}</span></p><p style="font-size:12px;">Silakan ajukan ulang jadwal di hari lain.</p>`;
                 } else if (jadwal.status === 'Hadir') {
-                    infoStatus.innerHTML = `<h3 style="color:var(--success);">Telah Selesai</h3><p>Anda sudah tercatat hadir pada pertemuan ini.</p>`;
+                    infoStatus.innerHTML = `<h3 style="color:var(--success); margin-bottom:5px;">Telah Selesai</h3><p>Anda sudah tercatat hadir pada pertemuan ini.</p>`;
                 }
             } else {
-                infoStatus.innerHTML = `<h3 style="color:var(--danger);">ID Tidak Ditemukan</h3><p>Pastikan Anda mengetik ID dengan benar.</p>`;
+                infoStatus.innerHTML = `<h3 style="color:var(--danger); margin-bottom:5px;">ID Tidak Ditemukan</h3><p>Pastikan Anda mengetik ID dengan benar.</p>`;
             }
         }
 
@@ -676,12 +689,14 @@
                 pending.forEach(j => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td style="font-family:monospace; font-weight: 600;">${j.id}</td>
-                        <td><div style="font-weight: 500; color:var(--text-dark);">${j.nama}</div><div style="font-size:12px; color:var(--primary-blue);">${j.email}</div></td>
+                        <td style="font-family:monospace; font-weight: 600; color: var(--primary-blue); font-size: 15px;">${j.id}</td>
+                        <td><div style="font-weight: 500; color:var(--text-dark);">${j.nama}</div><div style="font-size:12px; color:var(--text-muted); margin-top:2px;">${j.email}</div></td>
                         <td>${new Date(j.waktu).toLocaleString('id-ID')}</td>
-                        <td style="display:flex; gap:10px;">
-                            <button class="btn btn-small" onclick="approveJadwal('${j.id}')">Approve</button>
-                            <button class="btn-outline btn-small" style="color:var(--danger);" onclick="tolakJadwal('${j.id}')">Tolak</button>
+                        <td>
+                            <div class="action-btns">
+                                <button class="btn-approve" onclick="approveJadwal('${j.id}')">Approve</button>
+                                <button class="btn-reject" onclick="tolakJadwal('${j.id}')">Tolak</button>
+                            </div>
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -695,7 +710,6 @@
             if(index > -1) { 
                 databaseJadwal[index].status = 'Terverifikasi'; 
                 refreshDataAdmin(); 
-                // Simulasi Sistem Mengirim Email Otomatis
                 alert(`[SIMULASI EMAIL TERKIRIM]\nKe: ${databaseJadwal[index].email}\nPesan: Jadwal pertemuan Anda telah disetujui. QR Code akses telah dilampirkan.`);
             }
         }
@@ -795,10 +809,10 @@
                     card.innerHTML = `
                         <div>
                             <h4>${j.nama}</h4>
-                            <p style="margin:0; font-size:13px;">${j.tujuan}</p>
+                            <p style="margin:0; font-size:13px; color:var(--text-muted);">${j.tujuan}</p>
                             ${statusLabel}
                         </div>
-                        <div class="schedule-time">${jd.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB</div>
+                        <div class="schedule-time">${jd.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</div>
                     `;
                     container.appendChild(card);
                 });
@@ -822,18 +836,18 @@
                 const j = databaseJadwal[index];
                 if(j.status === 'Terverifikasi') {
                     databaseJadwal[index].status = 'Hadir';
-                    resultBox.style.background = '#ecfdf5'; resultBox.style.borderColor = 'var(--success)'; resultBox.style.color = '#065f46';
+                    resultBox.style.background = 'var(--success-light)'; resultBox.style.borderColor = 'var(--success)'; resultBox.style.color = '#065f46';
                     resultBox.innerHTML = `✅ <b>Akses Diberikan!</b><br><span style="font-size:14px; color:var(--text-dark);">Tamu: ${j.nama}</span>`;
                     renderJadwalHarian(); 
                 } else if (j.status === 'Hadir') {
-                    resultBox.style.background = '#fffbeb'; resultBox.style.borderColor = 'var(--warning)'; resultBox.style.color = '#b45309';
+                    resultBox.style.background = 'var(--warning-light)'; resultBox.style.borderColor = 'var(--warning)'; resultBox.style.color = '#b45309';
                     resultBox.innerHTML = `⚠️ <b>Sudah Check-In</b><br><span style="font-size:14px; color:var(--text-dark);">Tamu ini telah tercatat masuk sebelumnya.</span>`;
                 } else {
-                    resultBox.style.background = '#fef2f2'; resultBox.style.borderColor = 'var(--danger)'; resultBox.style.color = '#b91c1c';
+                    resultBox.style.background = 'var(--danger-light)'; resultBox.style.borderColor = 'var(--danger)'; resultBox.style.color = '#b91c1c';
                     resultBox.innerHTML = `❌ <b>Akses Ditolak</b><br><span style="font-size:14px; color:var(--text-dark);">Jadwal tamu belum disetujui / ditolak.</span>`;
                 }
             } else {
-                resultBox.style.background = '#fef2f2'; resultBox.style.borderColor = 'var(--danger)'; resultBox.style.color = '#b91c1c';
+                resultBox.style.background = 'var(--danger-light)'; resultBox.style.borderColor = 'var(--danger)'; resultBox.style.color = '#b91c1c';
                 resultBox.innerHTML = `❌ <b>ID Tidak Valid</b><br><span style="font-size:14px; color:var(--text-dark);">Tidak ditemukan data pengunjung.</span>`;
             }
             document.getElementById('input-scan-id').value = '';
