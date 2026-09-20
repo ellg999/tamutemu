@@ -143,7 +143,7 @@
         }
         input[type="file"]::file-selector-button:hover { background: #cbd5e1; }
 
-        /* --- KOTAK KARTU UMUM (Untuk Login, Cek Status, Dll) --- */
+        /* --- KOTAK KARTU UMUM --- */
         .card-container {
             width: 100%; max-width: 480px; margin: auto; padding: 40px;
             background: var(--bg-card); border-radius: 20px;
@@ -247,12 +247,12 @@
     <div id="view-landing" class="page-view active">
         <div class="top-nav">
             <div class="brand">TamuTemu</div>
-            <span class="nav-link" onclick="navigasi('view-login')">Masuk Pengelola</span>
+            <span class="nav-link" onclick="navigasi('view-login')">Supervisor Mode</span>
         </div>
         
         <div class="landing-center">
-            <h1 class="hero-title">Jadwalkan Pertemuan Anda</h1>
-            <p class="hero-subtitle">Sistem buku tamu digital untuk mengatur jadwal pertemuan dengan Kepala Sekolah secara praktis dan terstruktur.</p>
+            <h1 class="hero-title">Sistem Buku Tamu<br>SMA Negeri 1</h1>
+            <p class="hero-subtitle">Jadwalkan pertemuan Anda dengan Kepala Sekolah secara praktis. Proses verifikasi yang cepat, aman, dan tertata dengan baik.</p>
             
             <div class="hero-action">
                 <button class="btn" onclick="bukaModal()">Buat Jadwal Baru</button>
@@ -268,12 +268,12 @@
                 <div class="guide-card">
                     <div class="guide-icon">⏳</div>
                     <h4>2. Tunggu Verifikasi</h4>
-                    <p>Pihak sekolah akan meninjau. Notifikasi dan QR Code akan dikirim ke email Anda.</p>
+                    <p>Pihak sekolah akan meninjau. Notifikasi dan QR Code akan dikirim otomatis ke email Anda.</p>
                 </div>
                 <div class="guide-card">
                     <div class="guide-icon">📱</div>
                     <h4>3. Validasi Kehadiran</h4>
-                    <p>Saat tiba di sekolah, tunjukkan QR Code pada petugas lobi untuk di-scan.</p>
+                    <p>Saat Anda tiba di sekolah, tunjukkan QR Code pada petugas lobi untuk di-scan.</p>
                 </div>
             </div>
         </div>
@@ -309,13 +309,13 @@
                     <label>Keperluan Pertemuan</label>
                     <input type="text" id="m-tujuan" placeholder="Cth: Konsultasi program pendidikan">
                 </div>
-                <button class="btn" style="width: 100%; margin-top: 10px;" onclick="lanjutStep2()">Lanjutkan Verifikasi</button>
+                <button class="btn" style="width: 100%; margin-top: 15px;" onclick="lanjutStep2()">Lanjutkan Verifikasi</button>
             </div>
 
             <!-- STEP 2: Kamera Aktif / Selfie -->
             <div id="step-2">
                 <h2>Verifikasi Wajah</h2>
-                <p class="modal-desc" style="margin-bottom: 20px;">Silakan ambil foto wajah secara langsung untuk pendataan identitas keamanan lobi.</p>
+                <p class="modal-desc" style="margin-bottom: 20px;">Silakan ambil foto wajah (selfie) secara langsung untuk pendataan identitas keamanan lobi.</p>
                 
                 <div class="selfie-box" id="kamera-container">
                     <video id="kamera-video" autoplay playsinline></video>
@@ -393,7 +393,7 @@
         <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">Kembali</button>
         
         <div class="card-container">
-            <h2 style="margin-bottom: 5px;">Portal Admin</h2>
+            <h2 style="margin-bottom: 5px;">Supervisor Mode</h2>
             <p style="margin-bottom: 30px;">Silakan otorisasi akun Anda.</p>
             <div class="form-group">
                 <label>Kata Sandi</label>
@@ -408,7 +408,7 @@
         <div class="dashboard-layout">
             
             <div class="sidebar">
-                <div class="sidebar-brand">TamuTemu Admin</div>
+                <div class="sidebar-brand">Supervisor</div>
                 <div class="menu-item active" onclick="switchAdminTab('tab-persetujuan', this)">Persetujuan Jadwal</div>
                 <div class="menu-item" onclick="switchAdminTab('tab-kalender', this)">Kalender & Agenda</div>
                 <div class="menu-item" onclick="switchAdminTab('tab-scanner', this)">Scanner Kamera Lobi</div>
@@ -637,19 +637,19 @@
 
             if(jadwal) {
                 if(jadwal.status === 'Menunggu') {
-                    infoStatus.innerHTML = `<h3 style="color:var(--warning); margin-bottom:5px;">Menunggu Persetujuan</h3><p>Pihak sekolah sedang meninjau jadwal Anda.</p>`;
+                    infoStatus.innerHTML = `<h3 style="color:var(--warning);">Menunggu Persetujuan</h3><p>Pihak sekolah sedang meninjau jadwal Anda.</p>`;
                 } else if (jadwal.status === 'Terverifikasi') {
-                    infoStatus.innerHTML = `<h3 style="color:var(--success); margin-bottom:5px;">Jadwal Disetujui</h3><p>Gunakan QR Code ini pada scanner satpam di lobi.</p>`;
+                    infoStatus.innerHTML = `<h3 style="color:var(--success);">Jadwal Disetujui</h3><p>Gunakan QR Code ini pada scanner satpam di lobi.</p>`;
                     qrBox.style.display = 'block';
                     document.getElementById('qrcode').innerHTML = "";
-                    new QRCode(document.getElementById("qrcode"), { text: jadwal.id, width: 160, height: 160, colorDark: "#000000", colorLight: "#ffffff" });
+                    new QRCode(document.getElementById("qrcode"), { text: jadwal.id, width: 150, height: 150, colorDark: "#000000", colorLight: "#ffffff" });
                 } else if (jadwal.status === 'Ditolak') {
-                    infoStatus.innerHTML = `<h3 style="color:var(--danger); margin-bottom:5px;">Pengajuan Ditolak</h3><p>Alasan: <span style="font-weight:600;">${jadwal.alasan}</span></p><p style="font-size:12px;">Silakan ajukan ulang jadwal di hari lain.</p>`;
+                    infoStatus.innerHTML = `<h3 style="color:var(--danger);">Pengajuan Ditolak</h3><p>Alasan: <span style="font-weight:600;">${jadwal.alasan}</span></p><p style="font-size:12px;">Silakan ajukan ulang jadwal di hari lain.</p>`;
                 } else if (jadwal.status === 'Hadir') {
-                    infoStatus.innerHTML = `<h3 style="color:var(--success); margin-bottom:5px;">Telah Selesai</h3><p>Anda sudah tercatat hadir pada pertemuan ini.</p>`;
+                    infoStatus.innerHTML = `<h3 style="color:var(--success);">Telah Selesai</h3><p>Anda sudah tercatat hadir pada pertemuan ini.</p>`;
                 }
             } else {
-                infoStatus.innerHTML = `<h3 style="color:var(--danger); margin-bottom:5px;">ID Tidak Ditemukan</h3><p>Pastikan Anda mengetik ID dengan benar.</p>`;
+                infoStatus.innerHTML = `<h3 style="color:var(--danger);">ID Tidak Ditemukan</h3><p>Pastikan Anda mengetik ID dengan benar.</p>`;
             }
         }
 
@@ -809,10 +809,10 @@
                     card.innerHTML = `
                         <div>
                             <h4>${j.nama}</h4>
-                            <p style="margin:0; font-size:13px; color:var(--text-muted);">${j.tujuan}</p>
+                            <p style="margin:0; font-size:13px;">${j.tujuan}</p>
                             ${statusLabel}
                         </div>
-                        <div class="schedule-time">${jd.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</div>
+                        <div class="schedule-time">${jd.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB</div>
                     `;
                     container.appendChild(card);
                 });
