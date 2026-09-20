@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TamuTemu - Sistem Buku Tamu Sekolah</title>
+    <title>TamuTemu</title>
     <!-- Font Poppins yang bersih dan ramah -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
@@ -234,15 +234,15 @@
     <div id="view-landing" class="page-view active">
         <div class="top-nav">
             <div class="brand">TamuTemu</div>
-            <span class="nav-link" onclick="navigasi('view-login')">Masuk Pengelola</span>
+            <span class="nav-link" onclick="navigasi('view-login')">Supervisor</span>
         </div>
         
         <div class="landing-center">
-            <h1 class="hero-title">Sistem Buku Tamu<br>Digital Sekolah</h1>
-            <p class="hero-subtitle">Jadwalkan pertemuan Anda dengan Kepala Sekolah secara praktis. Proses verifikasi yang cepat, aman, dan tertata dengan baik.</p>
+            <h1 class="hero-title">TamuTemu</h
+            <p class="hero-subtitle">Jadwalkan pertemuan Anda.</p>
             
             <div class="hero-action">
-                <button class="btn" onclick="bukaModal()">Buat Jadwal Baru</button>
+                <button class="btn" onclick="bukaModal()">Buat Jadwal</button>
                 <button class="btn btn-outline" onclick="navigasi('view-cek-status')">Cek Status & QR Code</button>
             </div>
 
@@ -260,7 +260,7 @@
                 <div class="guide-card">
                     <div class="guide-icon">📱</div>
                     <h4>3. Validasi Kehadiran</h4>
-                    <p>Saat Anda tiba di sekolah, tunjukkan QR Code pada petugas lobi untuk di-scan.</p>
+                    <p>Saat Anda tiba di sekolah, tunjukkan QR Code pada petugas terkait untuk di-scan.</p>
                 </div>
             </div>
         </div>
@@ -273,7 +273,7 @@
             
             <div id="step-1">
                 <h2>Formulir Pengajuan</h2>
-                <p class="modal-desc">Jadwal Bertemu Kepala Sekolah</p>
+                <p class="modal-desc">Jadwal Pertemuan</p>
                 
                 <div class="form-group">
                     <label>Nama Lengkap</label>
@@ -310,9 +310,9 @@
                     <canvas id="kamera-canvas" style="display: none;"></canvas>
 
                     <div style="margin-top: 15px;" id="kamera-controls">
-                        <button class="btn btn-outline btn-small" id="btn-buka-kamera" onclick="bukaKamera()" style="width: 100%;">📸 Buka Kamera</button>
+                        <button class="btn btn-outline btn-small" id="btn-buka-kamera" onclick="bukaKamera()" style="width: 100%;">Buka Kamera</button>
                         <button class="btn btn-small" id="btn-jepret" onclick="jepretFoto()" style="width: 100%; display: none;">Ambil Gambar</button>
-                        <button class="btn btn-outline btn-small" id="btn-ulang" onclick="bukaKamera()" style="width: 100%; display: none; margin-top: 10px;">🔄 Ulangi Foto</button>
+                        <button class="btn btn-outline btn-small" id="btn-ulang" onclick="bukaKamera()" style="width: 100%; display: none; margin-top: 10px;">Ulangi</button>
                     </div>
                 </div>
                 
@@ -380,7 +380,7 @@
         <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">Kembali</button>
         
         <div class="card-container">
-            <h2 style="margin-bottom: 5px;">Portal Admin</h2>
+            <h2 style="margin-bottom: 5px;">Supervisor Mode</h2>
             <p style="margin-bottom: 30px;">Silakan otorisasi akun Anda.</p>
             <div class="form-group">
                 <label>Kata Sandi</label>
@@ -398,8 +398,8 @@
                 <div class="sidebar-brand">Panel Admin</div>
                 <div class="menu-item active" onclick="switchAdminTab('tab-persetujuan', this)">Persetujuan Jadwal</div>
                 <div class="menu-item" onclick="switchAdminTab('tab-kalender', this)">Kalender & Agenda</div>
-                <div class="menu-item" onclick="switchAdminTab('tab-scanner', this)">Scanner Kamera Lobi</div>
-                <div class="menu-item logout-btn" onclick="navigasi('view-landing')">Keluar Akun</div>
+                <div class="menu-item" onclick="switchAdminTab('tab-scanner', this)">Scanner QR Code</div>
+                <div class="menu-item logout-btn" onclick="navigasi('view-landing')">Keluar</div>
             </div>
 
             <div class="content-area">
@@ -428,7 +428,7 @@
 
                 <!-- TAB 2: KALENDER & JADWAL -->
                 <div id="tab-kalender" class="admin-tab">
-                    <div class="header-dash"><h2>Agenda Kepala Sekolah</h2></div>
+                    <div class="header-dash"><h2>Agenda</h2></div>
                     
                     <div class="calendar-section">
                         <!-- Box Kalender -->
