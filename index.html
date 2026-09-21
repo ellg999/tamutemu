@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TamuTemu</title>
+    <title>TamuTemu - Sistem Buku Tamu</title>
     <!-- Font Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
@@ -14,16 +14,16 @@
     <style>
         :root {
             /* Palette Clean Institutional */
-            --bg-body: #f8fafc;        /* Abu-abu sangat terang/bersih */
-            --bg-card: #ffffff;        /* Putih bersih */
-            --bg-sidebar: #0f172a;     /* Navy sangat gelap untuk sidebar */
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-sidebar: #0f172a;
             
-            --primary-blue: #2563eb;   /* Biru elegan */
+            --primary-blue: #2563eb;
             --primary-hover: #1d4ed8;
             
-            --text-dark: #1e293b;      /* Hitam kebiruan untuk judul */
-            --text-muted: #64748b;     /* Abu-abu untuk deskripsi */
-            --border-color: #e2e8f0;   /* Garis batas */
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
             
             --success: #10b981;
             --success-light: #d1fae5;
@@ -36,12 +36,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 
         body {
-            background-color: var(--bg-body);
-            color: var(--text-dark);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
+            background-color: var(--bg-body); color: var(--text-dark);
+            min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden;
         }
 
         h1, h2, h3, h4 { font-weight: 600; color: var(--text-dark); }
@@ -50,10 +46,7 @@
         .page-view { display: none; width: 100%; min-height: 100vh; position: relative; animation: fadeIn 0.4s ease; }
         .page-view.active { display: flex; flex-direction: column; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { 
-            from { opacity: 0; transform: translateY(20px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- BUTTONS --- */
         .btn {
@@ -69,6 +62,8 @@
 
         /* --- FORM INPUTS --- */
         .form-group { margin-bottom: 22px; text-align: left; }
+        .form-row { display: flex; gap: 15px; margin-bottom: 22px; }
+        .form-row .form-group { flex: 1; margin-bottom: 0; }
         label { display: block; margin-bottom: 8px; font-size: 13px; color: var(--text-dark); font-weight: 500;}
         input, textarea {
             width: 100%; padding: 12px 16px; background: #ffffff;
@@ -96,7 +91,6 @@
         }
         .hero-title { font-size: clamp(2.5rem, 5vw, 4rem); margin-bottom: 15px; color: var(--text-dark); line-height: 1.15; animation: slideUp 0.6s ease forwards; letter-spacing: -0.5px;}
         .hero-subtitle { font-size: 16px; max-width: 600px; margin-bottom: 40px; animation: slideUp 0.6s ease 0.1s forwards; opacity: 0; color: var(--text-muted); }
-        
         .hero-action { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; animation: slideUp 0.6s ease 0.2s forwards; opacity: 0; }
 
         .guide-container {
@@ -105,16 +99,15 @@
             animation: slideUp 0.6s ease 0.3s forwards; opacity: 0;
         }
         .guide-card {
-            background: var(--bg-card); border: 1px solid var(--border-color);
-            padding: 30px 25px; border-radius: 16px; text-align: left;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.02); transition: 0.3s;
+            background: var(--bg-card); border: 1px solid var(--border-color); padding: 30px 25px; border-radius: 16px; 
+            text-align: left; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.02); transition: 0.3s;
         }
         .guide-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); border-color: #cbd5e1; }
         .guide-icon { font-size: 24px; margin-bottom: 20px; display: inline-flex; align-items: center; justify-content: center; width: 50px; height: 50px; background: #eff6ff; border-radius: 12px; color: var(--primary-blue);}
         .guide-card h4 { font-size: 16px; margin-bottom: 8px; color: var(--text-dark); }
         .guide-card p { margin: 0; font-size: 13px; color: var(--text-muted); }
 
-        /* --- MODAL FORM --- */
+        /* --- MODALS --- */
         .modal-overlay {
             display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5);
             z-index: 100; align-items: center; justify-content: center; backdrop-filter: blur(4px);
@@ -125,10 +118,8 @@
             transform: translateY(30px); opacity: 0; transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .modal-overlay.open .modal-box { transform: translateY(0); opacity: 1; }
-        
         .modal-box h2 { font-size: 22px; margin-bottom: 8px; color: var(--text-dark); text-align: center;}
         .modal-desc { text-align: center; margin-bottom: 30px; font-size: 13px; color: var(--text-muted); }
-        
         .close-btn { position: absolute; top: 20px; right: 25px; font-size: 26px; cursor: pointer; color: #94a3b8; transition: 0.3s; line-height: 1;}
         .close-btn:hover { color: var(--danger); transform: rotate(90deg); }
 
@@ -138,15 +129,14 @@
         #selfie-preview { width: 100%; display: none; object-fit: cover; transform: scaleX(-1); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         
         input[type="file"]::file-selector-button {
-            background: #e2e8f0; color: var(--text-dark); border: none;
-            padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; margin-right: 15px; transition: 0.3s;
+            background: #e2e8f0; color: var(--text-dark); border: none; padding: 8px 16px; border-radius: 6px; 
+            cursor: pointer; font-weight: 500; margin-right: 15px; transition: 0.3s;
         }
         input[type="file"]::file-selector-button:hover { background: #cbd5e1; }
 
         /* --- KOTAK KARTU UMUM --- */
         .card-container {
-            width: 100%; max-width: 480px; margin: auto; padding: 40px;
-            background: var(--bg-card); border-radius: 20px;
+            width: 100%; max-width: 480px; margin: auto; padding: 40px; background: var(--bg-card); border-radius: 20px;
             border: 1px solid var(--border-color); box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.05);
             animation: slideUp 0.5s ease forwards; text-align: center;
         }
@@ -166,12 +156,7 @@
 
         /* --- DASHBOARD SUPERVISOR --- */
         .dashboard-layout { display: flex; height: 100vh; width: 100%; background: #f8fafc;}
-        
-        /* Sidebar Admin */
-        .sidebar {
-            width: 260px; background: var(--bg-sidebar); padding: 35px 20px; 
-            display: flex; flex-direction: column; color: #ffffff;
-        }
+        .sidebar { width: 260px; background: var(--bg-sidebar); padding: 35px 20px; display: flex; flex-direction: column; color: #ffffff; }
         .sidebar-brand { font-size: 20px; margin-bottom: 45px; text-align: center; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;}
         .menu-item {
             font-size: 14px; padding: 12px 16px; margin-bottom: 8px; cursor: pointer; color: #94a3b8;
@@ -181,7 +166,6 @@
         .logout-btn { margin-top: auto; color: #fca5a5; }
         .logout-btn:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
-        /* Kanan: Content */
         .content-area { flex: 1; padding: 40px 50px; overflow-y: auto; }
         .admin-tab { display: none; animation: fadeIn 0.4s ease; }
         .admin-tab.active { display: block; }
@@ -194,17 +178,17 @@
         th, td { padding: 16px 20px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 14px;}
         th { font-size: 12px; color: var(--text-muted); background: #f8fafc; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;}
         
-        /* Modifikasi Tombol Aksi Tabel */
-        .action-btns { display: flex; gap: 10px; }
+        .action-btns { display: flex; gap: 8px; }
         .btn-approve { background: var(--success-light); color: #047857; border: none; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.3s;}
         .btn-approve:hover { background: #a7f3d0; }
         .btn-reject { background: var(--danger-light); color: #b91c1c; border: none; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.3s;}
         .btn-reject:hover { background: #fecaca; }
+        .btn-view-photo { background: #f1f5f9; color: var(--primary-blue); border: 1px solid #cbd5e1; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.3s;}
+        .btn-view-photo:hover { background: #e2e8f0; }
 
         /* KALENDER MINIMALIS */
         .calendar-section { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start;}
         @media (max-width: 992px) { .calendar-section { grid-template-columns: 1fr; } }
-        
         .calendar-wrapper { background: white; border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);}
         .cal-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;}
         .cal-month-group { display: flex; align-items: center; gap: 15px; }
@@ -215,30 +199,24 @@
 
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; gap: 5px;}
         .day-name { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; font-weight: 600;}
-        .calendar-day { 
-            position: relative; padding: 12px 0; font-size: 14px; font-weight: 500; border-radius: 8px;
-            cursor: pointer; transition: 0.3s; color: var(--text-dark);
-        }
+        .calendar-day { position: relative; padding: 12px 0; font-size: 14px; font-weight: 500; border-radius: 8px; cursor: pointer; transition: 0.3s; color: var(--text-dark);}
         .calendar-day:hover:not(.empty) { background: #f1f5f9; }
         .calendar-day.empty { cursor: default; }
-        
         .calendar-day.selected { background: var(--primary-blue); color: white; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);}
         .calendar-day.today:not(.selected) { border: 1px solid var(--primary-blue); color: var(--primary-blue); }
         .event-dot { width: 5px; height: 5px; background: var(--success); border-radius: 50%; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); }
         .calendar-day.selected .event-dot { background: white; }
 
-        /* JADWAL HARIAN */
         .schedule-box { background: white; border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);}
         .schedule-box h3 { font-size: 16px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;}
         .schedule-card { display: flex; justify-content: space-between; align-items: center; padding: 16px; border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 15px; background: #f8fafc; transition: 0.3s;}
         .schedule-card:hover { border-color: #cbd5e1; }
         .schedule-card h4 { font-size: 15px; margin-bottom: 4px; }
-        .schedule-time { background: #eff6ff; color: var(--primary-blue); padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600;}
+        .schedule-time { background: #e0e7ff; color: var(--primary-blue); padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600;}
 
         /* SCANNER */
         #reader { width: 100%; max-width: 400px; margin: 0 auto 20px auto; border: 2px dashed #cbd5e1; border-radius: 16px; overflow: hidden; background: white;}
         #reader button { background: #f1f5f9; color: var(--text-dark); border: 1px solid #cbd5e1; padding: 8px 16px; font-size: 13px; border-radius: 8px; cursor: pointer; margin-bottom: 10px; font-family: 'Poppins'; font-weight: 500;}
-
     </style>
 </head>
 <body>
@@ -247,12 +225,12 @@
     <div id="view-landing" class="page-view active">
         <div class="top-nav">
             <div class="brand">TamuTemu</div>
-            <span class="nav-link" onclick="navigasi('view-login')">Supervisor Mode</span>
+            <span class="nav-link" onclick="navigasi('view-login')">Masuk Pengelola</span>
         </div>
         
         <div class="landing-center">
-            <h1 class="hero-title">Sistem Buku Tamu<br>SMA Negeri 1 Kandangan</h1>
-            <p class="hero-subtitle">Jadwalkan pertemuan Anda di sekolah secara praktis. Dengan proses verifikasi yang cepat, aman, dan tertata dengan baik.</p>
+            <h1 class="hero-title">Jadwalkan Pertemuan Anda</h1>
+            <p class="hero-subtitle">Sistem buku tamu digital untuk mengatur jadwal pertemuan dengan Kepala Sekolah secara praktis dan terstruktur.</p>
             
             <div class="hero-action">
                 <button class="btn" onclick="bukaModal()">Buat Jadwal Baru</button>
@@ -273,7 +251,7 @@
                 <div class="guide-card">
                     <div class="guide-icon">📱</div>
                     <h4>3. Validasi Kehadiran</h4>
-                    <p>Saat Anda tiba di sekolah, tunjukkan QR Code pada petugas lobi untuk di-scan.</p>
+                    <p>Saat tiba di sekolah, tunjukkan QR Code pada petugas lobi untuk di-scan.</p>
                 </div>
             </div>
         </div>
@@ -299,17 +277,25 @@
                 <div class="form-group">
                     <label>Alamat Email (Penting)</label>
                     <input type="email" id="m-email" placeholder="email@anda.com">
-                    <p style="font-size: 11px; color: var(--primary-blue); margin-top: 6px; margin-bottom: 0;">*Notifikasi hasil persetujuan akan dikirim ke email ini.</p>
                 </div>
-                <div class="form-group">
-                    <label>Pilih Waktu Kedatangan</label>
-                    <input type="datetime-local" id="m-waktu">
+                
+                <!-- Pemisahan Bar Tanggal & Waktu -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tanggal Kedatangan</label>
+                        <input type="date" id="m-tanggal">
+                    </div>
+                    <div class="form-group">
+                        <label>Waktu</label>
+                        <input type="time" id="m-jam">
+                    </div>
                 </div>
+
                 <div class="form-group">
                     <label>Keperluan Pertemuan</label>
                     <input type="text" id="m-tujuan" placeholder="Cth: Konsultasi program pendidikan">
                 </div>
-                <button class="btn" style="width: 100%; margin-top: 15px;" onclick="lanjutStep2()">Lanjutkan Verifikasi</button>
+                <button class="btn" style="width: 100%; margin-top: 5px;" onclick="lanjutStep2()">Lanjutkan Verifikasi</button>
             </div>
 
             <!-- STEP 2: Kamera Aktif / Selfie -->
@@ -334,6 +320,16 @@
                     <button class="btn" style="flex: 1;" onclick="submitJadwal()">Kirim Pengajuan</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL POP-UP LIHAT FOTO (ADMIN) -->
+    <div id="modal-foto" class="modal-overlay">
+        <div class="modal-box" style="text-align:center; max-width: 400px;">
+            <span class="close-btn" onclick="tutupModalFoto()">&times;</span>
+            <h3 style="margin-bottom: 20px;">Foto Pengunjung</h3>
+            <img id="admin-foto-preview" src="" style="width: 100%; border-radius: 8px; max-height: 400px; object-fit: cover; background: #f8fafc;">
+            <p id="admin-foto-nama" style="margin-top: 15px; font-weight: 600; color: var(--text-dark); font-size: 16px;"></p>
         </div>
     </div>
 
@@ -393,7 +389,7 @@
         <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">Kembali</button>
         
         <div class="card-container">
-            <h2 style="margin-bottom: 5px;">Supervisor Mode</h2>
+            <h2 style="margin-bottom: 5px;">Portal Admin</h2>
             <p style="margin-bottom: 30px;">Silakan otorisasi akun Anda.</p>
             <div class="form-group">
                 <label>Kata Sandi</label>
@@ -408,8 +404,9 @@
         <div class="dashboard-layout">
             
             <div class="sidebar">
-                <div class="sidebar-brand">Supervisor</div>
+                <div class="sidebar-brand">Panel Admin</div>
                 <div class="menu-item active" onclick="switchAdminTab('tab-persetujuan', this)">Persetujuan Jadwal</div>
+                <div class="menu-item" onclick="switchAdminTab('tab-riwayat', this)">Riwayat Pertemuan</div>
                 <div class="menu-item" onclick="switchAdminTab('tab-kalender', this)">Kalender & Agenda</div>
                 <div class="menu-item" onclick="switchAdminTab('tab-scanner', this)">Scanner Kamera Lobi</div>
                 <div class="menu-item logout-btn" onclick="navigasi('view-landing')">Keluar Akun</div>
@@ -420,7 +417,29 @@
                 <!-- TAB 1: PERSETUJUAN -->
                 <div id="tab-persetujuan" class="admin-tab active">
                     <div class="header-dash">
-                        <h2>Daftar Menunggu Persetujuan</h2>
+                        <h2>Menunggu Persetujuan</h2>
+                    </div>
+                    
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID Tiket</th>
+                                    <th>Tamu & Email</th>
+                                    <th>Jadwal Pengajuan</th>
+                                    <th>Foto</th>
+                                    <th>Tindakan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="body-pending"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 2: RIWAYAT PERTEMUAN (SEMUA STATUS) -->
+                <div id="tab-riwayat" class="admin-tab">
+                    <div class="header-dash">
+                        <h2>Riwayat Seluruh Pertemuan</h2>
                         <button class="btn btn-outline btn-small" onclick="unduhLaporan()">Unduh Rekap (CSV)</button>
                     </div>
                     
@@ -431,15 +450,16 @@
                                     <th>ID Tiket</th>
                                     <th>Tamu & Email</th>
                                     <th>Jadwal Pengajuan</th>
-                                    <th>Tindakan</th>
+                                    <th>Status</th>
+                                    <th>Foto</th>
                                 </tr>
                             </thead>
-                            <tbody id="body-pending"></tbody>
+                            <tbody id="body-riwayat"></tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- TAB 2: KALENDER & JADWAL -->
+                <!-- TAB 3: KALENDER & JADWAL -->
                 <div id="tab-kalender" class="admin-tab">
                     <div class="header-dash"><h2>Agenda Kepala Sekolah</h2></div>
                     
@@ -454,7 +474,6 @@
                                 </div>
                                 <div class="cal-year" id="cal-year-text">2026</div>
                             </div>
-                            
                             <div class="calendar-grid" id="calendar-grid-days"></div>
                         </div>
 
@@ -466,7 +485,7 @@
                     </div>
                 </div>
 
-                <!-- TAB 3: SCANNER ASLI -->
+                <!-- TAB 4: SCANNER ASLI -->
                 <div id="tab-scanner" class="admin-tab">
                     <div class="header-dash"><h2>Pemindai Tiket Kedatangan</h2></div>
                     <div style="background: white; border: 1px solid var(--border-color); padding: 40px; border-radius: 16px; max-width: 600px; margin: 0 auto; text-align: center;">
@@ -500,8 +519,8 @@
         const dummyDate2 = `${y}-${m}-${String(now.getDate()+2).padStart(2, '0')}T14:00`;
 
         let databaseJadwal = [
-            { id: 'TAMUTEMU-0001', nama: 'Vendor Buku', hp: '08123456789', email: 'vendor@email.com', waktu: dummyDate1, tujuan: 'Presentasi Kerjasama', status: 'Terverifikasi', alasan: '' },
-            { id: 'TAMUTEMU-0002', nama: 'Budi Santoso', hp: '08571234123', email: 'budi@email.com', waktu: dummyDate2, tujuan: 'Konsultasi Program', status: 'Terverifikasi', alasan: '' }
+            { id: 'TAMUTEMU-0001', nama: 'Vendor Buku', hp: '08123456789', email: 'vendor@email.com', waktu: dummyDate1, tujuan: 'Presentasi Kerjasama', status: 'Terverifikasi', alasan: '', foto: '' },
+            { id: 'TAMUTEMU-0002', nama: 'Budi Santoso', hp: '08571234123', email: 'budi@email.com', waktu: dummyDate2, tujuan: 'Konsultasi Program', status: 'Terverifikasi', alasan: '', foto: '' }
         ];
 
         let currentCalDate = new Date(); 
@@ -561,7 +580,7 @@
             if (streamKameraMuka) { streamKameraMuka.getTracks().forEach(track => track.stop()); streamKameraMuka = null; }
         }
 
-        // --- FUNGSI MODAL ---
+        // --- FUNGSI MODAL FORM ---
         function bukaModal() {
             document.getElementById('modal-form').style.display = 'flex';
             setTimeout(() => { document.getElementById('modal-form').classList.add('open'); }, 10);
@@ -570,8 +589,8 @@
             document.getElementById('step-2').style.display = 'none';
             
             document.getElementById('m-nama').value = ''; document.getElementById('m-hp').value = '';
-            document.getElementById('m-email').value = ''; document.getElementById('m-waktu').value = '';
-            document.getElementById('m-tujuan').value = '';
+            document.getElementById('m-email').value = ''; document.getElementById('m-tanggal').value = '';
+            document.getElementById('m-jam').value = ''; document.getElementById('m-tujuan').value = '';
             
             dataFotoSelfie = "";
             document.getElementById('kamera-video').style.display = 'none';
@@ -588,8 +607,8 @@
         }
         
         function lanjutStep2() {
-            if(!document.getElementById('m-nama').value || !document.getElementById('m-email').value || !document.getElementById('m-waktu').value) {
-                alert("Mohon lengkapi Nama, Email, dan Waktu terlebih dahulu."); return;
+            if(!document.getElementById('m-nama').value || !document.getElementById('m-email').value || !document.getElementById('m-tanggal').value || !document.getElementById('m-jam').value) {
+                alert("Mohon lengkapi seluruh data pertemuan (termasuk Tanggal dan Waktu) terlebih dahulu."); return;
             }
             document.getElementById('step-1').style.display = 'none';
             document.getElementById('step-2').style.display = 'block';
@@ -606,22 +625,48 @@
             const nama = document.getElementById('m-nama').value;
             const hp = document.getElementById('m-hp').value || '-';
             const email = document.getElementById('m-email').value;
-            const waktu = document.getElementById('m-waktu').value;
+            const tanggal = document.getElementById('m-tanggal').value;
+            const jam = document.getElementById('m-jam').value;
             const tujuan = document.getElementById('m-tujuan').value || '-';
+            
+            // Gabungkan tanggal dan waktu menjadi format datetime valid
+            const waktuLengkap = `${tanggal}T${jam}`;
             
             if(dataFotoSelfie === "") {
                 if(!confirm("Anda belum mengambil foto selfie. Lanjutkan pengajuan tanpa foto?")) return;
             }
             
-            databaseJadwal.push({ id: id, nama: nama, hp: hp, email: email, waktu: waktu, tujuan: tujuan, status: 'Menunggu', alasan: '' });
+            databaseJadwal.push({ id: id, nama: nama, hp: hp, email: email, waktu: waktuLengkap, tujuan: tujuan, status: 'Menunggu', alasan: '', foto: dataFotoSelfie });
             tutupModal();
             
             document.getElementById('t-id').innerText = id;
             document.getElementById('t-nama').innerText = nama;
             document.getElementById('t-email').innerText = email;
-            document.getElementById('t-waktu').innerText = new Date(waktu).toLocaleString('id-ID');
+            document.getElementById('t-waktu').innerText = new Date(waktuLengkap).toLocaleString('id-ID');
             document.getElementById('t-tujuan').innerText = tujuan;
             navigasi('view-tiket');
+        }
+
+        // --- FUNGSI LIHAT FOTO ADMIN ---
+        function lihatFoto(id) {
+            const j = databaseJadwal.find(x => x.id === id);
+            if(j) {
+                const imgEl = document.getElementById('admin-foto-preview');
+                if(j.foto && j.foto !== '') {
+                    imgEl.src = j.foto;
+                } else {
+                    // Placeholder jika tidak ada foto
+                    imgEl.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%23cbd5e1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+                }
+                document.getElementById('admin-foto-nama').innerText = j.nama;
+                
+                document.getElementById('modal-foto').style.display = 'flex';
+                setTimeout(() => { document.getElementById('modal-foto').classList.add('open'); }, 10);
+            }
+        }
+        function tutupModalFoto() {
+            document.getElementById('modal-foto').classList.remove('open');
+            setTimeout(() => { document.getElementById('modal-foto').style.display = 'none'; }, 400);
         }
 
         // --- FUNGSI CEK STATUS TAMU ---
@@ -637,19 +682,19 @@
 
             if(jadwal) {
                 if(jadwal.status === 'Menunggu') {
-                    infoStatus.innerHTML = `<h3 style="color:var(--warning);">Menunggu Persetujuan</h3><p>Pihak sekolah sedang meninjau jadwal Anda.</p>`;
+                    infoStatus.innerHTML = `<h3 style="color:var(--warning); margin-bottom:5px;">Menunggu Persetujuan</h3><p>Pihak sekolah sedang meninjau jadwal Anda.</p>`;
                 } else if (jadwal.status === 'Terverifikasi') {
-                    infoStatus.innerHTML = `<h3 style="color:var(--success);">Jadwal Disetujui</h3><p>Gunakan QR Code ini pada scanner satpam di lobi.</p>`;
+                    infoStatus.innerHTML = `<h3 style="color:var(--success); margin-bottom:5px;">Jadwal Disetujui</h3><p>Gunakan QR Code ini pada scanner satpam di lobi.</p>`;
                     qrBox.style.display = 'block';
                     document.getElementById('qrcode').innerHTML = "";
-                    new QRCode(document.getElementById("qrcode"), { text: jadwal.id, width: 150, height: 150, colorDark: "#000000", colorLight: "#ffffff" });
+                    new QRCode(document.getElementById("qrcode"), { text: jadwal.id, width: 160, height: 160, colorDark: "#000000", colorLight: "#ffffff" });
                 } else if (jadwal.status === 'Ditolak') {
-                    infoStatus.innerHTML = `<h3 style="color:var(--danger);">Pengajuan Ditolak</h3><p>Alasan: <span style="font-weight:600;">${jadwal.alasan}</span></p><p style="font-size:12px;">Silakan ajukan ulang jadwal di hari lain.</p>`;
+                    infoStatus.innerHTML = `<h3 style="color:var(--danger); margin-bottom:5px;">Pengajuan Ditolak</h3><p>Alasan: <span style="font-weight:600;">${jadwal.alasan}</span></p><p style="font-size:12px;">Silakan ajukan ulang jadwal di hari lain.</p>`;
                 } else if (jadwal.status === 'Hadir') {
-                    infoStatus.innerHTML = `<h3 style="color:var(--success);">Telah Selesai</h3><p>Anda sudah tercatat hadir pada pertemuan ini.</p>`;
+                    infoStatus.innerHTML = `<h3 style="color:var(--success); margin-bottom:5px;">Telah Selesai</h3><p>Anda sudah tercatat hadir pada pertemuan ini.</p>`;
                 }
             } else {
-                infoStatus.innerHTML = `<h3 style="color:var(--danger);">ID Tidak Ditemukan</h3><p>Pastikan Anda mengetik ID dengan benar.</p>`;
+                infoStatus.innerHTML = `<h3 style="color:var(--danger); margin-bottom:5px;">ID Tidak Ditemukan</h3><p>Pastikan Anda mengetik ID dengan benar.</p>`;
             }
         }
 
@@ -679,12 +724,13 @@
         }
 
         function refreshDataAdmin() {
-            const tbody = document.getElementById('body-pending');
-            tbody.innerHTML = '';
+            // Render Tabel Pending
+            const tbodyPending = document.getElementById('body-pending');
+            tbodyPending.innerHTML = '';
             const pending = databaseJadwal.filter(j => j.status === 'Menunggu');
             
             if(pending.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding: 30px;">Tidak ada daftar pengajuan baru.</td></tr>`;
+                tbodyPending.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding: 30px;">Tidak ada daftar pengajuan baru.</td></tr>`;
             } else {
                 pending.forEach(j => {
                     const tr = document.createElement('tr');
@@ -692,6 +738,7 @@
                         <td style="font-family:monospace; font-weight: 600; color: var(--primary-blue); font-size: 15px;">${j.id}</td>
                         <td><div style="font-weight: 500; color:var(--text-dark);">${j.nama}</div><div style="font-size:12px; color:var(--text-muted); margin-top:2px;">${j.email}</div></td>
                         <td>${new Date(j.waktu).toLocaleString('id-ID')}</td>
+                        <td><button class="btn-outline btn-small" onclick="lihatFoto('${j.id}')">📸 Foto</button></td>
                         <td>
                             <div class="action-btns">
                                 <button class="btn-approve" onclick="approveJadwal('${j.id}')">Approve</button>
@@ -699,9 +746,37 @@
                             </div>
                         </td>
                     `;
-                    tbody.appendChild(tr);
+                    tbodyPending.appendChild(tr);
                 });
             }
+            
+            // Render Tabel Riwayat Keseluruhan
+            const tbodyRiwayat = document.getElementById('body-riwayat');
+            tbodyRiwayat.innerHTML = '';
+            if(databaseJadwal.length === 0) {
+                tbodyRiwayat.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding: 30px;">Tidak ada riwayat pertemuan.</td></tr>`;
+            } else {
+                // Urutkan dari yang terbaru diajukan (berdasarkan index array dibalik / waktu dibuat)
+                const allDataRev = [...databaseJadwal].reverse();
+                allDataRev.forEach(j => {
+                    let statusBadge = '';
+                    if(j.status === 'Menunggu') statusBadge = `<span style="background:var(--warning-light); color:#b45309; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:600;">Menunggu</span>`;
+                    else if(j.status === 'Terverifikasi') statusBadge = `<span style="background:var(--primary-blue); color:white; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:600;">Disetujui</span>`;
+                    else if(j.status === 'Hadir') statusBadge = `<span style="background:var(--success-light); color:#065f46; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:600;">Hadir</span>`;
+                    else statusBadge = `<span style="background:var(--danger-light); color:#b91c1c; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:600;">Ditolak</span>`;
+                    
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="font-family:monospace; font-weight: 600; color: var(--text-muted); font-size: 14px;">${j.id}</td>
+                        <td><div style="font-weight: 500; color:var(--text-dark);">${j.nama}</div><div style="font-size:12px; color:var(--text-muted); margin-top:2px;">${j.email}</div></td>
+                        <td>${new Date(j.waktu).toLocaleString('id-ID')}</td>
+                        <td>${statusBadge}</td>
+                        <td><button class="btn-view-photo" onclick="lihatFoto('${j.id}')">Lihat</button></td>
+                    `;
+                    tbodyRiwayat.appendChild(tr);
+                });
+            }
+
             renderKalender();
         }
 
@@ -809,10 +884,10 @@
                     card.innerHTML = `
                         <div>
                             <h4>${j.nama}</h4>
-                            <p style="margin:0; font-size:13px;">${j.tujuan}</p>
+                            <p style="margin:0; font-size:13px; color:var(--text-muted);">${j.tujuan}</p>
                             ${statusLabel}
                         </div>
-                        <div class="schedule-time">${jd.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB</div>
+                        <div class="schedule-time">${jd.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</div>
                     `;
                     container.appendChild(card);
                 });
