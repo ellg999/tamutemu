@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TamuTemu - Sistem Buku Tamu</title>
-    <!-- Font Poppins -->
+    <title>TamuTemu</title>
+    <!-- Font Poppins yang bersih dan ramah -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Pustaka Eksternal -->
@@ -14,16 +14,16 @@
     <style>
         :root {
             /* Palette Clean Institutional */
-            --bg-body: #f8fafc;
-            --bg-card: #ffffff;
-            --bg-sidebar: #0f172a;
+            --bg-body: #f8fafc;        /* Abu-abu sangat lembut untuk background luar */
+            --bg-card: #ffffff;        /* Putih bersih untuk kartu/konten */
+            --bg-sidebar: #1e293b;     /* Navy gelap untuk sidebar admin */
             
-            --primary-blue: #2563eb;
+            --primary-blue: #2563eb;   /* Biru pendidikan / Royal blue */
             --primary-hover: #1d4ed8;
             
-            --text-dark: #1e293b;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
+            --text-dark: #0f172a;      /* Teks utama (hitam kebiruan) */
+            --text-muted: #64748b;     /* Teks sekunder (abu-abu) */
+            --border-color: #e2e8f0;   /* Garis batas halus */
             
             --success: #10b981;
             --success-light: #d1fae5;
@@ -46,16 +46,19 @@
         .page-view { display: none; width: 100%; min-height: 100vh; position: relative; animation: fadeIn 0.4s ease; }
         .page-view.active { display: flex; flex-direction: column; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
 
         /* --- BUTTONS --- */
         .btn {
             display: inline-flex; align-items: center; justify-content: center;
             padding: 12px 28px; background: var(--primary-blue);
             color: #ffffff; border: 1px solid var(--primary-blue); border-radius: 8px; 
-            font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;
+            font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; text-align: center;
         }
-        .btn:hover { background: var(--primary-hover); border-color: var(--primary-hover); box-shadow: 0 6px 15px rgba(37, 99, 235, 0.2); transform: translateY(-1px); }
+        .btn:hover { background: var(--primary-hover); border-color: var(--primary-hover); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); transform: translateY(-1px); }
         .btn-outline { background: transparent; color: var(--primary-blue); border-color: var(--border-color); }
         .btn-outline:hover { background: #f1f5f9; border-color: #cbd5e1; box-shadow: none; color: var(--text-dark);}
         .btn-small { padding: 8px 16px; font-size: 13px; }
@@ -91,6 +94,7 @@
         }
         .hero-title { font-size: clamp(2.5rem, 5vw, 4rem); margin-bottom: 15px; color: var(--text-dark); line-height: 1.15; animation: slideUp 0.6s ease forwards; letter-spacing: -0.5px;}
         .hero-subtitle { font-size: 16px; max-width: 600px; margin-bottom: 40px; animation: slideUp 0.6s ease 0.1s forwards; opacity: 0; color: var(--text-muted); }
+        
         .hero-action { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; animation: slideUp 0.6s ease 0.2s forwards; opacity: 0; }
 
         .guide-container {
@@ -217,6 +221,41 @@
         /* SCANNER */
         #reader { width: 100%; max-width: 400px; margin: 0 auto 20px auto; border: 2px dashed #cbd5e1; border-radius: 16px; overflow: hidden; background: white;}
         #reader button { background: #f1f5f9; color: var(--text-dark); border: 1px solid #cbd5e1; padding: 8px 16px; font-size: 13px; border-radius: 8px; cursor: pointer; margin-bottom: 10px; font-family: 'Poppins'; font-weight: 500;}
+
+        /* --- RESPONSIVE MEDIA QUERIES (Mobile / Laptop) --- */
+        @media (max-width: 768px) {
+            .top-nav { padding: 15px 5vw; }
+            .back-btn { top: 15px; left: 5vw; }
+            .hero-title { font-size: 2.2rem; }
+            
+            .modal-box { padding: 25px; border-radius: 16px; width: 95%; }
+            .card-container { padding: 30px 20px; margin: 20px; border-radius: 16px; width: auto; }
+            
+            .form-row { flex-direction: column; gap: 0; }
+            .form-row .form-group { margin-bottom: 22px; }
+
+            /* Dashboard Admin diubah menjadi menu atas pada HP */
+            .dashboard-layout { flex-direction: column; height: auto; min-height: 100vh;}
+            .sidebar { 
+                width: 100%; padding: 20px; border-right: none; 
+                flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 5px; 
+            }
+            .sidebar-brand { width: 100%; margin-bottom: 15px; text-align: center; }
+            .menu-item { margin-bottom: 0; font-size: 12px; padding: 8px 12px; }
+            .logout-btn { margin-top: 0; margin-left: auto; }
+            
+            .content-area { padding: 20px; }
+            .header-dash { flex-direction: column; align-items: flex-start; gap: 15px; }
+            
+            .calendar-section { grid-template-columns: 1fr; }
+            .action-btns { flex-wrap: wrap; }
+            .calendar-wrapper { padding: 20px; }
+            .cal-month-group h3, .cal-year { font-size: 16px; }
+            
+            /* Scroll Horizontal untuk Tabel di HP */
+            .table-wrapper { overflow-x: auto; }
+            table { min-width: 600px; }
+        }
     </style>
 </head>
 <body>
@@ -272,11 +311,13 @@
                 </div>
                 <div class="form-group">
                     <label>Nomor HP / WhatsApp</label>
-                    <input type="tel" id="m-hp" placeholder="0812xxxx">
+                    <!-- VALIDASI HANYA ANGKA -->
+                    <input type="tel" id="m-hp" placeholder="0812xxxx" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
                 <div class="form-group">
                     <label>Alamat Email (Penting)</label>
-                    <input type="email" id="m-email" placeholder="email@anda.com">
+                    <input type="email" id="m-email" placeholder="contoh@gmail.com atau @icloud.com">
+                    <p style="font-size: 11px; color: var(--primary-blue); margin-top: 6px; margin-bottom: 0;">*Hanya menerima domain @gmail.com atau @icloud.com</p>
                 </div>
                 
                 <!-- Pemisahan Bar Tanggal & Waktu -->
@@ -389,10 +430,10 @@
         <button class="btn btn-outline btn-small back-btn" onclick="navigasi('view-landing')">Kembali</button>
         
         <div class="card-container">
-            <h2 style="margin-bottom: 5px;">Portal Admin</h2>
+            <h2 style="margin-bottom: 5px;">Supervisor Mode</h2>
             <p style="margin-bottom: 30px;">Silakan otorisasi akun Anda.</p>
             <div class="form-group">
-                <label>Kata Sandi</label>
+                <label style="text-align: center;">Kata Sandi</label>
                 <input type="password" id="input-sandi" placeholder="Ketik sandi Anda..." style="text-align: center;">
             </div>
             <button class="btn" style="width: 100%;" onclick="loginAdmin()">Masuk Dasbor</button>
@@ -408,8 +449,8 @@
                 <div class="menu-item active" onclick="switchAdminTab('tab-persetujuan', this)">Persetujuan Jadwal</div>
                 <div class="menu-item" onclick="switchAdminTab('tab-riwayat', this)">Riwayat Pertemuan</div>
                 <div class="menu-item" onclick="switchAdminTab('tab-kalender', this)">Kalender & Agenda</div>
-                <div class="menu-item" onclick="switchAdminTab('tab-scanner', this)">Scanner Kamera Lobi</div>
-                <div class="menu-item logout-btn" onclick="navigasi('view-landing')">Keluar Akun</div>
+                <div class="menu-item" onclick="switchAdminTab('tab-scanner', this)">Scanner QR Code</div>
+                <div class="menu-item logout-btn" onclick="navigasi('view-landing')">Keluar</div>
             </div>
 
             <div class="content-area">
@@ -461,7 +502,7 @@
 
                 <!-- TAB 3: KALENDER & JADWAL -->
                 <div id="tab-kalender" class="admin-tab">
-                    <div class="header-dash"><h2>Agenda Kepala Sekolah</h2></div>
+                    <div class="header-dash"><h2>Agenda</h2></div>
                     
                     <div class="calendar-section">
                         <!-- Box Kalender -->
@@ -519,8 +560,8 @@
         const dummyDate2 = `${y}-${m}-${String(now.getDate()+2).padStart(2, '0')}T14:00`;
 
         let databaseJadwal = [
-            { id: 'TAMUTEMU-0001', nama: 'Vendor Buku', hp: '08123456789', email: 'vendor@email.com', waktu: dummyDate1, tujuan: 'Presentasi Kerjasama', status: 'Terverifikasi', alasan: '', foto: '' },
-            { id: 'TAMUTEMU-0002', nama: 'Budi Santoso', hp: '08571234123', email: 'budi@email.com', waktu: dummyDate2, tujuan: 'Konsultasi Program', status: 'Terverifikasi', alasan: '', foto: '' }
+            { id: 'TAMUTEMU-0001', nama: 'Vendor Buku', hp: '08123456789', email: 'vendor@gmail.com', waktu: dummyDate1, tujuan: 'Presentasi Kerjasama', status: 'Terverifikasi', alasan: '', foto: '' },
+            { id: 'TAMUTEMU-0002', nama: 'Budi Santoso', hp: '08571234123', email: 'budi@icloud.com', waktu: dummyDate2, tujuan: 'Konsultasi Program', status: 'Terverifikasi', alasan: '', foto: '' }
         ];
 
         let currentCalDate = new Date(); 
@@ -607,9 +648,18 @@
         }
         
         function lanjutStep2() {
-            if(!document.getElementById('m-nama').value || !document.getElementById('m-email').value || !document.getElementById('m-tanggal').value || !document.getElementById('m-jam').value) {
+            // Validasi kelengkapan form
+            if(!document.getElementById('m-nama').value || !document.getElementById('m-hp').value || !document.getElementById('m-email').value || !document.getElementById('m-tanggal').value || !document.getElementById('m-jam').value) {
                 alert("Mohon lengkapi seluruh data pertemuan (termasuk Tanggal dan Waktu) terlebih dahulu."); return;
             }
+
+            // Validasi Domain Email
+            const emailValue = document.getElementById('m-email').value.toLowerCase();
+            if(!emailValue.endsWith('@gmail.com') && !emailValue.endsWith('@icloud.com')) {
+                alert("Mohon gunakan alamat email dengan domain @gmail.com atau @icloud.com saja.");
+                return;
+            }
+
             document.getElementById('step-1').style.display = 'none';
             document.getElementById('step-2').style.display = 'block';
         }
@@ -738,7 +788,7 @@
                         <td style="font-family:monospace; font-weight: 600; color: var(--primary-blue); font-size: 15px;">${j.id}</td>
                         <td><div style="font-weight: 500; color:var(--text-dark);">${j.nama}</div><div style="font-size:12px; color:var(--text-muted); margin-top:2px;">${j.email}</div></td>
                         <td>${new Date(j.waktu).toLocaleString('id-ID')}</td>
-                        <td><button class="btn-outline btn-small" onclick="lihatFoto('${j.id}')">📸 Foto</button></td>
+                        <td><button class="btn-view-photo" onclick="lihatFoto('${j.id}')">📸 Foto</button></td>
                         <td>
                             <div class="action-btns">
                                 <button class="btn-approve" onclick="approveJadwal('${j.id}')">Approve</button>
